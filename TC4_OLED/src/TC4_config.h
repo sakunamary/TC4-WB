@@ -15,12 +15,11 @@
  * includes the required HeliOS header files automatically.
  */
 
-#ifndef __UNOTC4_H__
-#define __UNOTC4_H__
+#ifndef __TC4_CONFIG_H__
+#define __TC4_CONFIG_H__
 
 #include <SoftwareSerial.h>
 #include "MAX6675.h"
-#include "SevSeg.h"
 
 #ifdef  TC4_GLOBALS
 #define TC4_EXT
@@ -31,14 +30,11 @@
 #define PRINT_TEAMPERATURE_EACH_READING         1	    // Set, to print temperature vaule on serial debug port
 #define PRINT_ARTISAN_WHOLE_MESSAGE		        0       // set, to print Artisan commands on serial debug port
 #define ENVIRONMENT_TEMPERATURE_EXIST           1       // Set, if you installed ET thermal couple 
-#define SEGMENT_DISPLAY_EXIST                   1       // Set, if you installed 7-Segment Display
 
-#define SCK_PIN       13      // D13, PB5
-#define SO_PIN 	      12      // D12, PB4
-#define CS_BT_PIN 	  10      // D10, PB2
-#define CS_ET_PIN     9       // D9,  PB1
-#define SOFT_TX       8       // D8,  PB0
-#define SOFT_RX       7       // D7,  PD7
+#define CS_BT_PIN 	  10      // 
+#define CS_ET_PIN     9       //
+#define SOFT_TX       8       // 
+#define SOFT_RX       7       // 
 
 /* 
 the default sample rate of Artisan is 3 seconds, although the setting value can be modified by user.
@@ -63,4 +59,4 @@ TC4_EXT bool		abnormalValue = false;              // indicate temperature value 
 TC4_EXT float		ET_CurTemp = 0.0;
 #endif
 
-#endif /*__UNOTC4_H__*/
+#endif /*__TC4_CONFIG_H__*/

@@ -11,7 +11,7 @@
  */
 
 #include <Arduino.h>
-#include "TC4.h"
+#include "TC4_config.h"
 #include "U8g2lib.h"
 
 #ifdef U8X8_HAVE_HW_SPI

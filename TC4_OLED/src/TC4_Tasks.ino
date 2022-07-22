@@ -11,7 +11,7 @@
  */
 
 #include <Arduino.h>
-#include "UnoTC4.h"
+#include "TC4_config.h"
 
 float averageTemperature ( float *);
 
