@@ -14,7 +14,8 @@
 #include "TC4_config.h"
 
 float averageTemperature ( float *);
-
+void taskCmdHandle(xTask task_, xTaskParm parm_);
+void taskThermo(xTask task_, xTaskParm parm_);
 /*
  * The task definition for taskCmdHander() which handles 
  * Artisan TC4 commands from native UART port and  
@@ -79,10 +80,6 @@ void taskCmdHandle(xTask task_, xTaskParm parm_) {
 		}
   	}
 
-#if SEGMENT_DISPLAY_EXIST
-    // Must run repeatedly; don't use blocking code (ex: delay()) in the loop() function or this won't work right
-    sevseg.refreshDisplay(); 
-#endif  
 }
 
 /*

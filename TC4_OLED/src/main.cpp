@@ -18,7 +18,7 @@
 
 
 
-#include "HeliOS.h"
+#include <HeliOS.h>
 #include "TC4_config.h"
 
 #define TC4_GLOBALS
