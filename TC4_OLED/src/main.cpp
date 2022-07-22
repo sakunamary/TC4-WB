@@ -47,14 +47,6 @@ void setup() {
   // Declare and initialize an int to hold the task id
   int id = 0;
 
-#if SEGMENT_DISPLAY_EXIST
-  byte numDigits = 3;   
-  byte digitPins[] = {6, 5, 4}; 
-  byte segmentPins[] = {14, 15, 16, 17, 18, 19, 2, 3}; 
-
-  sevseg.begin(COMMON_ANODE, numDigits, digitPins, segmentPins);
-  sevseg.setBrightness(100);
-#endif
 
   // Serial ports initialize
   Serial.begin(115200);
@@ -64,23 +56,22 @@ void setup() {
   SerialDebug.println(" ");
   SerialDebug.println("TC4 Simulator with UNO, MAX6675 v0.02");
 
-  // Call xHeliOSSetup() to initialize HeliOS and its data structures
-  xHeliOSSetup();
 
-  // Add the task taskCmdHander() to HeliOS taskList
-  id = xTaskAdd("TASKCMDHANDLE", &taskCmdHandle);
+  /* Call xSystemInit() to initialize any interrupt handlers and/or
+  memory required by HeliOS to execute on the target platform/architecture. */
+  xSystemInit();
 
-  // Pass the task id of the task to set its state from stopped to running
-  xTaskStart(id);
 
-  // Add the task taskThermo() to HeliOS taskList
-  id = xTaskAdd("TASKTHERMO", &taskThermo);
-  
-  // Call xTaskWait() to place taskThermo() into a wait state 
-  xTaskWait(id);
+    /* Create two task to print all task information every
 
-  // Set the timer interval for taskThermo() to 750 microseconds
-  xTaskSetTimer(id, MAX6675_READING_INTERVEL);
+    */
+   xTask task = xTaskCreate("TASKCMDHANDLE",taskCmdHandle,NULL);
+   xTask task = xTaskCreate("TASKTHERMO",TaskIndicator,NULL);
+
+
+    /* Pass control to the HeliOS scheduler. */
+    xTaskStartScheduler();
+
 }
 
 void loop() {
