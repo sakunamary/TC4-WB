@@ -29,7 +29,6 @@
 
 #define PRINT_TEAMPERATURE_EACH_READING         1	    // Set, to print temperature vaule on serial debug port
 #define PRINT_ARTISAN_WHOLE_MESSAGE		        0       // set, to print Artisan commands on serial debug port
-#define ENVIRONMENT_TEMPERATURE_EXIST           1       // Set, if you installed ET thermal couple 
 
 #define CS_BT_PIN 	  10      // 
 #define CS_ET_PIN     9       //

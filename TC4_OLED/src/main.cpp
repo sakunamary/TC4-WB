@@ -30,14 +30,8 @@ extern void taskThermo(int);
 MAX6675 BT_Thermocouple(CS_BT_PIN);
 
 // Variables for Environment Temperature (ET) if exist
-#if ENVIRONMENT_TEMPERATURE_EXIST
 MAX6675 ET_Thermocouple(CS_ET_PIN);
-#endif
 
-#if SEGMENT_DISPLAY_EXIST
-// Create object for a seven segment controller
-SevSeg sevseg; 
-#endif
 
 // Create Software Serial port for debugging purpose
 SoftwareSerial SerialDebug(SOFT_RX, SOFT_TX);       // RX, TX : D7, D8
@@ -54,7 +48,7 @@ void setup() {
   // Try to print something on serial port
 //Serial.println("On board UART2USB port is used to communicate with Artisan App");
   SerialDebug.println(" ");
-  SerialDebug.println("TC4 Simulator with UNO, MAX6675 v0.02");
+  SerialDebug.println("TC4 OLED MAX6675 v1.0");
 
 
   /* Call xSystemInit() to initialize any interrupt handlers and/or
@@ -62,25 +56,36 @@ void setup() {
   xSystemInit();
 
 
-    /* Create two task to print all task information every
+    /* Create two task to print all task information every */
+   xTask CmdHandle = xTaskCreate("TASKCMDHANDLE",taskCmdHandle,NULL);
+   xTask Indicator = xTaskCreate("TASKTHERMO",TaskIndicator,NULL);
+  
+   if (CmdHandle && Indicator) {
+    /* Place the task in the waiting state. */
+    xTaskWait(CmdHandle);
+    xTaskWait(Indicator);
 
-    */
-   xTask task = xTaskCreate("TASKCMDHANDLE",taskCmdHandle,NULL);
-   xTask task = xTaskCreate("TASKTHERMO",TaskIndicator,NULL);
 
+
+    xTaskChangePeriod(Indicator, 1000); //1000 = 1 second
+    xTaskChangePeriod(CmdHandle, 1000); //
 
     /* Pass control to the HeliOS scheduler. */
     xTaskStartScheduler();
 
+
+    /* If the scheduler relinquishes control, do some clean-up by
+    deleting the task. */
+    xTaskDelete(CmdHandle);
+    xTaskDelete(Indicator);
+   }
+  /* Halt the system. Once called, the system must be reset to
+  recover. */
+  xSystemHalt();
+
 }
 
 void loop() {
-
-  /*
-   * Momentarily pass control to HeliOS by calling the
-   * xHeliOSLoop() function call. xHeliOSLoop() should be
-   * the only code inside of the sketch's loop() function.
-   */
-  xHeliOSLoop();
+  /* The loop function is not used and should remain empty. */
 }
 

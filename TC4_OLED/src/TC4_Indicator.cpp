@@ -30,7 +30,7 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* 
 
 #define INDICATOR_INTERVEL      1000    // Task re-entry intervel (ms)
 
-void TaskIndicator(void *pvParameters)  
+void TaskIndicator(xTask task_, xTaskParm parm_)  
 {
     /***
     Artisan Command Handler

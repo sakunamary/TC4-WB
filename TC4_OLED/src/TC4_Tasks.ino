@@ -20,7 +20,7 @@ float averageTemperature ( float *);
  * Artisan TC4 commands from native UART port and  
  * displays BT temperature on 7-segment LEDs if installed
  */
-void taskCmdHandle(int id_) {
+void taskCmdHandle(xTask task_, xTaskParm parm_) {
 
     if ( Serial.available() ) {
 		String msg = Serial.readStringUntil('\n');
@@ -89,7 +89,7 @@ void taskCmdHandle(int id_) {
  * The task definition for taskThermo() which will be 
  * executed by HeliOS every MAX6675_READING_INTERVEL (750ms) to read MAX6675 thermocouple
  */
-void taskThermo(int id_) {
+void taskThermo(xTask task_, xTaskParm parm_) {
 
     // read BT from MAX6675 thermal couple
     BT_CurTemp = BT_Thermocouple.readTempC();
