@@ -14,8 +14,7 @@
 #include "TC4_config.h"
 
 float averageTemperature ( float *);
-void taskCmdHandle(xTask task_, xTaskParm parm_);
-void taskThermo(xTask task_, xTaskParm parm_);
+
 /*
  * The task definition for taskCmdHander() which handles 
  * Artisan TC4 commands from native UART port and  
