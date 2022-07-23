@@ -63,17 +63,21 @@ void setup() {
 
 
 
-   if (CmdHandle && Indicator) {
+   if (CmdHandle && Indicator && Thermo ) {
     /* Place the task in the waiting state. */
     xTaskWait(CmdHandle);
     xTaskWait(Indicator);
+    xTaskWait(Thermo);
+
+
 
 
 
     xTaskChangePeriod(Indicator, 1000); //1000 = 1 second
     xTaskChangePeriod(CmdHandle, 1000); //
 
-    /* Pass control to the HeliOS scheduler. */
+    /* Pass control to the HeliOS scheduler. The HeliOS scheduler will
+    not relinquish control unless xTaskSuspendAll() is called. */
     xTaskStartScheduler();
 
 
@@ -112,16 +116,8 @@ void TaskIndicator(xTask task_, xTaskParm parm_)
 {
     /***
     Artisan Command Handler
-    The definition of Artisan Command Handler is to
-    (1) response Artisan TC4 commands which from native UART port
-        or Bluetooth Serial Port Profile (SPP)  
     (2) Displays Beam Temperature (BT) on 4 * 7-segment LEDs if installed
     ***/
-    
-    /* Variable Definition */
-    (void) pvParameters;
-    TickType_t xLastWakeTime;
-    const TickType_t xIntervel = INDICATOR_INTERVEL / portTICK_PERIOD_MS;
     
 	// Start SSD1315 OLED Display
 	u8g2.begin();
