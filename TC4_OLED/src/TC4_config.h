@@ -15,6 +15,23 @@
  * includes the required HeliOS header files automatically.
  */
 
+
+
+/*D1 mini  PINOUT table 
+ 5+           USB IN
+ GND          USB GND
+ TX IO1  TX0  Serial(PAD)
+ D4 IO2       serial debug 
+ RX IO3  RX0  Serial(PAD)
+ D2 IO4  SDA   I2C
+ D1 IO5  SCL   I2C
+ D7 IO13      
+ D6 IO12      RX1   serial_to_drumer
+ D5 IO14      TX1 serial_to_drumer        
+ D8 IO15      
+ D0 IO16      
+*/
+
 #ifndef __TC4_CONFIG_H__
 #define __TC4_CONFIG_H__
 
@@ -27,13 +44,16 @@
 #define TC4_EXT  extern
 #endif
 
+#define BAUD 57600 //serial port baudrate 
+
+
 #define PRINT_TEAMPERATURE_EACH_READING         1	    // Set, to print temperature vaule on serial debug port
 #define PRINT_ARTISAN_WHOLE_MESSAGE		        0       // set, to print Artisan commands on serial debug port
 
-#define CS_BT_PIN 	  10      // 
-#define CS_ET_PIN     9       //
-#define SOFT_TX       8       // 
-#define SOFT_RX       7       // 
+#define CS_BT_PIN 	 D8      // 
+#define CS_ET_PIN    D7       //
+#define SOFT_TX      D5       // 
+#define SOFT_RX      D6       // 
 
 /* 
 the default sample rate of Artisan is 3 seconds, although the setting value can be modified by user.
