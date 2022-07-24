@@ -17,19 +17,8 @@
 
 
 
-/*D1 mini  PINOUT table 
- 5+           USB IN
- GND          USB GND
- TX IO1  TX0  Serial(PAD)
- D4 IO2       serial debug 
- RX IO3  RX0  Serial(PAD)
- D2 IO4  SDA   I2C
- D1 IO5  SCL   I2C
- D7 IO13      
- D6 IO12      RX1   serial_to_drumer
- D5 IO14      TX1 serial_to_drumer        
- D8 IO15      
- D0 IO16      
+/*
+LGT8f
 */
 
 #ifndef __TC4_CONFIG_H__

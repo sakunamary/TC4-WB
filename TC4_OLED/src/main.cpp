@@ -33,7 +33,7 @@ MAX6675 ET_Thermocouple(CS_ET_PIN); //D7
 
 
 // Create Software Serial port for debugging purpose
-SoftwareSerial Serial_Blueno;// D0 IO16 RX_Blueno  D5 IO14 TX_Blueno
+SoftwareSerial Serial_Blueno();// D0 IO16 RX_Blueno  D5 IO14 TX_Blueno
 HardwareSerial Serial_debug(1); //output debug info .
 
 
@@ -127,13 +127,8 @@ void TaskIndicator(xTask task_, xTaskParm parm_)
     u8g2.drawStr(0, 16, "   Thermal Monitor v2");   // write string to buffer
     u8g2.sendBuffer();                    		    // transfer buffer string to display internal memory to show-up
 
-    // Initial the xLastWakeTime variable with the current time.
-    xLastWakeTime = xTaskGetTickCount();
-
     for (;;) // A Task shall never return or exit.
     {
-        // Wait for the next cycle
-        vTaskDelayUntil(&xLastWakeTime, xIntervel);
 
 	    memset(printBuf, 0, sizeof(printBuf));
    		snprintf(printBuf, sizeof(printBuf)-1, "%3.1f", BT_AvgTemp);
@@ -245,9 +240,9 @@ void taskThermo(xTask task_, xTaskParm parm_) {
 	     	// set abnormal flag
 	    	abnormalValue = true;
 	    	// print ? with temperature value in newline
-            SerialDebug.println(" ");
-            SerialDebug.print(" ?");
-            SerialDebug.println(BT_CurTemp);
+            Serial_debug.println(" ");
+            Serial_debug.print(" ?");
+            Serial_debug.println(BT_CurTemp);
 	   	}
 	}
 	else {
@@ -260,12 +255,12 @@ void taskThermo(xTask task_, xTaskParm parm_) {
 #if PRINT_TEAMPERATURE_EACH_READING
         // print MAX6675 reading value on serial monitor
 	   	if ( BT_ArrayIndex == 0 ) {
-			SerialDebug.println(" ");
-	   		SerialDebug.print("Temperature: ");
+			Serial_debug.println(" ");
+	   		Serial_debug.print("Temperature: ");
 	  	}
 
-        SerialDebug.print(" ");			
-	   	SerialDebug.print(BT_CurTemp);
+        Serial_debug.print(" ");			
+	   	Serial_debug.print(BT_CurTemp);
 #endif
         BT_ArrayIndex++;
         if ( BT_ArrayIndex >= TEMPERATURE_ARRAY_LENGTH ) {
@@ -275,24 +270,21 @@ void taskThermo(xTask task_, xTaskParm parm_) {
                 isReady = true;
             }
 #if PRINT_TEAMPERATURE_EACH_READING          
-            SerialDebug.print(" ");	
-            SerialDebug.print("Average: ");
-            SerialDebug.print(BT_AvgTemp);
+            Serial_debug.print(" ");	
+            Serial_debug.print("Average: ");
+            Serial_debug.print(BT_AvgTemp);
 #endif     
 #if ENVIRONMENT_TEMPERATURE_EXIST
             // The ET is reference temperature, don't need averaging
             // just read ET from MAX6675 thermal couple every 3 seconds
             ET_CurTemp = ET_Thermocouple.readTempC();
 #if PRINT_TEAMPERATURE_EACH_READING           
-            SerialDebug.print(" ");	
-            SerialDebug.print("ET: ");
-            SerialDebug.print(ET_CurTemp);
+            Serial_debug.print(" ");	
+            Serial_debug.print("ET: ");
+            Serial_debug.print(ET_CurTemp);
 #endif   
 #endif
-        } 
-#if SEGMENT_DISPLAY_EXIST
-        sevseg.setNumber(BT_AvgTemp);   
-#endif             
+        }            
     }
     else {
         // After bypass abnormal value, reset flag here
