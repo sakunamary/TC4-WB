@@ -42,12 +42,12 @@ void setup() {
 
 
   // Serial ports initialize
-  Serial_Blueno.begin(BAUD);
-  Serial_PAD.begin(BAUD, SWSERIAL_8N1, 14, 12, false, 256); 
+  Serial_debug.begin(BAUD);
+  Serial_Blueno.begin(BAUD, SWSERIAL_8N1, 14, 12, false, 256); 
   // Try to print something on serial port
 //Serial.println("On board UART2USB port is used to communicate with Artisan App");
-  SerialDebug.println(" ");
-  SerialDebug.println("TC4 OLED MAX6675 v1.0");
+  Serial_debug.println(" ");
+  Serial_debug.println("TC4 OLED MAX6675 v1.0");
 
 
   /* Call xSystemInit() to initialize any interrupt handlers and/or
@@ -163,11 +163,11 @@ float averageTemperature ( float *);
  */
 void taskCmdHandle(xTask task_, xTaskParm parm_) {
 
-    if ( Serial.available() ) {
-		String msg = Serial.readStringUntil('\n');
+    if ( Serial_Blueno.available() ) {
+		String msg = Serial_Blueno.readStringUntil('\n');
 
 #if PRINT_ARTISAN_WHOLE_MESSAGE
-		SerialDebug.println(msg);                 			// print whole message
+		Serial_debug.println(msg);                 			// print whole message
 #endif
 
 		if (msg.indexOf("READ")==0) {	            		// READ command
@@ -179,44 +179,44 @@ void taskCmdHandle(xTask task_, xTaskParm parm_) {
 			Serial.print("0.00,");			      			// ambient temperature
 #ifdef ENVIRONMENT_TEMPERATURE_EXIST    
       		if (unit_C)  
-				Serial.print(ET_CurTemp);	      			// channel 1 : Environment Temperature (ET) with degree Celsius
+				Serial_Blueno.print(ET_CurTemp);	      			// channel 1 : Environment Temperature (ET) with degree Celsius
       		else 
-      			Serial.print(ET_CurTemp * 9.0/5.0 + 32);	// channel 1 : Environment Temperature (ET) with degree Farenheit
+      			Serial_Blueno.print(ET_CurTemp * 9.0/5.0 + 32);	// channel 1 : Environment Temperature (ET) with degree Farenheit
 #else
       		if (unit_C)
-			 	Serial.print(BT_AvgTemp);			        // channel 1 : Environment Temperature (ET); no ET sensor, so uses BT instead	
+			 	Serial_Blueno.print(BT_AvgTemp);			        // channel 1 : Environment Temperature (ET); no ET sensor, so uses BT instead	
       		else
-        		Serial.print(BT_AvgTemp * 9.0/5.0 + 32);    // channel 1 : Environment Temperature (ET); no ET sensor, so uses BT instead	
+        		Serial_Blueno.print(BT_AvgTemp * 9.0/5.0 + 32);    // channel 1 : Environment Temperature (ET); no ET sensor, so uses BT instead	
 #endif      				 
-    		Serial.print(",");		
+    		Serial_Blueno.print(",");		
       		if (unit_C)		
-			  	Serial.print(BT_AvgTemp);	            	// channel 2 : Bean Temperature (BT) with degree Celsius
+			  	Serial_Blueno.print(BT_AvgTemp);	            	// channel 2 : Bean Temperature (BT) with degree Celsius
       		else 
-        		Serial.print(BT_AvgTemp * 9.0/5.0 + 32);	// channel 2 : Bean Temperature (BT) with degree Farenheit 
-    		Serial.println(",0.00,0.00");	          		// channel 3,4 : A vaule of zero indicates the channel is inactive
+        		Serial_Blueno.print(BT_AvgTemp * 9.0/5.0 + 32);	// channel 2 : Bean Temperature (BT) with degree Farenheit 
+    		Serial_Blueno.println(",0.00,0.00");	          		// channel 3,4 : A vaule of zero indicates the channel is inactive
 			
 // The READ command be sent from Artisan every 3 seconds (set by sample rate), unmark below code carefully
 //			SerialDebug.println("Artisan \"READ\"");						
     	} else if (msg.indexOf("UNITS;")== 0) {	  			// UNIT command 
       		if (msg.substring(6,7)=="F") {   
 			  	unit_C = false;
-        		Serial.println("#OK Farenheit");
-				SerialDebug.println("Artisan \"Farenheit\"");
+        		Serial_Blueno.println("#OK Farenheit");
+				Serial_debug.println("Artisan \"Farenheit\"");
       		}
       		else if (msg.substring(6,7)=="C") {  
         		unit_C = true;
-        		Serial.println("#OK Celsius");
-			  	SerialDebug.println("Artisan \"Celsius\"");
+        		Serial_Blueno.println("#OK Celsius");
+			  	Serial_debug.println("Artisan \"Celsius\"");
       		}
     	} else if (msg.indexOf("CHAN;")== 0) {    			// CHAN command
-      		Serial.print("#OK");
-	    	SerialDebug.println("Artisan \"CHAN\"");
+      		Serial_Blueno.print("#OK");
+	    	Serial_debug.println("Artisan \"CHAN\"");
     	} else if (msg.indexOf("FILT;")== 0) {    			// FILT command
-      		Serial.print("#OK");
-			SerialDebug.println("Artisan \"FILT\"");
+      		Serial_Blueno.print("#OK");
+			Serial_debug.println("Artisan \"FILT\"");
 		} else {
-		  	SerialDebug.println("Artisan Unhandle command");
-			SerialDebug.println(msg);
+		  	Serial_debug.println("Artisan Unhandle command");
+			Serial_debug.println(msg);
 		}
   	}
 
