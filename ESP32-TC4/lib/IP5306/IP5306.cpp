@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include "IP5306.h"
-#define I2C_ERROR_OK 1
+#define I2C_ERROR_OK 0
 
 
 void IP5306::begin(uint8_t sdaPin, uint8_t sclPin) {
