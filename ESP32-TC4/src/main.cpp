@@ -62,7 +62,7 @@ void setup() {
   
 
     // Initialize serial communication at 115200 bits per second:
-    Serial.begin(115200);
+    Serial.begin(57600);
     while (!Serial) {
         ; // wait for serial port ready
     }
