@@ -14,7 +14,7 @@
 #include "TC4.h"
 #include <WiFi.h>
 #include "BluetoothSerial.h"
-#include "MAX6675.h"
+#include "max6675.h"
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -69,8 +69,6 @@ void setup() {
 
     Serial.printf("\nTC4 Thermo v1.0 - BT and WebSocket !\n");
   
-
-
     // Initial Bluetooth Serial Port Profile (SPP)
     BTSerial.register_callback(Bluetooth_Callback);
 	// Setup bluetooth device name as
@@ -93,7 +91,7 @@ void setup() {
     // Setup tasks to run independently.
     xTaskCreatePinnedToCore (
         TaskIndicator
-    ,   "IndicatorTask" // 128*32 SSD1306 OLED 显示参数
+    ,   "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
     ,   2048            // This stack size can be checked & adjusted by reading the Stack Highwater
     ,   NULL
     ,   2               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.

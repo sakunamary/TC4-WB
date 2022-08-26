@@ -29,60 +29,70 @@
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
+            
 
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
 extern uint8_t  pwr_level ;
-
-// Create object for SSD1306
-
+//extern uint8_t  charging  ; 
 
 #define INDICATOR_INTERVEL      1000    // Task re-entry intervel (ms)
 
+static const unsigned char PROGMEM logo_bmp[] =
+{ 0b00000000, 0b11000000,
+  0b00000001, 0b11000000,
+  0b00000001, 0b11000000,
+  0b00000011, 0b11100000,
+  0b11110011, 0b11100000,
+  0b11111110, 0b11111000,
+  0b01111110, 0b11111111,
+  0b00110011, 0b10011111,
+  0b00011111, 0b11111100,
+  0b00001101, 0b01110000,
+  0b00011011, 0b10100000,
+  0b00111111, 0b11100000,
+  0b00111111, 0b11110000,
+  0b01111100, 0b11110000,
+  0b01110000, 0b01110000,
+  0b00000000, 0b00110000 };
+
+
+
+
 void TaskIndicator(void *pvParameters)  
 {
-    /***
-
-    ***/
-    
     /* Variable Definition */
     (void) pvParameters;
     TickType_t xLastWakeTime;
     const TickType_t xIntervel = INDICATOR_INTERVEL / portTICK_PERIOD_MS;
-    
 
+
+  Serial.printf("\n start ssd1306 session !\n");
+    
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
 
-
   // Show initial display buffer contents on the screen --
-  // the library initializes this with an Adafruit splash screen.
-  display.display();
-  // Clear the buffer
-  display.clearDisplay();
+    //display.clearDisplay();
+   // text display tests
+    //display.drawBitmap(10,10,logo_bmp,16,16,SSD1306_WHITE);
+    display.display();
+   vTaskDelay( 3000 / portTICK_RATE_MS ); //dealy 3s showup
 
-  // text display tests
-  display.setTextSize(3);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(2,22);
-  display.print("TC4 THREMO");
-  display.display();
-
-  vTaskDelay( 3000 / portTICK_RATE_MS ); //dealy 3s showup
-
-  display.clearDisplay();
+  
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
 
     for (;;) // A Task shall never return or exit.
     {
         // Wait for the next cycle
-        vTaskDelayUntil(&xLastWakeTime, xIntervel);
+    vTaskDelayUntil(&xLastWakeTime, xIntervel);
 
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);  
     display.setTextSize(1);
     display.setCursor(2, 12+2);
     display.print(F("BT:"));
@@ -96,6 +106,22 @@ void TaskIndicator(void *pvParameters)
     display.print(ET_CurTemp); 
     display.setCursor(20+42, 24+2);
     display.println(F("C"));
+    display.setCursor(2, 36+2);
+
+    display.print(F("BAT:"));
+  // if (charging == HIGH) 
+  // {
+    display.setCursor(20+6, 36+2);
+    display.print(pwr_level); 
+ //  } else 
+ //     {
+ //       display.setCursor(20+6, 36+2);
+ //       display.print("Chargin..."); 
+ //     }
+
+    display.display();
+    vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
 
   } 
+
 }
