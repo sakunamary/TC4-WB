@@ -13,7 +13,6 @@
 
 #include <Arduino.h>
 #include "TC4.h"
-
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -67,7 +66,7 @@ void TaskIndicator(void *pvParameters)
   display.clearDisplay();
 
   // text display tests
-  display.setTextSize(1);
+  display.setTextSize(3);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(2,22);
   display.print("TC4 THREMO");
