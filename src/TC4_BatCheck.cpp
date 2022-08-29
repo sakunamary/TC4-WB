@@ -8,17 +8,18 @@
 #include <Wire.h>
 #include "TC4.h"
 
-#include "IP5306.h"
 
-#define I2C_SDA   21
-#define I2C_SCL   22
-#define PWR_IQR   4
+#include <Battery18650Stats.h>
 
-IP5306 ip5306;
-uint8_t pwr_level ;
-//uint8_t charging   ;
+#define ADC_PIN 34
 
-void TaskIP5306(void *pvParameters) 
+Battery18650Stats battery(ADC_PIN);
+ uint8_t  pwr_level ;
+ uint8_t  charging  ; 
+
+
+
+void TaskBatCheck(void *pvParameters) 
 { 
 
     /* Variable Definition */
@@ -31,17 +32,17 @@ void TaskIP5306(void *pvParameters)
     xLastWakeTime = xTaskGetTickCount ();
 
 
-ip5306.begin(I2C_SDA, I2C_SCL);
-ip5306.setup();
-//pinMode(PWR_IQR,INPUT) ;
 
 
   for (;;) // A Task shall never return or exit.
     {
         // Wait for the next cycle (intervel 750ms).
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
-        pwr_level = ip5306.getBatteryLevel();
-        //charging = digitalRead(PWR_IQR) ;
+
+      pwr_level = battery.getBatteryVolts();
+      charging  = battery.getBatteryChargeLevel(true);
+   
+
     }
 
 }

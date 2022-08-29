@@ -24,7 +24,7 @@
 extern void TaskIndicator( void *pvParameters );
 extern void TaskThermalMeter( void *pvParameters );
 extern void TaskwebSocket(void *pvParameters) ;
-extern void TaskIP5306(void *pvParameters ) ;
+extern void TaskBatCheck(void *pvParameters ) ;
 
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
@@ -120,8 +120,8 @@ void setup() {
     );
 
  xTaskCreatePinnedToCore (
-        TaskIP5306
-    ,   "IP5306"        // I2C协议抽取电池的电量信息。每5分钟测一次
+        TaskBatCheck
+    ,   "bat_check"        // I2C协议抽取电池的电量信息。每5分钟测一次
     ,   1024            // This stack size can be checked & adjusted by reading the Stack Highwater
     ,   NULL
     ,   1               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
