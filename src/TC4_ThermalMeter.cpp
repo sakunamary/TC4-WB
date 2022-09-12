@@ -12,7 +12,7 @@
 
 #include <Arduino.h>
 #include "TC4.h"
-#include "MAX6675.h"
+#include "max6675.h"
 
 #define THERMAL_READING_INTERVEL 			    750     // read MAX6675 value every 750 ms
 #define TEMPERATURE_ARRAY_LENGTH		        4	    // for averagging temperature purpose
@@ -139,7 +139,7 @@ void TaskThermalMeter(void *pvParameters)
                //ET_CurTemp = 199.99;        
                 Serial.print(" ");	
                 Serial.print("ET: ");
-                Serial.print(ET_CurTemp);
+                Serial.println(ET_CurTemp);
             } 
         }
         else

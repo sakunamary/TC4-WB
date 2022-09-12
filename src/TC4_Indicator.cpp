@@ -36,7 +36,7 @@ extern float    ET_CurTemp;
 extern uint8_t  pwr_level ;
 extern uint8_t  charging  ; 
 
-#define INDICATOR_INTERVEL      1000    // Task re-entry intervel (ms)
+#define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
 
 static const unsigned char PROGMEM logo_bmp[] =
 { 0b00000000, 0b11000000,
@@ -71,7 +71,7 @@ void TaskIndicator(void *pvParameters)
     
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
+    //Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
 
@@ -112,7 +112,9 @@ void TaskIndicator(void *pvParameters)
   // if (charging == HIGH) 
   // {
     display.setCursor(20+6, 36+2);
-    display.print(pwr_level); 
+    display.print(charging); 
+    display.setCursor(20+42, 36+2);
+    display.println(F("%")); 
  //  } else 
  //     {
  //       display.setCursor(20+6, 36+2);
