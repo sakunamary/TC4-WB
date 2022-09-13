@@ -1,11 +1,6 @@
 
-
-
-
-
-
 #include <Arduino.h>
-#include <Wire.h>
+//#include <Wire.h>
 #include "TC4.h"
 
 
@@ -26,13 +21,13 @@ void TaskBatCheck(void *pvParameters)
     /* Variable Definition */
     (void) pvParameters;
     TickType_t xLastWakeTime;
-    const TickType_t xIntervel = 10000/ portTICK_PERIOD_MS; //check every 60s
+    const TickType_t xIntervel = 1000*60 / portTICK_PERIOD_MS; //check every 60s
 
     /* Task Setup and Initialize */
+
+     charging  = battery.getBatteryChargeLevel(true);
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount ();
-    charging  = battery.getBatteryChargeLevel(true);
-
 
 
   for (;;) // A Task shall never return or exit.
@@ -42,7 +37,7 @@ void TaskBatCheck(void *pvParameters)
       //Serial.print(F("pwr_level : "));
      // pwr_level = battery.getBatteryVolts();
       //Serial.println(pwr_level);
-      Serial.print(F("charging : "));
+      Serial.print(F("Pwr_level %: "));
       charging  = battery.getBatteryChargeLevel(true);
       Serial.println(charging);
 

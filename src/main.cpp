@@ -121,7 +121,7 @@ void setup() {
 
  xTaskCreatePinnedToCore (
         TaskBatCheck
-    ,   "bat_check"        // I2C协议抽取电池的电量信息。每5分钟测一次
+    ,   "bat_check"     // 测量电池电源数据，每分钟测量一次
     ,   1024            // This stack size can be checked & adjusted by reading the Stack Highwater
     ,   NULL
     ,   1               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
