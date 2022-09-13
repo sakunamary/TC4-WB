@@ -33,7 +33,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
-extern uint8_t  pwr_level ;
+//extern uint8_t  pwr_level ;
 extern uint8_t  charging  ; 
 
 #define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)

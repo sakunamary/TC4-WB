@@ -16,9 +16,8 @@
 Battery18650Stats battery(ADC_PIN);
 
 
- uint8_t  pwr_level ;
+ //uint8_t  pwr_level ;
  uint8_t  charging  ; 
-
 
 
 void TaskBatCheck(void *pvParameters) 
@@ -32,7 +31,7 @@ void TaskBatCheck(void *pvParameters)
     /* Task Setup and Initialize */
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount ();
-
+    charging  = battery.getBatteryChargeLevel(true);
 
 
 
@@ -40,13 +39,12 @@ void TaskBatCheck(void *pvParameters)
     {
         // Wait for the next cycle (intervel 750ms).
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
-      Serial.print(F("pwr_level : "));
-      pwr_level = battery.getBatteryVolts();
-      Serial.println(pwr_level);
-         Serial.print(F("charging : "));
-      charging  = battery.getBatteryChargeLevel();
-
-          Serial.println(charging);
+      //Serial.print(F("pwr_level : "));
+     // pwr_level = battery.getBatteryVolts();
+      //Serial.println(pwr_level);
+      Serial.print(F("charging : "));
+      charging  = battery.getBatteryChargeLevel(true);
+      Serial.println(charging);
 
     }
 
