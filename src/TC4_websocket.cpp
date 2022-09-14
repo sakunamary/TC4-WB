@@ -14,7 +14,7 @@
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
 
-
+String local_IP;
 
 //定义 网页wifi 内容
 struct settings {
@@ -83,10 +83,14 @@ Serial.print("TC4 THREMO 's IP:");
  if  (WiFi.getMode() == 2 ) //1:STA mode 2:AP mode
  {
     Serial.println(IpAddressToString(WiFi.softAPIP())); 
+    local_IP = IpAddressToString(WiFi.softAPIP());
  }
  else {
     Serial.println(IpAddressToString(WiFi.localIP())); 
+    local_IP = IpAddressToString(WiFi.localIP());
  }
+
+
 
 //init websocket 
   webSocket.begin();
