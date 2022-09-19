@@ -28,6 +28,7 @@ extern void TaskBatCheck(void *pvParameters ) ;
 
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
+String  BT_EVENT;
 
 
 
@@ -38,18 +39,23 @@ void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 	switch (event) {
         case ESP_SPP_INIT_EVT:
 			Serial.println("SPP is inited");
+            BT_EVENT = "SPP INITED";
 			break;
         case ESP_SPP_START_EVT:
             Serial.println("SPP server started");
+            BT_EVENT = "SPP STARTED";
 			break;
 		case ESP_SPP_SRV_OPEN_EVT:
 			Serial.println("Client Connected");
+            BT_EVENT = "Client OK";           
 			break;
 		case ESP_SPP_CLOSE_EVT:
 			Serial.println("Client disconnected");
+            BT_EVENT = "Client lost";    
 			break;
         case ESP_SPP_DATA_IND_EVT:
             Serial.println("SPP connection received data");
+            BT_EVENT = "DATA receiving";    
 			break;       
 		default:
 			Serial.print("Unhandle Event: ");

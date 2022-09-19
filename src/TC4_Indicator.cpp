@@ -18,6 +18,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "img.h"
+//#include "Fonts/FreeMono9pt7b.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -32,6 +33,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
 extern String   local_IP ;
+extern String    BT_EVENT;
 extern uint8_t  charging  ; 
 
 #define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
@@ -71,33 +73,53 @@ void TaskIndicator(void *pvParameters)
 
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);  
+   // display.setFont(&FreeMono9pt7b);
     display.setTextSize(1);
 
-    display.setCursor(2, 12+2);
+    display.setCursor(0, 0);
+
+    display.drawBitmap(0, 0, BEAN_LOGO, 16, 16, WHITE);
+    display.drawBitmap(0, 16, DRUMMER_LOGO, 16, 16, WHITE);
+    display.drawBitmap(0, 32, WIFI_LOGO, 16, 16, WHITE);
+    display.drawBitmap(0, 48, BT_LOGO, 16, 16, WHITE);
+
+
+    display.setCursor(2+16, 0+2);
     display.print(F("BT:"));
-    display.setCursor(20, 12+2);
+    display.setCursor(20+16, 0+2);
     display.print(BT_AvgTemp); 
-    display.setCursor(20+42, 12+2);
+    display.setCursor(20+42+16, 0+2);
     display.println(F("C")); 
 
-    display.setCursor(2, 24+2);
+    display.setCursor(2+16, 18+2);
     display.print(F("ET:")); 
-    display.setCursor(20, 24+2);
+    display.setCursor(20+16, 18+2);
     display.print(ET_CurTemp); 
-    display.setCursor(20+42, 24+2);
+    display.setCursor(20+42+16, 18+2);
     display.println(F("C"));
 
-    display.setCursor(2, 36+2);
+    display.setCursor(2+16, 36+2);
     display.print(F("IP:"));
-    display.setCursor(20+6, 36+2);
+    display.setCursor(20+16,36+2);
     display.println(local_IP); 
 
-    display.setCursor(2, 48+2);
-    display.print(F("BAT:"));
-    display.setCursor(20+6, 48+2);
-    display.println(charging); 
-    display.setCursor(20+42, 48+2);
-    display.println(F("%"));
+    display.setCursor(2+16, 54);
+    display.print(BT_EVENT);
+ 
+
+
+//显示电池电量情况
+     if (charging >= 85){
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12, BAT_100, 16, 14, WHITE);
+     }else if (charging >= 55) {
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_75, 16, 14, WHITE);
+     }else if (charging >=35) {
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_50, 16, 14, WHITE);
+     }else if (charging >5){
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_25, 16, 14, WHITE);
+     }else {
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_0, 16, 14, WHITE);
+     }  
 
     display.display();
     vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
