@@ -35,11 +35,10 @@ extern float    ET_CurTemp;
 extern String   local_IP ;
 extern String    BT_EVENT;
 extern uint8_t  charging  ; 
-
+//uint8_t charg =4  ;
 
 
 #define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
-
 
 
 
@@ -87,9 +86,11 @@ void TaskIndicator(void *pvParameters)
 
             display.setFont(&FreeMonoBold9pt7b);
             display.setTextSize(1);
-            display.setCursor(48,12+12);
+            //display.drawLine(64,0,64,64,WHITE);
+           // display.drawLine(0,32,128,32,WHITE);
+            display.setCursor(48,24+4);
             display.print(F("LOW"));
-            display.setCursor(24,12+12+16);
+            display.setCursor(26,40+4);
             display.print(F("BATTERY"));
             display.drawRoundRect( 19,7,90,45,3,WHITE);
 
@@ -114,16 +115,18 @@ void TaskIndicator(void *pvParameters)
     display.print(F("BT:"));
     display.setCursor(20+16, 0+2);
     display.print(BT_AvgTemp); 
-    display.setCursor(20+42+16, 0+2);
+    display.setCursor(62+16, 0+2);
     display.println(F("C")); 
 
     display.setCursor(2+16, 18+2);
     display.print(F("ET:")); 
     display.setCursor(20+16, 18+2);
     display.print(ET_CurTemp); 
-    display.setCursor(20+42+16, 18+2);
+    display.setCursor(62+16, 18+2);
     display.println(F("C"));
 
+    //display.drawLine(78+8,0,78+8,32,WHITE);
+    //display.drawLine(86,32,128,32,WHITE);
 
 //显示IP地址和蓝牙状态
     display.setCursor(2+16, 36+2);
