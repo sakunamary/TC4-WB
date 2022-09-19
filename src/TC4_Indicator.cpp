@@ -35,7 +35,6 @@ extern float    ET_CurTemp;
 extern String   local_IP ;
 extern String    BT_EVENT;
 extern uint8_t  charging  ; 
-//uint8_t charg =4  ;
 
 
 #define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
