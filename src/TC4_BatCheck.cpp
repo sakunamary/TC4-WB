@@ -10,9 +10,7 @@
 
 Battery18650Stats battery(ADC_PIN);
 
-
- //uint8_t  pwr_level ;
- uint8_t  charging  ; 
+ uint8_t  charging =15  ; 
 
 
 void TaskBatCheck(void *pvParameters) 
@@ -25,10 +23,13 @@ void TaskBatCheck(void *pvParameters)
 
     /* Task Setup and Initialize */
 
-     charging  = battery.getBatteryChargeLevel(true);
+
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount ();
 
+     
+   vTaskDelay( 3000 / portTICK_RATE_MS ); //dealy 3s showup
+   charging  = battery.getBatteryChargeLevel(true);
 
   for (;;) // A Task shall never return or exit.
     {
