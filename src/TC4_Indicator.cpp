@@ -35,6 +35,8 @@ extern float    ET_CurTemp;
 extern String   local_IP ;
 extern String    BT_EVENT;
 extern uint8_t  charging  ; 
+uint8_t charg = 5 ;
+
 
 #define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
 
@@ -71,19 +73,37 @@ void TaskIndicator(void *pvParameters)
         // Wait for the next cycle
     vTaskDelayUntil(&xLastWakeTime, xIntervel);
 
+
+
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);  
-   // display.setFont(&FreeMono9pt7b);
     display.setTextSize(1);
 
-    display.setCursor(0, 0);
+
+    if (charg <=5) {
+            display.setCursor(, );
+            display.setTextSize(2);
+            display.print(F("LOW BATTERY"));
+            display.drawRoundRect( 14,7,100,50,3,WHITE);
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_0, 16, 14, WHITE);
+
+            display.display();
+    vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
+    }
+
+    else {
+    display.setTextColor(SSD1306_WHITE);  
+    display.setTextSize(1);
+
+//显示logo
+
 
     display.drawBitmap(0, 0, BEAN_LOGO, 16, 16, WHITE);
     display.drawBitmap(0, 16, DRUMMER_LOGO, 16, 16, WHITE);
     display.drawBitmap(0, 32, WIFI_LOGO, 16, 16, WHITE);
     display.drawBitmap(0, 48, BT_LOGO, 16, 16, WHITE);
 
-
+//显示温度
     display.setCursor(2+16, 0+2);
     display.print(F("BT:"));
     display.setCursor(20+16, 0+2);
@@ -98,6 +118,8 @@ void TaskIndicator(void *pvParameters)
     display.setCursor(20+42+16, 18+2);
     display.println(F("C"));
 
+
+//显示IP地址和蓝牙状态
     display.setCursor(2+16, 36+2);
     display.print(F("IP:"));
     display.setCursor(20+16,36+2);
@@ -110,20 +132,20 @@ void TaskIndicator(void *pvParameters)
 
 //显示电池电量情况
      if (charging >= 85){
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12, BAT_100, 16, 14, WHITE);
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14, BAT_100, 16, 14, WHITE);
      }else if (charging >= 55) {
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_75, 16, 14, WHITE);
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_75, 16, 14, WHITE);
      }else if (charging >=35) {
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_50, 16, 14, WHITE);
-     }else if (charging >5){
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_25, 16, 14, WHITE);
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_50, 16, 14, WHITE);
      }else {
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-12,  BAT_0, 16, 14, WHITE);
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_25, 16, 14, WHITE);
      }  
 
     display.display();
-    vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
 
+
+    vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
+    }
   } 
 
 }
