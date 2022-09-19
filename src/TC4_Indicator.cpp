@@ -35,7 +35,7 @@ extern float    ET_CurTemp;
 extern String   local_IP ;
 extern String    BT_EVENT;
 extern uint8_t  charging  ; 
-uint8_t charg = 5 ;
+uint8_t charg = 4 ;
 
 
 #define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
@@ -87,13 +87,11 @@ void TaskIndicator(void *pvParameters)
 
             display.setFont(&FreeMonoBold9pt7b);
             display.setTextSize(1);
-            display.setCursor(48,8+12);
+            display.setCursor(48,12+12);
             display.print(F("LOW"));
-            display.setCursor(22,8+12+14);
+            display.setCursor(24,12+12+16);
             display.print(F("BATTERY"));
-            display.drawRoundRect( 19,7,90,50,3,WHITE);
-
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_50, 16, 14, WHITE);
+            display.drawRoundRect( 19,7,90,45,3,WHITE);
 
             display.display();
     vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
