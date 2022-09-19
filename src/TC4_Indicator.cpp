@@ -18,7 +18,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "img.h"
-//#include "Fonts/FreeMono9pt7b.h"
+#include "Fonts/FreeMonoBold9pt7b.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -81,11 +81,19 @@ void TaskIndicator(void *pvParameters)
 
 
     if (charg <=5) {
-            display.setCursor(, );
-            display.setTextSize(2);
-            display.print(F("LOW BATTERY"));
-            display.drawRoundRect( 14,7,100,50,3,WHITE);
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_0, 16, 14, WHITE);
+            display.clearDisplay();
+            display.setTextColor(SSD1306_WHITE);  
+
+
+            display.setFont(&FreeMonoBold9pt7b);
+            display.setTextSize(1);
+            display.setCursor(48,8+12);
+            display.print(F("LOW"));
+            display.setCursor(22,8+12+14);
+            display.print(F("BATTERY"));
+            display.drawRoundRect( 19,7,90,50,3,WHITE);
+
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_50, 16, 14, WHITE);
 
             display.display();
     vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
