@@ -57,6 +57,17 @@ void TaskIndicator(void *pvParameters)
   // Show initial display buffer contents on the screen --
    display.clearDisplay();
    display.drawBitmap(17, 19, logo_bmp, 94, 45, WHITE);
+
+   if (charging >= 85){
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14, BAT_100, 16, 14, WHITE);
+     }else if (charging >= 55) {
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_75, 16, 14, WHITE);
+     }else if (charging >=35) {
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_50, 16, 14, WHITE);
+     }else if (charging >=20 ){
+            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_25, 16, 14, WHITE);
+     } 
+     
    display.display();
 
 
