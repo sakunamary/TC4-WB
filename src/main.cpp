@@ -120,7 +120,7 @@ void setup() {
     ,   "webSocketTask" // 设置wifi参数的网页处理和处理artisan websocket的处理函数
     ,   4096            // This stack size can be checked & adjusted by reading the Stack Highwater
     ,   NULL
-    ,   1               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    ,   3               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,   NULL 
     ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
     );

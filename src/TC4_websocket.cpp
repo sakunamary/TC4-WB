@@ -27,8 +27,6 @@ WebServer     server(80);
 WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 
 
-#define INDICATOR_INTERVEL      1000   // Task re-entry intervel (ms)
-
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
 String IpAddressToString(const IPAddress& ipAddress);//转换IP地址格式
 void handlePortal();//处理设置网页处理模块
@@ -38,17 +36,17 @@ void handlePortal();//处理设置网页处理模块
 void TaskwebSocket(void *pvParameters)  
 {
 
- /***
+ /*
     TaskwebSocket
      1)建立wifi端，
      2）建立web页面服务器，可以输入wifi的账号密码
      3）建立websocket服务器
-    ***/
+    */
 
     /* Variable Definition */
     (void) pvParameters;
     TickType_t xLastWakeTime;
-    const TickType_t xIntervel = INDICATOR_INTERVEL / portTICK_PERIOD_MS;
+    const TickType_t xIntervel = 1000 / portTICK_PERIOD_MS;
 
 
 //set up eeprom data 
@@ -63,7 +61,8 @@ EEPROM.get( 0, user_wifi );
   byte tries = 0;
   while (WiFi.status() != WL_CONNECTED) {
 
-    delay(1000);
+   vTaskDelay( 1000 / portTICK_RATE_MS ); //dealy 1s
+
     if (tries++> 15) {
     
       //Serial_debug.println("WiFi.mode(AP):");  
@@ -94,14 +93,17 @@ Serial.print("TC4 THREMO 's IP:");
 
 //init websocket 
   webSocket.begin();
+  Serial.println("WebSocket started!");
+
     // event handler
   webSocket.onEvent(webSocketEvent);
 //websocket loop 
 
     xLastWakeTime = xTaskGetTickCount();
 for(;;)
-{   
+{    // Wait for the next cycle (intervel 750ms).
     vTaskDelayUntil(&xLastWakeTime, xIntervel);
+
     webSocket.loop();  //处理websocketmie
     server.handleClient();//处理网页
 }
@@ -196,6 +198,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
               root["id"] = ln_id;
               data["BT"] = BT_AvgTemp;
               data["ET"] = ET_CurTemp;
+
+              Serial.println("getData");
             }
 
             char buffer[200]; // create temp buffer 200

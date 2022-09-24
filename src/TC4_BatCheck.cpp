@@ -22,7 +22,7 @@ void TaskBatCheck(void *pvParameters)
     const TickType_t xIntervel = 1000*3 / portTICK_PERIOD_MS; //check every 60s
 
     /* Task Setup and Initialize */
-    charging  = battery.getBatteryChargeLevel(true);
+    charging  = battery.getBatteryChargeLevel();
 
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount ();
@@ -35,7 +35,7 @@ void TaskBatCheck(void *pvParameters)
         // Wait for the next cycle (intervel 750ms).
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
       Serial.print(F("Pwr_level %: "));
-      charging  = battery.getBatteryChargeLevel(true);
+      charging  = battery.getBatteryChargeLevel();
       Serial.println(charging);
 
     }
