@@ -215,7 +215,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
 void setup() {
   
-
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(57600);
     while (!Serial) {
@@ -223,6 +222,9 @@ void setup() {
     }
 
     Serial.printf("\nTC4 Thermo v1.0 - BT and WebSocket !\n");
+
+
+
   
     // Initial Bluetooth Serial Port Profile (SPP)
     BTSerial.register_callback(Bluetooth_Callback);
@@ -246,50 +248,6 @@ void setup() {
 EEPROM.begin(sizeof(struct settings) );
 EEPROM.get( 0, user_wifi );
 
-//初始化网络服务
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(user_wifi.ssid, user_wifi.password);
-
-
-  byte tries = 0;
-  while (WiFi.status() != WL_CONNECTED) {
-
-   delay(1000);
-
-    if (tries++> 5) {
-    
-      //Serial_debug.println("WiFi.mode(AP):");  
-      WiFi.mode(WIFI_AP);
-      WiFi.softAP("TC4_THRMO", "TC4_THRMO"); // defualt IP address :192.168.4.1 password min 8 digis
-      break;
-    }
-     //show AP's IP
-  }
-
-  server.on("/",  handlePortal);
-  server.begin();
-
-Serial.print("TC4 THREMO 's IP:");
-
- if  (WiFi.getMode() == 2 ) //1:STA mode 2:AP mode
- {
-    Serial.println(IpAddressToString(WiFi.softAPIP())); 
-    local_IP = IpAddressToString(WiFi.softAPIP());
- }
- else {
-    Serial.println(IpAddressToString(WiFi.localIP())); 
-    local_IP = IpAddressToString(WiFi.localIP());
- }
-
-
-
-//init websocket 
-  webSocket.begin();
-  Serial.println("WebSocket started!");
-
-    // event handler
-  webSocket.onEvent(webSocketEvent);
-//websocket loop 
 
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
@@ -334,6 +292,51 @@ Serial.print("TC4 THREMO 's IP:");
     ,   NULL 
     ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
     );
+
+//初始化网络服务
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(user_wifi.ssid, user_wifi.password);
+
+
+  byte tries = 0;
+  while (WiFi.status() != WL_CONNECTED) {
+
+   delay(1000);
+
+    if (tries++> 5) {
+    
+      //Serial_debug.println("WiFi.mode(AP):");  
+      WiFi.mode(WIFI_AP);
+      WiFi.softAP("TC4_THRMO", "TC4_THRMO"); // defualt IP address :192.168.4.1 password min 8 digis
+      break;
+    }
+     //show AP's IP
+  }
+
+Serial.print("TC4 THREMO 's IP:");
+
+ if  (WiFi.getMode() == 2 ) //1:STA mode 2:AP mode
+ {
+    Serial.println(IpAddressToString(WiFi.softAPIP())); 
+    local_IP = IpAddressToString(WiFi.softAPIP());
+ }
+ else {
+    Serial.println(IpAddressToString(WiFi.localIP())); 
+    local_IP = IpAddressToString(WiFi.localIP());
+ }
+
+
+
+//init websocket 
+  webSocket.begin();
+  Serial.println("WebSocket started!");
+
+    // event handler
+  webSocket.onEvent(webSocketEvent);
+//websocket loop 
+
+  server.on("/",  handlePortal);
+  server.begin();
 
 }
 
