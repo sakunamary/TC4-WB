@@ -72,7 +72,6 @@ void TaskThermalMeter(void *pvParameters)
         // Perform task actions from here
         // Read BT from MAX6675 thermal couple
         BT_CurTemp = thermocouple_BT.readCelsius();
-        //BT_CurTemp = 225.99; //for testing 
 
 	    if ( bReady )
         {

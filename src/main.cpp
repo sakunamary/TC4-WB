@@ -80,9 +80,13 @@ void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
             BT_EVENT = "Client lost";    
 			break;
         case ESP_SPP_DATA_IND_EVT:
-            Serial.println("SPP connection received data");
+            Serial.println("SPP  received data");
             BT_EVENT = "DATA receiving";    
-			break;       
+			break; 
+         case ESP_SPP_WRITE_EVT:
+            Serial.println("SPP  write data");
+            BT_EVENT = "DATA writing";    
+			break;            
 		default:
 			Serial.print("Unhandle Event: ");
 			Serial.println(event);
@@ -302,7 +306,7 @@ Serial.print("TC4 THREMO 's IP:");
   xTaskCreatePinnedToCore (
         TaskThermalMeter
     ,   "ThermalMeter"  // MAX6675 thermal task to read Bean-Temperature (BT)
-    ,   1024            // Stack size
+    ,   2048            // Stack size
     ,   NULL
     ,   3               // Priority
     ,   NULL 
