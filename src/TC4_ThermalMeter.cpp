@@ -16,7 +16,7 @@
 
 #define THERMAL_READING_INTERVEL 			    750     // read MAX6675 value every 750 ms
 #define TEMPERATURE_ARRAY_LENGTH		        4	    // for averagging temperature purpose
-#define ABNORMAL_TEMPERATURE_DEGREE             10      // defin abnormal temperature value
+#define ABNORMAL_TEMPERATURE_DEGREE             50     // defin abnormal temperature value
 
 float       BT_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0};	    // temperature array
 int			BT_ArrayIndex = 0;                          // A pointer of temperature array
@@ -40,7 +40,6 @@ MAX6675 thermocouple_ET(thermoCLK, thermoCS_ET, thermoDO);
 MAX6675 thermocouple_BT(thermoCLK, thermoCS_BT, thermoDO);
 
 float averageTemperature ( float *pTemp );
-
 
 
 void TaskThermalMeter(void *pvParameters) 
