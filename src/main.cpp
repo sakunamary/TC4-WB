@@ -20,7 +20,7 @@
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 
-// Define two tasks 
+// Define four tasks 
 extern void TaskIndicator( void *pvParameters );
 extern void TaskThermalMeter( void *pvParameters );
 extern void TaskwebSocket(void *pvParameters) ;
@@ -120,10 +120,12 @@ void setup() {
     ,   "webSocketTask" // 设置wifi参数的网页处理和处理artisan websocket的处理函数
     ,   4096            // This stack size can be checked & adjusted by reading the Stack Highwater
     ,   NULL
-    ,   3               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    ,   4               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,   NULL 
     ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
     );
+
+    /*
 
  xTaskCreatePinnedToCore (
         TaskBatCheck
@@ -134,7 +136,7 @@ void setup() {
     ,   NULL 
     ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
     );
-
+*/
 }
 
 void loop()

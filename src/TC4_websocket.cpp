@@ -63,7 +63,7 @@ EEPROM.get( 0, user_wifi );
 
    vTaskDelay( 1000 / portTICK_RATE_MS ); //dealy 1s
 
-    if (tries++> 15) {
+    if (tries++> 5) {
     
       //Serial_debug.println("WiFi.mode(AP):");  
       WiFi.mode(WIFI_AP);
@@ -149,12 +149,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
   String temp_cmd_out = "" ;//from websockets recived drumer control command and send out ;
     switch(type) {
         case WStype_DISCONNECTED:
-            //Serial_debug.printf("[%u] Disconnected!\n", num);
+            webSocket.sendTXT(num, "Disonnected");
+            Serial.printf("[%u] Disconnected!\n", num);
             break;
         case WStype_CONNECTED:
             {
                 IPAddress ip = webSocket.remoteIP(num);
-                //Serial_debug.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+                Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
         
                 // send message to client
                 webSocket.sendTXT(num, "Connected");
@@ -163,7 +164,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         case WStype_TEXT:
             { 
             //DEBUG WEBSOCKET
-            //Serial.printf("[%u] get Text: %s\n", num, payload);
+            Serial.printf("[%u] get Text: %s\n", num, payload);
 
             //Extract Values lt. https://arduinojson.org/v6/example/http-client/
             //Artisan Anleitung: https://artisan-scope.org/devices/websockets/
