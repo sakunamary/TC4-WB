@@ -14,6 +14,6 @@
 #define __TC4_H__
 
 #define PRINT_ARTISAN_WHOLE_MESSAGE		        1       // set, to print Artisan commands on serial debug port
-#define PRINT_TEAMPERATURE_EACH_READING         1	    // Set, to print temperature vaule on serial debug port
+#define PRINT_TEAMPERATURE_EACH_READING         0	    // Set, to print temperature vaule on serial debug port
 
 #endif /*__TC4_H__*/
