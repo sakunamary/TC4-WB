@@ -105,6 +105,7 @@ void TaskIndicator(void *pvParameters)
             display.drawRoundRect( 19,7,90,45,3,WHITE);
 
             display.display();
+            display.setFont();
     vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
     }
 
