@@ -16,7 +16,7 @@
 
 #define THERMAL_READING_INTERVEL 			    750     // read MAX6675 value every 750 ms
 #define TEMPERATURE_ARRAY_LENGTH		        4	    // for averagging temperature purpose
-#define ABNORMAL_TEMPERATURE_DEGREE             50     // defin abnormal temperature value
+#define ABNORMAL_TEMPERATURE_DEGREE             5     // defin abnormal temperature value
 
 float       BT_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0};	    // temperature array
 int			BT_ArrayIndex = 0;                          // A pointer of temperature array
@@ -26,7 +26,7 @@ float		ET_CurTemp = 0.0;
 bool		bReady = false;                             // flag to indicate temperature array whether is ready or not
 bool 		bUnit_C = true;                             // flag to indicate temperature unit from Artisan requested 
 bool		bAbnormalValue = false;                     // indicate temperature value is unexpect or not
-
+int         b_drop = 0;
 int thermoDO = 19;
 int thermoCLK = 5;
 int thermoCS_ET =16;
@@ -85,15 +85,19 @@ void TaskThermalMeter(void *pvParameters)
             {
 	            // temperature is in-arrange, store it
 	    	    BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
+                b_drop =0 ;
 	        }
 	        else
             {
 	            // set abnormal flag
 	    	    bAbnormalValue = true;
+                b_drop++;
 	    	    // print ? with temperature value in newline
                 Serial.println(" ");
                 Serial.print(" ?");
                 Serial.println(BT_CurTemp);
+                Serial.println("BT_CurTemp is true");
+
 	        }
 	    }
 	    else
