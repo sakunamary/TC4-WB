@@ -35,7 +35,7 @@ extern float    ET_CurTemp;
 extern String   local_IP ;
 extern String    BT_EVENT;
 extern uint8_t  charging  ; 
-
+extern int      b_drop;  
 
 #define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
 
@@ -55,20 +55,13 @@ void TaskIndicator(void *pvParameters)
   }
     
   // Show initial display buffer contents on the screen --
-   display.clearDisplay();
-   display.drawBitmap(17, 19, logo_bmp, 94, 45, WHITE);
-
-   if (charging >= 85){
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14, BAT_100, 16, 14, WHITE);
-     }else if (charging >= 55) {
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_75, 16, 14, WHITE);
-     }else if (charging >=35) {
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_50, 16, 14, WHITE);
-     }else if (charging >=20 ){
-            display.drawBitmap(SCREEN_WIDTH-17, SCREEN_HEIGHT-14,  BAT_25, 16, 14, WHITE);
-     } 
-     
-   display.display();
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);  
+    display.setTextSize(1);
+    display.setCursor(90, 0+2);
+    display.print(F("1.0.2"));
+    display.drawBitmap(17, 19, logo_bmp, 94, 45, WHITE);
+    display.display();
 
 
    vTaskDelay( 3000 / portTICK_RATE_MS ); //dealy 3s showup
@@ -105,6 +98,7 @@ void TaskIndicator(void *pvParameters)
             display.drawRoundRect( 19,7,90,45,3,WHITE);
 
             display.display();
+            display.setFont();
     vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
     }
 
@@ -120,9 +114,18 @@ void TaskIndicator(void *pvParameters)
     display.drawBitmap(0, 32, WIFI_LOGO, 16, 16, WHITE);
     display.drawBitmap(0, 48, BT_LOGO, 16, 16, WHITE);
 
+  
+
 //显示温度
+
+if (b_drop > 0)  {
+    display.invertDisplay(true);
+    Serial.println("babnomal is ture from ssd");
+} else     Serial.println("babnomal is false from ssd");
     display.setCursor(2+16, 0+2);
     display.print(F("BT:"));
+
+
     display.setCursor(20+16, 0+2);
     display.print(BT_AvgTemp); 
     display.setCursor(62+16, 0+2);

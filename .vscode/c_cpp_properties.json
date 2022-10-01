@@ -10,10 +10,10 @@
             "includePath": [
                 "/home/sakunamary/文档/GitHub/TC4_OLED/include",
                 "/home/sakunamary/文档/GitHub/TC4_OLED/src",
-                "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
                 "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                 "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
                 "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/FS/src",
+                "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
                 "/home/sakunamary/文档/GitHub/TC4_OLED/.pio/libdeps/nodemcu-32s/WebSockets/src",
                 "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                 "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/Ethernet/src",
@@ -245,10 +245,10 @@
                 "path": [
                     "/home/sakunamary/文档/GitHub/TC4_OLED/include",
                     "/home/sakunamary/文档/GitHub/TC4_OLED/src",
-                    "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
                     "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/EEPROM/src",
                     "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src",
                     "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/FS/src",
+                    "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/BluetoothSerial/src",
                     "/home/sakunamary/文档/GitHub/TC4_OLED/.pio/libdeps/nodemcu-32s/WebSockets/src",
                     "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src",
                     "/home/sakunamary/.platformio/packages/framework-arduinoespressif32/libraries/Ethernet/src",
