@@ -120,8 +120,8 @@ void TaskIndicator(void *pvParameters)
 
 if (b_drop > 0)  {
     display.invertDisplay(true);
-    Serial.println("babnomal is ture from ssd");
-} else     Serial.println("babnomal is false from ssd");
+} else     display.invertDisplay(false);
+
     display.setCursor(2+16, 0+2);
     display.print(F("BT:"));
 
