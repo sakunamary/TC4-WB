@@ -66,6 +66,7 @@ struct settings {
 
 //WiFiServer    wifiserver(8090); //构建webserver类
 WebServer     server(80);
+AsyncWebServer server(8090);
 
 WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 BluetoothSerial BTSerial;
