@@ -59,7 +59,7 @@ void TaskIndicator(void *pvParameters)
     display.setTextColor(SSD1306_WHITE);  
     display.setTextSize(1);
     display.setCursor(90, 0+2);
-    display.print(F("1.0.2"));
+    display.print(F("1.0.3"));
     display.drawBitmap(17, 19, logo_bmp, 94, 45, WHITE);
     display.display();
 

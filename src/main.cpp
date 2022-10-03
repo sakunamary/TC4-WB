@@ -12,8 +12,13 @@
 
 #include <Arduino.h>
 #include "TC4.h"
+
 #include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncElegantOTA.h>
 #include "BluetoothSerial.h"
+
 #include "max6675.h"
 
 
@@ -22,8 +27,13 @@
 #include <WebSocketsServer.h>
 //JSON for Artisan Websocket implementation
 #include "ArduinoJson.h"
+
+
 #include <EEPROM.h>
-#define VERSION "1.02"
+
+
+
+#define VERSION "1.03"
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -56,6 +66,7 @@ struct settings {
 
 //WiFiServer    wifiserver(8090); //构建webserver类
 WebServer     server(80);
+
 WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 BluetoothSerial BTSerial;
 
