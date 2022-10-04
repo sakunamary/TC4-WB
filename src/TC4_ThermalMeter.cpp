@@ -143,10 +143,10 @@ void TaskThermalMeter(void *pvParameters)
                 // The ET is reference temperature, don't need averaging
                 // just read ET from MAX6675 thermal couple every 3 seconds
                ET_CurTemp = thermocouple_ET.readCelsius() + etemp_fix_in;
-               //ET_CurTemp = 199.99;        
-                Serial.println(" ");	
-                Serial.printf("ET:%f ,ET compensate:%f",ET_CurTemp,etemp_fix_in);
-                Serial.println("");
+       
+                //Serial.println(" ");	
+                //Serial.printf("ET:%f ,ET compensate:%f",ET_CurTemp,etemp_fix_in);
+                //Serial.println("");
 
             } 
         }

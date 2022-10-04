@@ -122,66 +122,6 @@ String IpAddressToString(const IPAddress& ipAddress) {
 }
 
 
-const char wifi_sussce_html[] PROGMEM = R"rawliteral(
-<!doctype html><html lang='en'><head>
-    <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
-        <title>TC4 THREMO Wifi Setup</title>
-        <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> 
-        </head> 
-<body>
-    <main class='form-signin'> 
-        <h1>TC4-WB Setup OK</h1> <br/> 
-        <p>Your settings have been saved successfully!<br />
-        IF settings not working, Please do it again.<br />
-        Please RESTART the device.<br />
-
-        </p>
-    </main>
-</body></html>
-)rawliteral";
-
-
-const char index_html[] PROGMEM = R"rawliteral(
-<!doctype html><html lang='en'>
-<head>
-    <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
-        <title>TC4-WB Setup</title>
-        <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> 
-</head> 
-<body>
-    <main class='form-signin'> 
-        <form action='/get' method='get'>
-            <h1 class=''>TC4 THRMO SETTING </h1>
-            <br/>
-            <h2 class=''>WIFI SETUP </h2>
-            <br/>
-            <div class='form-floating'>
-            <label>SSID NAME</label>
-            <input type='text' class='form-control' name='ssid'> 
-            </div>
-            <div class='form-floating'>
-            <br/>
-            <label>Password</label>
-            <input type='password' class='form-control' name='password'>
-            </div>
-            <br/>
-            <h2 class=''>Thermo compensate SETUP </h2>
-            <div class='form-floating'>
-            <label>Bean Temp</label>
-            <input type='text' class='form-control' name='Btemp_fix'> 
-            </div>
-            <br/>
-            <div class='form-floating'>
-            <label>Env Temp</label>
-            <input type='text' class='form-control' name='Etemp_fix'> 
-            </div>
-            <br/>
-            <br/>
-            <button type='submit'>Save</button>
-        </form></main> 
-</body></html>
-)rawliteral";
-
 
 void notFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Opps....Not found");
@@ -276,6 +216,18 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
 
 
+String processor(const String& var){
+  Serial.println(var);
+  if(var == "bt_compens"){
+    return String(btemp_fix_in) ;
+  }
+  else if(var == "et_compens"){
+    return String(etemp_fix_in) ;
+  }
+  
+  return String();
+}
+
 void setup() {
   
     // Initialize serial communication at 115200 bits per second:
@@ -363,7 +315,7 @@ EEPROM.get( 0, user_wifi );
      //show AP's IP
   }
 
-Serial.print("TC4 THREMO 's IP:");
+Serial.print("TC4-WB's IP:");
 
  if  (WiFi.getMode() == 2 ) //1:STA mode 2:AP mode
  {
@@ -387,7 +339,8 @@ Serial.print("TC4 THREMO 's IP:");
 
 // for index.html
   server_OTA.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "text/html", index_html);
+
+    request->send_P(200, "text/html", index_html,processor);
   });
 
 //get the value from index.html 
@@ -398,10 +351,22 @@ Serial.print("TC4 THREMO 's IP:");
     strncpy(user_wifi.password,request->getParam("password")->value().c_str(), sizeof(user_wifi.password) );
     user_wifi.ssid[request->getParam("ssid")->value().length()] = user_wifi.password[request->getParam("password")->value().length()] = '\0';
    
+//Svae EEPROM 
+    EEPROM.put(0, user_wifi);
+    EEPROM.commit();
+
+//output wifi_sussce html;
+    request->send_P(200, "text/html", wifi_sussce_html);
+  });
+
+
+
+  server_OTA.on("/compens", HTTP_GET, [](AsyncWebServerRequest *request){
+
     user_wifi.btemp_fix = request->getParam("Btemp_fix")->value().toFloat();
     user_wifi.etemp_fix = request->getParam("Etemp_fix")->value().toFloat();
 
-//debug output 
+    //debug output 
  //   Serial.println("");
  //   Serial.printf("Btemp is %f and Etemp is %f ",user_wifi.btemp_fix , user_wifi.etemp_fix );
  //   Serial.println("");
@@ -409,12 +374,13 @@ Serial.print("TC4 THREMO 's IP:");
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
 
- btemp_fix_in = user_wifi.btemp_fix ;
- etemp_fix_in = user_wifi.etemp_fix ;
-
+    btemp_fix_in = user_wifi.btemp_fix ;
+    etemp_fix_in = user_wifi.etemp_fix ;
 //output wifi_sussce html;
-    request->send_P(200, "text/html", wifi_sussce_html);
+   // request->send_P(200, "text/html", wifi_sussce_html);
+
   });
+
 
 
 
