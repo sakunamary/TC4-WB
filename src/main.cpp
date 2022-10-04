@@ -34,7 +34,7 @@
 
 
 
-#define VERSION "1.03"
+#define VERSION "1.0.4"
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -283,7 +283,7 @@ void setup() {
         ; // wait for serial port ready
     }
 
-    Serial.printf("\nTC4-WB v1.0.3 STARTING...\n");
+    Serial.printf("\nTC4-WB v1.0.4 STARTING...\n");
   
     // Initial Bluetooth Serial Port Profile (SPP)
     BTSerial.register_callback(Bluetooth_Callback);

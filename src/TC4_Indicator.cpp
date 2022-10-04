@@ -33,7 +33,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
 extern String   local_IP ;
-extern String    BT_EVENT;
+extern String   BT_EVENT;
 extern uint8_t  charging  ; 
 extern int      b_drop;  
 
@@ -59,7 +59,7 @@ void TaskIndicator(void *pvParameters)
     display.setTextColor(SSD1306_WHITE);  
     display.setTextSize(1);
     display.setCursor(90, 0+2);
-    display.print(F("1.0.3"));
+    display.print(F("1.0.4"));
     display.drawBitmap(17, 19, logo_bmp, 94, 45, WHITE);
     display.display();
 
