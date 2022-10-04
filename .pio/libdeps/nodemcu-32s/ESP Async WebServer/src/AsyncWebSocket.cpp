@@ -24,18 +24,7 @@
 #include <libb64/cencode.h>
 
 #ifndef ESP8266
-extern "C" {
-typedef struct {
-    uint32_t state[5];
-    uint32_t count[2];
-    unsigned char buffer[64];
-} SHA1_CTX;
-
-void SHA1Transform(uint32_t state[5], const unsigned char buffer[64]);
-void SHA1Init(SHA1_CTX* context);
-void SHA1Update(SHA1_CTX* context, const unsigned char* data, uint32_t len);
-void SHA1Final(unsigned char digest[20], SHA1_CTX* context);
-}
+#include "mbedtls/sha1.h"
 #else
 #include <Hash.h>
 #endif
@@ -321,6 +310,7 @@ AsyncWebSocketBasicMessage::~AsyncWebSocketBasicMessage() {
 }
 
  void AsyncWebSocketBasicMessage::ack(size_t len, uint32_t time)  {
+   (void)time;
   _acked += len;
   if(_sent == _len && _acked == _ack){
     _status = WS_MSG_SENT;
@@ -416,6 +406,7 @@ AsyncWebSocketMultiMessage::~AsyncWebSocketMultiMessage() {
 }
 
  void AsyncWebSocketMultiMessage::ack(size_t len, uint32_t time)  {
+   (void)time;
   _acked += len;
   if(_sent >= _len && _acked >= _ack){
     _status = WS_MSG_SENT;
@@ -485,12 +476,12 @@ AsyncWebSocketClient::AsyncWebSocketClient(AsyncWebServerRequest *request, Async
   _lastMessageTime = millis();
   _keepAlivePeriod = 0;
   _client->setRxTimeout(0);
-  _client->onError([](void *r, AsyncClient* c, int8_t error){ ((AsyncWebSocketClient*)(r))->_onError(error); }, this);
-  _client->onAck([](void *r, AsyncClient* c, size_t len, uint32_t time){ ((AsyncWebSocketClient*)(r))->_onAck(len, time); }, this);
+  _client->onError([](void *r, AsyncClient* c, int8_t error){ (void)c; ((AsyncWebSocketClient*)(r))->_onError(error); }, this);
+  _client->onAck([](void *r, AsyncClient* c, size_t len, uint32_t time){ (void)c; ((AsyncWebSocketClient*)(r))->_onAck(len, time); }, this);
   _client->onDisconnect([](void *r, AsyncClient* c){ ((AsyncWebSocketClient*)(r))->_onDisconnect(); delete c; }, this);
-  _client->onTimeout([](void *r, AsyncClient* c, uint32_t time){ ((AsyncWebSocketClient*)(r))->_onTimeout(time); }, this);
-  _client->onData([](void *r, AsyncClient* c, void *buf, size_t len){ ((AsyncWebSocketClient*)(r))->_onData(buf, len); }, this);
-  _client->onPoll([](void *r, AsyncClient* c){ ((AsyncWebSocketClient*)(r))->_onPoll(); }, this);
+  _client->onTimeout([](void *r, AsyncClient* c, uint32_t time){ (void)c; ((AsyncWebSocketClient*)(r))->_onTimeout(time); }, this);
+  _client->onData([](void *r, AsyncClient* c, void *buf, size_t len){ (void)c; ((AsyncWebSocketClient*)(r))->_onData(buf, len); }, this);
+  _client->onPoll([](void *r, AsyncClient* c){ (void)c; ((AsyncWebSocketClient*)(r))->_onPoll(); }, this);
   _server->_addClient(this);
   _server->_handleEvent(this, WS_EVT_CONNECT, request, NULL, 0);
   delete request;
@@ -607,6 +598,7 @@ void AsyncWebSocketClient::ping(uint8_t *data, size_t len){
 void AsyncWebSocketClient::_onError(int8_t){}
 
 void AsyncWebSocketClient::_onTimeout(uint32_t time){
+  (void)time;
   _client->close(true);
 }
 
@@ -1265,10 +1257,12 @@ AsyncWebSocketResponse::AsyncWebSocketResponse(const String& key, AsyncWebSocket
   sha1(key + WS_STR_UUID, hash);
 #else
   (String&)key += WS_STR_UUID;
-  SHA1_CTX ctx;
-  SHA1Init(&ctx);
-  SHA1Update(&ctx, (const unsigned char*)key.c_str(), key.length());
-  SHA1Final(hash, &ctx);
+  mbedtls_sha1_context ctx;
+  mbedtls_sha1_init(&ctx);
+  mbedtls_sha1_starts_ret(&ctx);
+  mbedtls_sha1_update_ret(&ctx, (const unsigned char*)key.c_str(), key.length());
+  mbedtls_sha1_finish_ret(&ctx, hash);
+  mbedtls_sha1_free(&ctx);
 #endif
   base64_encodestate _state;
   base64_init_encodestate(&_state);
@@ -1292,6 +1286,7 @@ void AsyncWebSocketResponse::_respond(AsyncWebServerRequest *request){
 }
 
 size_t AsyncWebSocketResponse::_ack(AsyncWebServerRequest *request, size_t len, uint32_t time){
+  (void)time;
   if(len){
     new AsyncWebSocketClient(request, _server);
   }

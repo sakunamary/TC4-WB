@@ -1,7 +1,7 @@
-ESP Async WebServer
 links2004/WebSockets@^2.3.7
-bblanchon/ArduinoJson@^6.19.4
-adafruit/MAX6675 library@^1.1.0
-ayushsharma82/AsyncElegantOTA @ ^2.2.5
+ayushsharma82/AsyncElegantOTA @ ^2.2.7
 adafruit/Adafruit SSD1306@^2.5.7
+adafruit/MAX6675 library@^1.1.0
 danilopinotti/Battery_18650_Stats@^1.0.0
+https://github.com/me-no-dev/ESPAsyncWebServer.git
+bblanchon/ArduinoJson@^6.19.4

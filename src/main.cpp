@@ -13,6 +13,7 @@
 #include <Arduino.h>
 #include "TC4.h"
 
+
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -422,6 +423,8 @@ Serial.print("TC4 THREMO 's IP:");
   AsyncElegantOTA.begin(&server_OTA);    // Start ElegantOTA
 
   server_OTA.begin();
+
+  Serial.println("HTTP server started");
 
 }
 
