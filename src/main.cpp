@@ -16,7 +16,7 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <AsyncElegantOTA.h>
+//#include <AsyncElegantOTA.h>
 #include "BluetoothSerial.h"
 
 #include "max6675.h"
@@ -53,6 +53,10 @@ void handlePortal();//处理设置网页处理模块
 
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
+
+float btemp_fix_in;
+float etemp_fix_in;
+
 String  BT_EVENT;
 
 String local_IP;
@@ -61,7 +65,11 @@ String local_IP;
 struct settings {
   char ssid[60]; //增加到30个字符
   char password[60]; //增加到30个字符
-} user_wifi = {};
+  float  btemp_fix;
+  float  etemp_fix;
+} user_wifi = {"","",0.0,0.0};
+
+
 
 
 //WiFiServer    wifiserver(8090); //构建webserver类
@@ -115,26 +123,71 @@ String IpAddressToString(const IPAddress& ipAddress) {
   String(ipAddress[3])  ;
 }
 
-/*
-void web_handle_SSID() {
 
-  if (server_OTA.method() == HTTP_POST) {
+const char wifi_sussce_html[] PROGMEM = R"rawliteral(
+<!doctype html><html lang='en'><head>
+    <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>TC4 THREMO Wifi Setup</title>
+        <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> 
+        </head> 
+<body>
+    <main class='form-signin'> 
+        <h1>TC4-WB Setup OK</h1> <br/> 
+        <p>Your settings have been saved successfully!<br />
+        IF settings not working, Please do it again.<br />
+        Please RESTART the device.<br />
 
-    strncpy(user_wifi.ssid,     server.arg("ssid").c_str(),     sizeof(user_wifi.ssid) );
-    strncpy(user_wifi.password, server.arg("password").c_str(), sizeof(user_wifi.password) );
-    user_wifi.ssid[server.arg("ssid").length()] = user_wifi.password[server.arg("password").length()] = '\0';
+        </p>
+    </main>
+</body></html>
+)rawliteral";
 
-    EEPROM.put(0, user_wifi);
-    EEPROM.commit();
 
-    server_OTA.send(200,   "text/html",  "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>TC4 THREMO Wifi Setup</title><style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> </head> <body><main class='form-signin'> <h1>TC4 THRMO Wifi Setup</h1> <br/> <p>Your settings have been saved successfully!<br />Please restart the device.</p></main></body></html>" );
-  } else {
+const char index_html[] PROGMEM = R"rawliteral(
+<!doctype html><html lang='en'>
+<head>
+    <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>TC4-WB Setup</title>
+        <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> 
+</head> 
+<body>
+    <main class='form-signin'> 
+        <form action='/get' method='get'>
+            <h1 class=''>TC4 THRMO SETTING </h1>
+            <br/>
+            <h2 class=''>WIFI SETUP </h2>
+            <br/>
+            <div class='form-floating'>
+            <label>SSID NAME</label>
+            <input type='text' class='form-control' name='ssid'> 
+            </div>
+            <div class='form-floating'>
+            <br/>
+            <label>Password</label>
+            <input type='password' class='form-control' name='password'>
+            </div>
+            <br/>
+            <h2 class=''>Thermo compensate SETUP </h2>
+            <div class='form-floating'>
+            <label>Bean Temp</label>
+            <input type='text' class='form-control' name='Btemp_fix'> 
+            </div>
+            <br/>
+            <div class='form-floating'>
+            <label>Env Temp</label>
+            <input type='text' class='form-control' name='Etemp_fix'> 
+            </div>
+            <br/>
+            <br/>
+            <button type='submit'>Save</button>
+        </form></main> 
+</body></html>
+)rawliteral";
 
-    server_OTA.send(200,   "text/html", "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>TC4 THREMO Wifi Setup</title> <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{cursor: pointer;border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1{text-align: center}</style> </head> <body><main class='form-signin'> <form action='/' method='post'><h1 class=''>TC4 THRMO Wifi Setup</h1><br/><div class='form-floating'><label>SSID NAME</label><input type='text' class='form-control' name='ssid'> </div><div class='form-floating'><br/><label>Password</label><input type='password' class='form-control' name='password'></div><br/><br/><button type='submit'>Save</button></form></main> </body></html>" );
-  }
+
+void notFound(AsyncWebServerRequest *request) {
+  request->send(404, "text/plain", "Opps....Not found");
 }
-*/
-
 
 //Define Artisan Websocket events to exchange data
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -233,15 +286,12 @@ void setup() {
         ; // wait for serial port ready
     }
 
-    Serial.printf("\nTC4 Thermo v1.0 - BT and WebSocket !\n");
-
-
-
+    Serial.printf("\nTC4-WB v1.0.3 STARTING...\n");
   
     // Initial Bluetooth Serial Port Profile (SPP)
     BTSerial.register_callback(Bluetooth_Callback);
 	// Setup bluetooth device name as
-	if (!BTSerial.begin("TC4_Thermo")) {
+	if (!BTSerial.begin("TC4_THERMO")) {
 		Serial.println("An error occurred during initialize");
 	}
 	else {
@@ -259,7 +309,9 @@ void setup() {
 //set up eeprom data 
 EEPROM.begin(sizeof(struct settings) );
 EEPROM.get( 0, user_wifi );
-
+ 
+ btemp_fix_in = user_wifi.btemp_fix ;
+ etemp_fix_in = user_wifi.etemp_fix ;
 
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
@@ -282,18 +334,6 @@ EEPROM.get( 0, user_wifi );
     ,   NULL 
     ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
     );
-/*
- xTaskCreatePinnedToCore (
-        TaskwebSocket
-    ,   "webSocketTask" // 设置wifi参数的网页处理和处理artisan websocket的处理函数
-    ,   4096            // This stack size can be checked & adjusted by reading the Stack Highwater
-    ,   NULL
-    ,   4               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-    ,   NULL 
-    ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
-    );
-*/
-    
 
  xTaskCreatePinnedToCore (
         TaskBatCheck
@@ -343,54 +383,50 @@ Serial.print("TC4 THREMO 's IP:");
   webSocket.begin();
   Serial.println("WebSocket started!");
 
-    // event handler
+// event  websocket handler
   webSocket.onEvent(webSocketEvent);
-//websocket loop 
-
-  server_OTA.on("/OTA", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Hi! I am ESP32.");
-  });
-
-  AsyncElegantOTA.begin(&server_OTA);    // Start ElegantOTA
-  //server_OTA.begin();
 
 
 /*
-
-
-void web_handle_SSID() {
-
-  if (server_OTA.method() == HTTP_POST) {
-
-    strncpy(user_wifi.ssid,     server.arg("ssid").c_str(),     sizeof(user_wifi.ssid) );
-    strncpy(user_wifi.password, server.arg("password").c_str(), sizeof(user_wifi.password) );
-    user_wifi.ssid[server.arg("ssid").length()] = user_wifi.password[server.arg("password").length()] = '\0';
-
-    EEPROM.put(0, user_wifi);
-    EEPROM.commit();
-
-    server_OTA.send(200,   "text/html",  "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>TC4 THREMO Wifi Setup</title><style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> </head> <body><main class='form-signin'> <h1>TC4 THRMO Wifi Setup</h1> <br/> <p>Your settings have been saved successfully!<br />Please restart the device.</p></main></body></html>" );
-  } else {
-
-    server_OTA.send(200,   "text/html", "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>TC4 THREMO Wifi Setup</title> <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{cursor: pointer;border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1{text-align: center}</style> </head> <body><main class='form-signin'> <form action='/' method='post'><h1 class=''>TC4 THRMO Wifi Setup</h1><br/><div class='form-floating'><label>SSID NAME</label><input type='text' class='form-control' name='ssid'> </div><div class='form-floating'><br/><label>Password</label><input type='password' class='form-control' name='password'></div><br/><br/><button type='submit'>Save</button></form></main> </body></html>" );
-  }
-}
+  AsyncElegantOTA.begin(&server_OTA);    // Start ElegantOTA
 
 */
 
-  server_OTA.on("/", HTTP_POST , [] (AsyncWebServerRequest *request)
-  {
-    strncpy(user_wifi.ssid,     server_OTA.arg("ssid").c_str(),     sizeof(user_wifi.ssid) );
-    strncpy(user_wifi.password, server_OTA.arg("password").c_str(), sizeof(user_wifi.password) );
-    user_wifi.ssid[server_OTA.arg("ssid").length()] = user_wifi.password[server_OTA.arg("password").length()] = '\0';
 
+// for index.html
+  server_OTA.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", index_html);
+  });
+
+//get the value from index.html 
+  server_OTA.on("/get", HTTP_GET, [](AsyncWebServerRequest *request){
+     
+
+    strncpy(user_wifi.ssid,request->getParam("ssid")->value().c_str(), sizeof(user_wifi.ssid) );
+    strncpy(user_wifi.password,request->getParam("password")->value().c_str(), sizeof(user_wifi.password) );
+    user_wifi.ssid[request->getParam("ssid")->value().length()] = user_wifi.password[request->getParam("password")->value().length()] = '\0';
+   
+    user_wifi.btemp_fix = request->getParam("Btemp_fix")->value().toFloat();
+    user_wifi.etemp_fix = request->getParam("Etemp_fix")->value().toFloat();
+
+//debug output 
+    Serial.println("");
+    Serial.printf("Btemp is %f and Etemp is %f ",user_wifi.btemp_fix , user_wifi.etemp_fix );
+    Serial.println("");
+//Svae EEPROM 
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
-    request->send(200,"text/html","<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>TC4 THREMO Wifi Setup</title><style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> </head> <body><main class='form-signin'> <h1>TC4 THRMO Wifi Setup</h1> <br/> <p>Your settings have been saved successfully!<br />Please restart the device.</p></main></body></html>" );
-  }
-  
-  
-  );
+
+ btemp_fix_in = user_wifi.btemp_fix ;
+ etemp_fix_in = user_wifi.etemp_fix ;
+
+//output wifi_sussce html;
+    request->send_P(200, "text/html", wifi_sussce_html);
+  });
+
+
+//404 page seems not necessary...
+  server_OTA.onNotFound(notFound);
   server_OTA.begin();
 
 }
