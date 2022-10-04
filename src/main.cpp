@@ -224,7 +224,9 @@ String processor(const String& var){
   else if(var == "et_compens"){
     return String(etemp_fix_in) ;
   }
-  
+    else if(var == "version"){
+    return  VERSION;
+  }
   return String();
 }
 

@@ -96,12 +96,12 @@ const char index_html[] PROGMEM = R"rawliteral(
             <br/>
             <h2 class=''>Thermo compensate SETUP </h2>
             <div class='form-floating'>
-            <label>Bean Temp (current: %bt_compens%) </label>
+            <label>Bean Temp (current value: %bt_compens%) </label>
             <input type='number' class='form-control'  name='Btemp_fix'> 
             </div>
             <br/>
             <div class='form-floating'>
-            <label>Env Temp  (current:%et_compens%)</label>
+            <label>Env Temp  (current value:%et_compens%)</label>
             <input type='number' class='form-control' name='Etemp_fix'> 
             </div>
             <br/>
@@ -109,7 +109,7 @@ const char index_html[] PROGMEM = R"rawliteral(
             <button type='submit'onclick="submitMessage()">Save TEMP COMPENs</button>
         </form> 
             <p>
-            <a href='/update' target='_blank'>FIRWARE UPDATE </a>
+            <a href='/update' target='_blank'>FIRWARE UPDATE verison:%version%</a>
             </p>
             <br/>
     </main> 
