@@ -16,7 +16,8 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-//#include <AsyncElegantOTA.h>
+#include <AsyncElegantOTA.h>
+
 #include "BluetoothSerial.h"
 
 #include "max6675.h"
@@ -69,11 +70,7 @@ struct settings {
   float  etemp_fix;
 } user_wifi = {"","",0.0,0.0};
 
-
-
-
-//WiFiServer    wifiserver(8090); //构建webserver类
-//WebServer     server(80);
+//webserver declare 
 AsyncWebServer server_OTA(80);
 
 WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
@@ -387,12 +384,6 @@ Serial.print("TC4 THREMO 's IP:");
   webSocket.onEvent(webSocketEvent);
 
 
-/*
-  AsyncElegantOTA.begin(&server_OTA);    // Start ElegantOTA
-
-*/
-
-
 // for index.html
   server_OTA.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html);
@@ -410,9 +401,9 @@ Serial.print("TC4 THREMO 's IP:");
     user_wifi.etemp_fix = request->getParam("Etemp_fix")->value().toFloat();
 
 //debug output 
-    Serial.println("");
-    Serial.printf("Btemp is %f and Etemp is %f ",user_wifi.btemp_fix , user_wifi.etemp_fix );
-    Serial.println("");
+ //   Serial.println("");
+ //   Serial.printf("Btemp is %f and Etemp is %f ",user_wifi.btemp_fix , user_wifi.etemp_fix );
+ //   Serial.println("");
 //Svae EEPROM 
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
@@ -425,8 +416,11 @@ Serial.print("TC4 THREMO 's IP:");
   });
 
 
-//404 page seems not necessary...
-  server_OTA.onNotFound(notFound);
+
+  server_OTA.onNotFound(notFound); //404 page seems not necessary...
+
+  AsyncElegantOTA.begin(&server_OTA);    // Start ElegantOTA
+
   server_OTA.begin();
 
 }
@@ -435,7 +429,7 @@ void loop()
 {
 
     webSocket.loop();  //处理websocketmie
-    //server.handleClient();//处理网页
+   
     // This is main task which is created by Arduino to handle Artisan TC4 Commands
 
     if (BTSerial.available())
