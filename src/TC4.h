@@ -16,9 +16,9 @@
 
 
 
-//#define  FULL_VERSION         //full function version ,with wifi and bluetooth
+#define  FULL_VERSION         //full function version ,with wifi and bluetooth
 //#define  WIFI_VERSION       //only wifi version 
-#define  BLUETOOTH_VERSION  //only bluetooth version
+//#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
     #define VERSION "1.0.5"
@@ -107,7 +107,7 @@ const char index_html[] PROGMEM = R"rawliteral(
             <input type='password' class='form-control' name='password'>
             </div>
             <p>NOTICE:INPUT NULL will set back to AP mode <br/>
-            提示：输入空白即恢复AP模式直链模式
+            提示:输入空白即恢复AP模式直链模式
             </p>
             <br/>
             <button type='submit'>Save WIFI</button>
