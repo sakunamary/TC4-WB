@@ -38,7 +38,10 @@ const char wifi_sussce_html[] PROGMEM = R"rawliteral(
         <p>Your settings have been saved successfully!<br />
         IF settings not working, Please do it again.<br />
         Please RESTART the device.<br />
-
+        </p>
+        <p>设置成功!<br />
+        重启生效<br />
+        如不成功请重复操作<<br />
         </p>
     </main>
 </body></html>
