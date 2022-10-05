@@ -60,8 +60,8 @@ String processor(const String& var);//webpage function
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
 
-float btemp_fix_in;
-float etemp_fix_in;
+float btemp_fix_in = 0.0;
+float etemp_fix_in = 0.0;
 
 String  BT_EVENT;
 String local_IP;
@@ -280,8 +280,8 @@ void setup() {
 EEPROM.begin(sizeof(struct settings) );
 EEPROM.get( 0, user_wifi );
  
- btemp_fix_in = user_wifi.btemp_fix ;
- etemp_fix_in = user_wifi.etemp_fix ;
+ btemp_fix_in = user_wifi.btemp_fix + 0.0 ; //fixbug make sure btemp_fix_in has value
+ etemp_fix_in = user_wifi.etemp_fix + 0.0 ; //fixbug make sure etemp_fix_in has value
 
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.

@@ -16,9 +16,9 @@
 
 
 
-#define  FULL_VERSION         //full function version ,with wifi and bluetooth
+//#define  FULL_VERSION         //full function version ,with wifi and bluetooth
 //#define  WIFI_VERSION       //only wifi version 
-//#define  BLUETOOTH_VERSION  //only bluetooth version
+#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
     #define VERSION "1.0.5"
@@ -60,7 +60,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 <head>
 <script>
   function submitMessage() {
-    alert("Saved value");
+    alert("VALUE SAVED  数据已保存");
     setTimeout(function(){ document.location.reload(false); }, 500);
   }
 </script>
@@ -98,12 +98,12 @@ const char index_html[] PROGMEM = R"rawliteral(
             <h1 class=''>TC4-WB SETTING </h1>
             <h2 class=''>WIFI SETUP </h2>
             <div class='form-floating'>
-            <label>SSID NAME/WIFI名字</label>
+            <label>SSID/WIFI名字</label>
             <input type='text' class='form-control' name='ssid'> 
             </div>
             <div class='form-floating'>
             <br/>
-            <label>Password</label>
+            <label>PASSWORD</label>
             <input type='password' class='form-control' name='password'>
             </div>
             <p>NOTICE:INPUT NULL will set back to AP mode <br/>
@@ -115,14 +115,14 @@ const char index_html[] PROGMEM = R"rawliteral(
         <form action='/compens' method='get'>                
             <br/>
             <br/>
-            <h2 class=''>Thermo compensate SETUP <br/> 热电偶温度补偿设置</h2>
+            <h2 class=''>Thermo compensate SETUP <br/>电偶温度补偿设置</h2>
             <div class='form-floating'>
             <label>Bean Temp/豆温 (current value: %bt_compens%) </label>
             <input type='number' class='form-control'  name='Btemp_fix'> 
             </div>
             <br/>
             <div class='form-floating'>
-            <label>Env Temp/炉温 (current value:%et_compens%)</label>
+            <label>Env  Temp/炉温 (current value:%et_compens%)</label>
             <input type='number' class='form-control' name='Etemp_fix'> 
             </div>
             <br/>
