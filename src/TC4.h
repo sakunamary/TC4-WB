@@ -17,8 +17,8 @@
 
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-//#define  WIFI_VERSION       //only wifi version 
-#define  BLUETOOTH_VERSION  //only bluetooth version
+#define  WIFI_VERSION       //only wifi version 
+//#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
     #define VERSION "1.0.5"
@@ -118,12 +118,12 @@ const char index_html[] PROGMEM = R"rawliteral(
             <h2 class=''>Thermo compensate SETUP <br/>电偶温度补偿设置</h2>
             <div class='form-floating'>
             <label>Bean Temp/豆温 (current value: %bt_compens%) </label>
-            <input type='number' class='form-control'  name='Btemp_fix'> 
+            <input type='number' step = '0.01' max = '20' min='-20' class='form-control'  name='Btemp_fix'> 
             </div>
             <br/>
             <div class='form-floating'>
             <label>Env  Temp/炉温 (current value:%et_compens%)</label>
-            <input type='number' class='form-control' name='Etemp_fix'> 
+            <input type='number' step = '0.01' max = '20' min='-20' class='form-control' name='Etemp_fix'> 
             </div>
             <br/>
             <br/>
