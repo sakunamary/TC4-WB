@@ -1,3 +1,18 @@
+/*
+    TC4-WB for Artisan Coffee Roaster Application
+
+    Released under BSD-NC-3.0 License
+
+    Created by Sakunamary on 2022
+  
+    TC4-wb Indicator.cpp 
+    
+    this is a FreeRTOS task for showing infomation on SSD1306 OLED monitor
+    the Indicator task will reflash data every 750 ms 
+    using Adafruit_GFX and OLED driver
+
+*/
+
 
 
 #include <Arduino.h>

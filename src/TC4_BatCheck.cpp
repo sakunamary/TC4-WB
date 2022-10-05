@@ -1,7 +1,22 @@
+/*
+    TC4-WB for Artisan Coffee Roaster Application
+
+    Released under BSD-NC-3.0 License
+
+    Created by Sakunamary on 2022
+
+    TC4_batCheck.cpp
+     
+    This a FreeRTOS task to check the battery onboard every 60s
+    this task is lowest priority ,so sometime  battery value on OLED 
+    is not currect ,but will be currect in next loop .
+
+*/   
+
+
 
 #include <Arduino.h>
 #include "TC4.h"
-
 
 #include <Battery18650Stats.h>
 

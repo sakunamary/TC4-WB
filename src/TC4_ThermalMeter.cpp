@@ -1,12 +1,19 @@
-    /***
+/*  TC4-WB for Artisan Coffee Roaster Application
+
+    Released under BSD-NC-3.0 License
+
+    Created by Sakunamary on 2022
+
+
     ThermalMeter Task
     The default sample rate of Artisan is 3 seconds, although the setting value can be modified by user.
     I think this value is generated from lots of experimental, so keeps polling-time as 3 seconds.
     Thus, In the ThermalMeter Task will (750ms x 4 = 3s)
     (1) read MAX6675 temperature evey 750ms, and
     (2) Average-Array length is 4.
-    That is, the measured temperature is avaraged from 4 times of MAX6675 temperature reading. 
-    ***/
+    That is, the measured temperature is avaraged from 4 times of MAX6675 temperature reading.
+   
+*/
 
 #include <Arduino.h>
 #include "TC4.h"
