@@ -21,10 +21,8 @@
 
 #include "BluetoothSerial.h"
 
+//Thermo lib for MX6675
 #include "max6675.h"
-
-
-//#include "WebServer.h"
 //Websockets Lib by links2004
 #include <WebSocketsServer.h>
 //JSON for Artisan Websocket implementation
@@ -34,25 +32,24 @@
 #include <EEPROM.h>
 
 
-
-#define VERSION "1.0.4"
-
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 
-// Define four tasks 
+// Define three tasks 
 extern void TaskIndicator( void *pvParameters );
 extern void TaskThermalMeter( void *pvParameters );
-//extern void TaskwebSocket(void *pvParameters) ;
 extern void TaskBatCheck(void *pvParameters ) ;
 
-
+//define other functions
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
 String IpAddressToString(const IPAddress& ipAddress);//转换IP地址格式
-void handlePortal();//处理设置网页处理模块
+void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param);//bluetooth callback handler
+void notFound(AsyncWebServerRequest *request) ;//webpage function
+String processor(const String& var);//webpage function
 
 
+//define variable
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
 
@@ -60,7 +57,6 @@ float btemp_fix_in;
 float etemp_fix_in;
 
 String  BT_EVENT;
-
 String local_IP;
 
 //定义 网页wifi 内容
@@ -71,10 +67,18 @@ struct settings {
   float  etemp_fix;
 } user_wifi = {"","",0.0,0.0};
 
+
+//object declare 
 //webserver declare 
 AsyncWebServer server_OTA(80);
 
+#if defined(FULL_VERSION) ||defined(WIFI_VERSION)
+//WebSocketsServer declare 
 WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
+#endif
+
+#if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
+//bluetooth declare
 BluetoothSerial BTSerial;
 
 
@@ -111,7 +115,7 @@ void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 			break;
 	}
 }
-
+#endif
 
 
 String IpAddressToString(const IPAddress& ipAddress) {
@@ -123,9 +127,7 @@ String IpAddressToString(const IPAddress& ipAddress) {
 
 
 
-void notFound(AsyncWebServerRequest *request) {
-  request->send(404, "text/plain", "Opps....Not found");
-}
+#if defined(FULL_VERSION) ||defined(WIFI_VERSION)
 
 //Define Artisan Websocket events to exchange data
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -214,7 +216,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     }
 }
 
-
+#endif
 
 String processor(const String& var){
   Serial.println(var);
@@ -230,6 +232,11 @@ String processor(const String& var){
   return String();
 }
 
+void notFound(AsyncWebServerRequest *request) {
+  request->send(404, "text/plain", "Opps....Not found");
+}
+
+
 void setup() {
   
     // Initialize serial communication at 115200 bits per second:
@@ -238,8 +245,10 @@ void setup() {
         ; // wait for serial port ready
     }
 
-    Serial.printf("\nTC4-WB v1.0.4 STARTING...\n");
-  
+    Serial.printf("\nTC4-WB v VERSION STARTING...\n");
+
+
+  #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
     // Initial Bluetooth Serial Port Profile (SPP)
     BTSerial.register_callback(Bluetooth_Callback);
 	// Setup bluetooth device name as
@@ -257,6 +266,8 @@ void setup() {
  		pinCode[3] = '4';
 		BTSerial.setPin(pinCode); 
 	}
+
+ #endif
 
 //set up eeprom data 
 EEPROM.begin(sizeof(struct settings) );
@@ -330,13 +341,14 @@ Serial.print("TC4-WB's IP:");
  }
 
 
-
+#if defined(FULL_VERSION) ||defined(WIFI_VERSION)
 //init websocket 
   webSocket.begin();
   Serial.println("WebSocket started!");
 
 // event  websocket handler
   webSocket.onEvent(webSocketEvent);
+#endif 
 
 
 // for index.html
@@ -347,43 +359,31 @@ Serial.print("TC4-WB's IP:");
 
 //get the value from index.html 
   server_OTA.on("/get", HTTP_GET, [](AsyncWebServerRequest *request){
-     
-
+//get value form webpage      
     strncpy(user_wifi.ssid,request->getParam("ssid")->value().c_str(), sizeof(user_wifi.ssid) );
     strncpy(user_wifi.password,request->getParam("password")->value().c_str(), sizeof(user_wifi.password) );
-    user_wifi.ssid[request->getParam("ssid")->value().length()] = user_wifi.password[request->getParam("password")->value().length()] = '\0';
-   
+    user_wifi.ssid[request->getParam("ssid")->value().length()] = user_wifi.password[request->getParam("password")->value().length()] = '\0';  
 //Svae EEPROM 
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
-
 //output wifi_sussce html;
     request->send_P(200, "text/html", wifi_sussce_html);
   });
 
-
-
   server_OTA.on("/compens", HTTP_GET, [](AsyncWebServerRequest *request){
-
+//get value form webpage   
     user_wifi.btemp_fix = request->getParam("Btemp_fix")->value().toFloat();
     user_wifi.etemp_fix = request->getParam("Etemp_fix")->value().toFloat();
 
-    //debug output 
- //   Serial.println("");
- //   Serial.printf("Btemp is %f and Etemp is %f ",user_wifi.btemp_fix , user_wifi.etemp_fix );
- //   Serial.println("");
 //Svae EEPROM 
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
 
     btemp_fix_in = user_wifi.btemp_fix ;
     etemp_fix_in = user_wifi.etemp_fix ;
-//output wifi_sussce html;
-   // request->send_P(200, "text/html", wifi_sussce_html);
+
 
   });
-
-
 
 
   server_OTA.onNotFound(notFound); //404 page seems not necessary...
@@ -398,11 +398,12 @@ Serial.print("TC4-WB's IP:");
 
 void loop()
 {
-
+#if defined(FULL_VERSION) ||defined(WIFI_VERSION)
     webSocket.loop();  //处理websocketmie
-   
-    // This is main task which is created by Arduino to handle Artisan TC4 Commands
+#endif
 
+#if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
+    // This is main task which is created by Arduino to handle Artisan TC4 Commands
     if (BTSerial.available())
     {
         String msg = BTSerial.readStringUntil('\n');
@@ -449,4 +450,6 @@ void loop()
 			Serial.println(msg);
 		}
    }
+#endif
+   
 }
