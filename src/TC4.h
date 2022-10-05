@@ -1,14 +1,4 @@
-/*
- * TC4 Simulator for Artisan Coffee Roaster Application
- *
- * Released under MIT License
- *
- * Created by Sam Chen on 2020
- * Copyright (c) 2020 sam4sharing.com, All rights reserved.
- *
- * Blog     : https://www.sam4sharing.com
- * YouTube	: https://www.youtube.com/channel/UCN7IzeZdi7kl1Egq_a9Tb4g
- */
+
 
 #ifndef __TC4_H__
 #define __TC4_H__
@@ -16,8 +6,28 @@
 #define PRINT_ARTISAN_WHOLE_MESSAGE 1     // set, to print Artisan commands on serial debug port
 #define PRINT_TEAMPERATURE_EACH_READING 1 // Set, to print temperature vaule on serial debug port
 
+
+
+//#define  FULL_VERSION         //full function version ,with wifi and bluetooth
+//#define  WIFI_VERSION       //only wifi version 
+#define  BLUETOOTH_VERSION  //only bluetooth version
+
+#if defined(FULL_VERSION)
+    #define VERSION "1.0.5"
+#endif    
+#if defined(WIFI_VERSION)
+    #define VERSION "1.0.5w"
+#endif 
+#if defined(BLUETOOTH_VERSION)
+    #define VERSION "1.0.5b"
+#endif
+////////////////////////////////////////////////////////////////
+//
+//  web page raw data 
+//
+////////////////////////////////////////////////////////////////
 const char wifi_sussce_html[] PROGMEM = R"rawliteral(
-<!doctype html><html lang='en'><head>
+<!doctype html><html lang='cn'><head>
     <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
         <title>TC4-WB Wifi Setup</title>
         <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> 
@@ -35,7 +45,7 @@ const char wifi_sussce_html[] PROGMEM = R"rawliteral(
 )rawliteral";
 
 const char index_html[] PROGMEM = R"rawliteral(
-<!doctype html><html lang='en'>
+<!doctype html><html lang='cn'>
 <head>
 <script>
   function submitMessage() {
@@ -79,7 +89,7 @@ const char index_html[] PROGMEM = R"rawliteral(
             <h2 class=''>WIFI SETUP </h2>
             <br/>
             <div class='form-floating'>
-            <label>SSID NAME</label>
+            <label>SSID NAME/WIFI名字</label>
             <input type='text' class='form-control' name='ssid'> 
             </div>
             <div class='form-floating'>
@@ -94,19 +104,19 @@ const char index_html[] PROGMEM = R"rawliteral(
         <form action='/compens' method='get'>                
             <br/>
             <br/>
-            <h2 class=''>Thermo compensate SETUP </h2>
+            <h2 class=''>Thermo compensate SETUP <br/> 热电偶温度补偿设置</h2>
             <div class='form-floating'>
-            <label>Bean Temp (current value: %bt_compens%) </label>
+            <label>Bean Temp/豆温 (current value: %bt_compens%) </label>
             <input type='number' class='form-control'  name='Btemp_fix'> 
             </div>
             <br/>
             <div class='form-floating'>
-            <label>Env Temp  (current value:%et_compens%)</label>
+            <label>Env Temp/炉温 (current value:%et_compens%)</label>
             <input type='number' class='form-control' name='Etemp_fix'> 
             </div>
             <br/>
             <br/>
-            <button type='submit'onclick="submitMessage()">Save TEMP COMPENs</button>
+            <button type='submit'onclick="submitMessage()">SAVE DATA</button>
         </form> 
             <p>
             <a href='/update' target='_blank'>FIRWARE UPDATE verison:%version%</a>

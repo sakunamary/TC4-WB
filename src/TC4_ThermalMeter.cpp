@@ -1,14 +1,12 @@
-/*
- * TC4 Simulator for Artisan Coffee Roaster Application
- *
- * Released under MIT License
- *
- * Created by Sam Chen on 2020
- * Copyright (c) 2020 sam4sharing.com, All rights reserved.
- * 
- * Blog     : https://www.sam4sharing.com
- * YouTube	: https://www.youtube.com/channel/UCN7IzeZdi7kl1Egq_a9Tb4g
- */
+    /***
+    ThermalMeter Task
+    The default sample rate of Artisan is 3 seconds, although the setting value can be modified by user.
+    I think this value is generated from lots of experimental, so keeps polling-time as 3 seconds.
+    Thus, In the ThermalMeter Task will (750ms x 4 = 3s)
+    (1) read MAX6675 temperature evey 750ms, and
+    (2) Average-Array length is 4.
+    That is, the measured temperature is avaraged from 4 times of MAX6675 temperature reading. 
+    ***/
 
 #include <Arduino.h>
 #include "TC4.h"
@@ -48,15 +46,6 @@ float averageTemperature ( float *pTemp );
 
 void TaskThermalMeter(void *pvParameters) 
 { 
-    /***
-    ThermalMeter Task
-    The default sample rate of Artisan is 3 seconds, although the setting value can be modified by user.
-    I think this value is generated from lots of experimental, so keeps polling-time as 3 seconds.
-    Thus, In the ThermalMeter Task will (750ms x 4 = 3s)
-    (1) read MAX6675 temperature evey 750ms, and
-    (2) Average-Array length is 4.
-    That is, the measured temperature is avaraged from 4 times of MAX6675 temperature reading. 
-    ***/
 
     /* Variable Definition */
     (void) pvParameters;

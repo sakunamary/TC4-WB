@@ -1,14 +1,3 @@
-/*
- * TC4 Simulator for Artisan Coffee Roaster Application
- *
- * Released under MIT License
- *
- * Created by Sam Chen on 2020
- * Copyright (c) 2020 sam4sharing.com, All rights reserved.
- * 
- * Blog     : https://www.sam4sharing.com
- * YouTube	: https://www.youtube.com/channel/UCN7IzeZdi7kl1Egq_a9Tb4g
- */
 
 
 #include <Arduino.h>
@@ -37,7 +26,7 @@ extern String   BT_EVENT;
 extern uint8_t  charging  ; 
 extern int      b_drop;  
 
-#define INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
+#define TASKINDICATOR_INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
 
 
 
@@ -46,7 +35,7 @@ void TaskIndicator(void *pvParameters)
     /* Variable Definition */
     (void) pvParameters;
     TickType_t xLastWakeTime;
-    const TickType_t xIntervel = INDICATOR_INTERVEL / portTICK_PERIOD_MS;
+    const TickType_t xIntervel = TASKINDICATOR_INDICATOR_INTERVEL / portTICK_PERIOD_MS;
 
 
  if(!display.begin(SSD1306_SWITCHCAPVCC,SCREEN_ADDRESS)) {
@@ -54,12 +43,16 @@ void TaskIndicator(void *pvParameters)
     for(;;); // Don't proceed, loop forever
   }
     
+String ver= VERSION ;
+
   // Show initial display buffer contents on the screen --
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);  
     display.setTextSize(1);
-    display.setCursor(90, 0+2);
-    display.print(F("1.0.4"));
+    display.setCursor(86, 0+2);
+
+
+    display.print(ver);
     display.drawBitmap(17, 19, logo_bmp, 94, 45, WHITE);
     display.display();
 
@@ -99,7 +92,7 @@ void TaskIndicator(void *pvParameters)
 
             display.display();
             display.setFont();
-    vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
+    vTaskDelay( TASKINDICATOR_INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
     }
 
     else {
@@ -111,16 +104,14 @@ void TaskIndicator(void *pvParameters)
 
     display.drawBitmap(0, 0, BEAN_LOGO, 16, 16, WHITE);
     display.drawBitmap(0, 16, DRUMMER_LOGO, 16, 16, WHITE);
-    display.drawBitmap(0, 32, WIFI_LOGO, 16, 16, WHITE);
-    display.drawBitmap(0, 48, BT_LOGO, 16, 16, WHITE);
 
-  
 
 //显示温度
 
 if (b_drop > 0)  {
     display.invertDisplay(true);
 } else     display.invertDisplay(false);
+
 
     display.setCursor(2+16, 0+2);
     display.print(F("BT:"));
@@ -138,18 +129,36 @@ if (b_drop > 0)  {
     display.setCursor(62+16, 18+2);
     display.println(F("C"));
 
-    //display.drawLine(78+8,0,78+8,32,WHITE);
-    //display.drawLine(86,32,128,32,WHITE);
-
+#if defined(FULL_VERSION) //full version 
 //显示IP地址和蓝牙状态
+    display.drawBitmap(0, 32, WIFI_LOGO, 16, 16, WHITE);
+    display.drawBitmap(0, 48, BT_LOGO, 16, 16, WHITE);
+    display.setCursor(2+16, 36+2);
+    display.print(F("IP:"));
+    display.setCursor(20+16,36+2);
+    display.println(local_IP); 
+    display.setCursor(2+16, 54);
+    display.print(BT_EVENT);
+ #endif 
+
+#if defined(WIFI_VERSION) //wifi version 
+//显示IP地址和蓝牙状态
+    display.drawBitmap(0, 32, WIFI_LOGO, 16, 16, WHITE);
     display.setCursor(2+16, 36+2);
     display.print(F("IP:"));
     display.setCursor(20+16,36+2);
     display.println(local_IP); 
 
-    display.setCursor(2+16, 54);
+ #endif 
+
+
+#if defined(BLUETOOTH_VERSION) //wifi version 
+//显示IP地址和蓝牙状态
+    display.drawBitmap(0, 32, BT_LOGO, 16, 16, WHITE);
+    display.setCursor(2+16, 36+2);
     display.print(BT_EVENT);
- 
+
+ #endif 
 
 
 //显示电池电量情况
@@ -166,7 +175,7 @@ if (b_drop > 0)  {
     display.display();
 
 
-    vTaskDelay( INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
+    vTaskDelay( TASKINDICATOR_INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
     }
   } 
 
