@@ -130,7 +130,7 @@ const char index_html[] PROGMEM = R"rawliteral(
             <button type='submit'onclick="submitMessage()">SAVE DATA</button>
         </form> 
             <p>
-            <a href='/update' target='_blank'>FIRWARE UPDATE verison:%version%</a>
+            <a href='/update' target='_blank'>FIRMWARE UPDATE verison:%version%</a>
             </p>
             <br/>
     </main> 
