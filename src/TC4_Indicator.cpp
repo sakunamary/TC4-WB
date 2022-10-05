@@ -5,7 +5,7 @@
 
     Created by Sakunamary on 2022
   
-    TC4-wb Indicator.cpp 
+    TC4_Indicator.cpp 
     
     this is a FreeRTOS task for showing infomation on SSD1306 OLED monitor
     the Indicator task will reflash data every 750 ms 

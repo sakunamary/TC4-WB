@@ -108,6 +108,9 @@ const char index_html[] PROGMEM = R"rawliteral(
             <label>Password</label>
             <input type='password' class='form-control' name='password'>
             </div>
+            <p>INPUT NULL will set back to AP mode <br/>
+            输入空白即恢复AP模式直链模式
+            </p>
             <br/>
             <br/>
             <button type='submit'>Save WIFI</button>

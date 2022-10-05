@@ -27,9 +27,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
-
 #include "BluetoothSerial.h"
-
 //Thermo lib for MX6675
 #include "max6675.h"
 //Websockets Lib by links2004
