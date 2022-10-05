@@ -17,8 +17,8 @@
 
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-#define  WIFI_VERSION       //only wifi version 
-//#define  BLUETOOTH_VERSION  //only bluetooth version
+//#define  WIFI_VERSION       //only wifi version 
+#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
     #define VERSION "1.0.5"
@@ -96,9 +96,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     <main class='form-signin'> 
         <form action='/get' method='get'>
             <h1 class=''>TC4-WB SETTING </h1>
-            <br/>
             <h2 class=''>WIFI SETUP </h2>
-            <br/>
             <div class='form-floating'>
             <label>SSID NAME/WIFI名字</label>
             <input type='text' class='form-control' name='ssid'> 
@@ -108,10 +106,9 @@ const char index_html[] PROGMEM = R"rawliteral(
             <label>Password</label>
             <input type='password' class='form-control' name='password'>
             </div>
-            <p>INPUT NULL will set back to AP mode <br/>
-            输入空白即恢复AP模式直链模式
+            <p>NOTICE:INPUT NULL will set back to AP mode <br/>
+            提示：输入空白即恢复AP模式直链模式
             </p>
-            <br/>
             <br/>
             <button type='submit'>Save WIFI</button>
         </form>     
