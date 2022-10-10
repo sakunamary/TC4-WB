@@ -35,6 +35,7 @@
 //JSON for Artisan Websocket implementation
 #include "ArduinoJson.h"
 
+#include "TC4_Indicator.h"
 
 #include <EEPROM.h>
 
@@ -90,6 +91,7 @@ WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 //bluetooth declare
 BluetoothSerial BTSerial;
 
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 
@@ -251,12 +253,13 @@ void notFound(AsyncWebServerRequest *request) {
 // low power mode; checks every few seconds for an event
 inline uint32_t checkLowPowerMode(uint32_t lastTimestamp) {
   if (millis() - lastTimestamp > TIME_TO_SLEEP) {
-
+    display.clearDisplay(); //disable OLED
+    //set sleep mode 
+    //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+    esp_deep_sleep(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 
     }
-    lastTimestamp = millis() ;
-    //display.line(); disable OLED
-    return lastTimestamp;
+    return  millis();
 }
 
 
@@ -417,14 +420,13 @@ Serial.print("TC4-WB's IP:");
 
   Serial.println("HTTP server started");
 
-   lastTimestamp = millis() ; //init sleep timestamp
+
 
 }
 
 void loop()
 
 
-//esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 
 
 {
