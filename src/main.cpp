@@ -246,6 +246,20 @@ void notFound(AsyncWebServerRequest *request) {
 }
 
 
+
+
+// low power mode; checks every few seconds for an event
+inline uint32_t checkLowPowerMode(uint32_t lastTimestamp) {
+  if (millis() - lastTimestamp > TIME_TO_SLEEP) {
+
+
+    }
+    lastTimestamp = millis() ;
+    //display.line(); disable OLED
+    return lastTimestamp;
+}
+
+
 void setup() {
   
     // Initialize serial communication at 115200 bits per second:
@@ -403,7 +417,7 @@ Serial.print("TC4-WB's IP:");
 
   Serial.println("HTTP server started");
 
-
+   lastTimestamp = millis() ; //init sleep timestamp
 
 }
 
