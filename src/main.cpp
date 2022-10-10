@@ -251,13 +251,14 @@ void notFound(AsyncWebServerRequest *request) {
 
 
 // low power mode; checks every few seconds for an event
-inline uint32_t checkLowPowerMode(uint32_t lastTimestamp) {
-  if (millis() - lastTimestamp > TIME_TO_SLEEP) {
-    display.clearDisplay(); //disable OLED
-    //set sleep mode 
-    //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-    esp_deep_sleep(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+inline uint32_t checkLowPowerMode(float temp ,uint32_t lastTimestamp) {
+float last_BT_temp ;
 
+    if (millis() - lastTimestamp > TIME_TO_SLEEP) {
+        display.clearDisplay(); //disable OLED
+        //set sleep mode 
+        //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+        esp_deep_sleep(TIME_TO_SLEEP * uS_TO_S_FACTOR);
     }
     return  millis();
 }
@@ -266,7 +267,7 @@ inline uint32_t checkLowPowerMode(uint32_t lastTimestamp) {
 void setup() {
   
     // Initialize serial communication at 115200 bits per second:
-    Serial.begin(57600);
+    Serial.begin(BAUDRATE);
     while (!Serial) {
         ; // wait for serial port ready
     }
@@ -420,12 +421,11 @@ Serial.print("TC4-WB's IP:");
 
   Serial.println("HTTP server started");
 
-
+lastTimestamp = millis();
 
 }
 
 void loop()
-
 
 
 
@@ -483,5 +483,9 @@ void loop()
 		}
    }
 #endif
+
+
+    lastTimestamp = checkLowPowerMode(lastTimestamp);
+
 
 }
