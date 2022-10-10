@@ -15,19 +15,23 @@
 #define PRINT_TEAMPERATURE_EACH_READING 1 // Set, to print temperature vaule on serial debug port
 
 
+#define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
+#define TIME_TO_SLEEP  60      /* Time ESP32 will go to sleep (in seconds) */
+
+
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-//#define  WIFI_VERSION       //only wifi version 
-#define  BLUETOOTH_VERSION  //only bluetooth version
+#define  WIFI_VERSION       //only wifi version 
+//#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
-    #define VERSION "1.0.5"
+    #define VERSION "1.0.6"
 #endif    
 #if defined(WIFI_VERSION)
-    #define VERSION "1.0.5w"
+    #define VERSION "1.0.6w"
 #endif 
 #if defined(BLUETOOTH_VERSION)
-    #define VERSION "1.0.5b"
+    #define VERSION "1.0.6b"
 #endif
 ////////////////////////////////////////////////////////////////
 //
