@@ -43,6 +43,8 @@
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 
+
+
 // Define three tasks 
 extern void TaskIndicator( void *pvParameters );
 extern void TaskThermalMeter( void *pvParameters );
@@ -401,9 +403,16 @@ Serial.print("TC4-WB's IP:");
 
   Serial.println("HTTP server started");
 
+
+
 }
 
 void loop()
+
+
+//esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+
+
 {
 #if defined(FULL_VERSION) ||defined(WIFI_VERSION)
     webSocket.loop();  //处理websocketmie
