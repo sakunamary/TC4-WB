@@ -13,7 +13,8 @@
 
 */
 
-
+#ifndef __TC4_INDICATOR_H__
+#define __TC4_INDICATOR_H__
 
 #include <Arduino.h>
 #include "TC4.h"
@@ -195,3 +196,6 @@ if (b_drop > 0)  {
   } 
 
 }
+
+
+#endif
