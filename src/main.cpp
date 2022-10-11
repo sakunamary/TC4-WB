@@ -74,6 +74,8 @@ user_wifi_t  user_wifi = {" "," ",0.0,0.0} ;
 
 //object declare 
 AsyncWebServer server_OTA(80);
+//Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
 
 #if defined(FULL_VERSION) ||defined(WIFI_VERSION)
 //WebSocketsServer declare 
@@ -84,7 +86,7 @@ WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 //bluetooth declare
 BluetoothSerial BTSerial;
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
 
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 
@@ -244,25 +246,16 @@ void notFound(AsyncWebServerRequest *request) {
 
 // low power mode; checks every few seconds for an event
 void checkLowPowerMode(float temp_in) {
-        Serial.print("Millis :");
-        Serial.println(millis());
 
      if (take_temp) {
         last_BT_temp = temp_in ; //设置第一次温度戳
         lastTimestamp = millis(); //设置第一次时间戳
         take_temp = false;
-        Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
+        //Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
     if ((millis() - lastTimestamp ) > TIME_TO_SLEEP*1000  && abs(last_BT_temp - temp_in )<10 ) {//60s
 
           // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
-            display.clearDisplay(); //disable OLED
-            display.setTextColor(SSD1306_WHITE);  
-            display.setTextSize(1);
-            display.setCursor(2+16, 0+2);
-            display.print(F("going sleep in 3s..."));
-            display.display();
-             delay(3000);
             display.clearDisplay(); //disable OLED
             display.display();
             take_temp = true;
