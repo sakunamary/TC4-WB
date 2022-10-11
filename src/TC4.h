@@ -34,6 +34,8 @@
 #endif
 
 
+
+//wiif 网页设置的参数
  typedef struct eeprom_settings 
 {
   char ssid[60]; //增加到30个字符

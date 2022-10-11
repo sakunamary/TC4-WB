@@ -62,14 +62,16 @@ String processor(const String& var);//webpage function
 //define variable
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
-
+/*
 float btemp_fix_in = 0.0;
 float etemp_fix_in = 0.0;
+*/
 
 String  BT_EVENT;
 String local_IP;
 uint32_t lastTimestamp ;
-
+float last_BT_temp = -273.0 ;
+bool take_temp  = true ;
 
 user_wifi_t  user_wifi = {" "," ",0.0,0.0} ;
 
@@ -230,10 +232,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 String processor(const String& var){
   Serial.println(var);
   if(var == "bt_compens"){
-    return String(btemp_fix_in) ;
+    return String(user_wifi.btemp_fix) ;
   }
   else if(var == "et_compens"){
-    return String(etemp_fix_in) ;
+    return String(user_wifi.etemp_fix) ;
   }
     else if(var == "version"){
     return  VERSION;
@@ -247,13 +249,25 @@ void notFound(AsyncWebServerRequest *request) {
 
 
 
-
 // low power mode; checks every few seconds for an event
-inline uint32_t checkLowPowerMode(float temp ,uint32_t lastTimestamp) {
-float last_BT_temp ;
+inline uint32_t checkLowPowerMode(float temp_in ,uint32_t lastTimestamp) {
+     if (take_temp) {//保留温度
+        last_BT_temp = temp_in ; 
+        take_temp = false;
+        Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
+     }
 
-    if (millis() - lastTimestamp > TIME_TO_SLEEP) {
+    if (millis() - lastTimestamp > TIME_TO_SLEEP //60s
+        && 
+        abs(last_BT_temp - temp_in )<10)  { // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
         display.clearDisplay(); //disable OLED
+        display.setTextColor(SSD1306_WHITE);  
+        display.setTextSize(1);
+        display.setCursor(2+16, 0+2);
+        display.print(F("going sleep"));
+        display.display();
+
+        take_temp = true;
         //set sleep mode 
         //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
         esp_deep_sleep(TIME_TO_SLEEP * uS_TO_S_FACTOR);
@@ -297,10 +311,10 @@ void setup() {
 //set up eeprom data 
 EEPROM.begin(sizeof(user_wifi) );
 EEPROM.get( 0, user_wifi);
- 
+ /*
  btemp_fix_in = user_wifi.btemp_fix + 0.0 ; //fixbug make sure btemp_fix_in has value
  etemp_fix_in = user_wifi.etemp_fix + 0.0 ; //fixbug make sure etemp_fix_in has value
-
+*/
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
     xTaskCreatePinnedToCore (
@@ -404,9 +418,10 @@ Serial.print("TC4-WB's IP:");
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
 
-    btemp_fix_in = user_wifi.btemp_fix ;
+/*
+     btemp_fix_in = user_wifi.btemp_fix ;
     etemp_fix_in = user_wifi.etemp_fix ;
-
+*/
 
   });
 
