@@ -69,7 +69,7 @@ float etemp_fix_in = 0.0;
 
 String  BT_EVENT;
 String local_IP;
-uint32_t lastTimestamp ;
+uint32_t lastTimestamp =millis();
 float last_BT_temp = -273.0 ;
 bool take_temp  = true ;
 
@@ -248,16 +248,18 @@ void notFound(AsyncWebServerRequest *request) {
 
 // low power mode; checks every few seconds for an event
 void checkLowPowerMode(float temp_in) {
+        Serial.print("Millis :");
+        Serial.println(millis());
 
-     if (take_temp) {//保留温度
+     if (take_temp) {
         last_BT_temp = temp_in ; //设置第一次温度戳
         lastTimestamp = millis(); //设置第一次时间戳
         take_temp = false;
         Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
-    if (millis() - lastTimestamp > TIME_TO_SLEEP) {//60s
-        if (abs(last_BT_temp - temp_in )<10) 
-         { // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
+    if ((millis() - lastTimestamp ) > TIME_TO_SLEEP*1000  && abs(last_BT_temp - temp_in )<10 ) {//60s
+
+          // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
             display.clearDisplay(); //disable OLED
             display.setTextColor(SSD1306_WHITE);  
             display.setTextSize(1);
@@ -271,7 +273,7 @@ void checkLowPowerMode(float temp_in) {
         //set sleep mode 
         //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
             esp_deep_sleep(3*TIME_TO_SLEEP * uS_TO_S_FACTOR);
-        }
+        
     }
 }
 
