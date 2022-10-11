@@ -69,7 +69,7 @@ float etemp_fix_in = 0.0;
 
 String  BT_EVENT;
 String local_IP;
-uint32_t lastTimestamp ;
+uint32_t lastTimestamp = millis();
 float last_BT_temp = -273.0 ;
 bool take_temp  = true ;
 
@@ -437,7 +437,7 @@ Serial.print("TC4-WB's IP:");
 
   Serial.println("HTTP server started");
 
-lastTimestamp = millis(); //init lastTimestamp
+//lastTimestamp = millis(); //init lastTimestamp
 
 }
 
