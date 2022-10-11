@@ -69,7 +69,7 @@ float etemp_fix_in = 0.0;
 
 String  BT_EVENT;
 String local_IP;
-uint32_t lastTimestamp = millis();
+uint32_t lastTimestamp ;
 float last_BT_temp = -273.0 ;
 bool take_temp  = true ;
 
@@ -247,15 +247,17 @@ void notFound(AsyncWebServerRequest *request) {
 
 
 // low power mode; checks every few seconds for an event
-inline uint32_t checkLowPowerMode(float temp_in ,uint32_t Timestamp) {
+void checkLowPowerMode(float temp_in) {
+
+
      if (take_temp) {//保留温度
-        last_BT_temp = temp_in ; 
-        idleTimestamp = Timestamp;
+        last_BT_temp = temp_in ; //设置第一次温度戳
+        lastTimestamp = millis(); //设置第一次时间戳
         take_temp = false;
         Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
 
-    if (Timestamp - idleTimestamp > TIME_TO_SLEEP) {//60s
+    if (millis() - lastTimestamp > TIME_TO_SLEEP) {//60s
         if (abs(last_BT_temp - temp_in )<10) 
          { // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
             display.clearDisplay(); //disable OLED
@@ -499,7 +501,7 @@ void loop()
 #endif
 
 
-    lastTimestamp = checkLowPowerMode(BT_AvgTemp,lastTimestamp);
+checkLowPowerMode(BT_AvgTemp); //测量是否进入睡眠模式
 
 
 }
