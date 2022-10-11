@@ -71,16 +71,8 @@ String local_IP;
 uint32_t lastTimestamp ;
 
 
-//定义 网页wifi 内容
-typedef struct settings 
-{
-  char ssid[60]; //增加到30个字符
-  char password[60]; //增加到30个字符
-  float  btemp_fix;
-  float  etemp_fix;
-} user_wifi_t;
+user_wifi_t  user_wifi = {" "," ",0.0,0.0} ;
 
-extern user_wifi_t  user_wifi ;
 
 
 
@@ -271,7 +263,6 @@ float last_BT_temp ;
 
 
 void setup() {
-  memset(&user_wifi,0,sizeof(user_wifi)); //初始化 user_wifi结构体
   
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(BAUDRATE);
@@ -304,7 +295,7 @@ void setup() {
  #endif
 
 //set up eeprom data 
-EEPROM.begin(sizeof(user_wifi_t) );
+EEPROM.begin(sizeof(user_wifi) );
 EEPROM.get( 0, user_wifi);
  
  btemp_fix_in = user_wifi.btemp_fix + 0.0 ; //fixbug make sure btemp_fix_in has value
