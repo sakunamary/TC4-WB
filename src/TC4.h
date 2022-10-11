@@ -32,6 +32,19 @@
 #if defined(BLUETOOTH_VERSION)
     #define VERSION "1.0.6b"
 #endif
+
+
+ typedef struct eeprom_settings 
+{
+  char ssid[60]; //增加到30个字符
+  char password[60]; //增加到30个字符
+  float  btemp_fix;
+  float  etemp_fix;
+} user_wifi_t;
+
+extern user_wifi_t  user_wifi ;
+
+
 ////////////////////////////////////////////////////////////////
 //
 //  web page raw data 
