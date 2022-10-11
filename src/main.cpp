@@ -62,10 +62,7 @@ String processor(const String& var);//webpage function
 //define variable
 extern float    BT_AvgTemp;
 extern float    ET_CurTemp;
-/*
-float btemp_fix_in = 0.0;
-float etemp_fix_in = 0.0;
-*/
+
 
 String  BT_EVENT;
 String local_IP;
@@ -76,7 +73,6 @@ bool take_temp  = true ;
 user_wifi_t  user_wifi = {" "," ",0.0,0.0} ;
 
 //object declare 
-//webserver declare 
 AsyncWebServer server_OTA(80);
 
 #if defined(FULL_VERSION) ||defined(WIFI_VERSION)
