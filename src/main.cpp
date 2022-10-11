@@ -75,9 +75,6 @@ bool take_temp  = true ;
 
 user_wifi_t  user_wifi = {" "," ",0.0,0.0} ;
 
-
-
-
 //object declare 
 //webserver declare 
 AsyncWebServer server_OTA(80);
@@ -250,21 +247,22 @@ void notFound(AsyncWebServerRequest *request) {
 
 
 // low power mode; checks every few seconds for an event
-inline uint32_t checkLowPowerMode(float temp_in ,uint32_t lastTimestamp) {
+inline uint32_t checkLowPowerMode(float temp_in ,uint32_t Timestamp) {
      if (take_temp) {//保留温度
         last_BT_temp = temp_in ; 
+        idleTimestamp = Timestamp;
         take_temp = false;
         Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
 
-    if (millis() - lastTimestamp > TIME_TO_SLEEP) {//60s
+    if (Timestamp - idleTimestamp > TIME_TO_SLEEP) {//60s
         if (abs(last_BT_temp - temp_in )<10) 
          { // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
             display.clearDisplay(); //disable OLED
             display.setTextColor(SSD1306_WHITE);  
             display.setTextSize(1);
             display.setCursor(2+16, 0+2);
-            display.print(F("going sleep"));
+            display.print(F("going sleep in 3s..."));
             display.display();
              delay(3000);
             display.clearDisplay(); //disable OLED
