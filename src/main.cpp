@@ -257,20 +257,23 @@ inline uint32_t checkLowPowerMode(float temp_in ,uint32_t lastTimestamp) {
         Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
 
-    if (millis() - lastTimestamp > TIME_TO_SLEEP //60s
-        && 
-        abs(last_BT_temp - temp_in )<10)  { // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
-        display.clearDisplay(); //disable OLED
-        display.setTextColor(SSD1306_WHITE);  
-        display.setTextSize(1);
-        display.setCursor(2+16, 0+2);
-        display.print(F("going sleep"));
-        display.display();
-
-        take_temp = true;
+    if (millis() - lastTimestamp > TIME_TO_SLEEP) {//60s
+        if (abs(last_BT_temp - temp_in )<10) 
+         { // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
+            display.clearDisplay(); //disable OLED
+            display.setTextColor(SSD1306_WHITE);  
+            display.setTextSize(1);
+            display.setCursor(2+16, 0+2);
+            display.print(F("going sleep"));
+            display.display();
+             delay(3000);
+            display.clearDisplay(); //disable OLED
+            display.display();
+            take_temp = true;
         //set sleep mode 
         //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-        esp_deep_sleep(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+            esp_deep_sleep(3*TIME_TO_SLEEP * uS_TO_S_FACTOR);
+        }
     }
     return  millis();
 }
@@ -434,7 +437,7 @@ Serial.print("TC4-WB's IP:");
 
   Serial.println("HTTP server started");
 
-lastTimestamp = millis();
+lastTimestamp = millis(); //init lastTimestamp
 
 }
 

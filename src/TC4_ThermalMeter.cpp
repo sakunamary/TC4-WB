@@ -37,11 +37,6 @@ int thermoCLK = 5;
 int thermoCS_ET =16;
 int thermoCS_BT = 17;
 
-/*
-extern float etemp_fix_in ;
-extern float btemp_fix_in ;
-*/
-
 // Create Variables and Object for Environment Temperature (ET) if exist
 MAX6675 thermocouple_ET(thermoCLK, thermoCS_ET, thermoDO);
 
@@ -139,9 +134,7 @@ void TaskThermalMeter(void *pvParameters)
                 // The ET is reference temperature, don't need averaging
                 // just read ET from MAX6675 thermal couple every 3 seconds
 
-               ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix; 
-               //ET_CurTemp = thermocouple_ET.readCelsius() + etemp_fix_in;
-       
+               ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;       
                 //Serial.println(" ");	
                 //Serial.printf("ET:%f ,ET compensate:%f",ET_CurTemp,etemp_fix_in);
                 //Serial.println("");
