@@ -249,14 +249,12 @@ void notFound(AsyncWebServerRequest *request) {
 // low power mode; checks every few seconds for an event
 void checkLowPowerMode(float temp_in) {
 
-
      if (take_temp) {//保留温度
         last_BT_temp = temp_in ; //设置第一次温度戳
         lastTimestamp = millis(); //设置第一次时间戳
         take_temp = false;
         Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
-
     if (millis() - lastTimestamp > TIME_TO_SLEEP) {//60s
         if (abs(last_BT_temp - temp_in )<10) 
          { // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
@@ -275,7 +273,6 @@ void checkLowPowerMode(float temp_in) {
             esp_deep_sleep(3*TIME_TO_SLEEP * uS_TO_S_FACTOR);
         }
     }
-    return  millis();
 }
 
 
