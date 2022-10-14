@@ -258,10 +258,10 @@ void checkLowPowerMode(float temp_in) {
           // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
             display.clearDisplay(); //disable OLED
             display.display();
+            delay(3000);
             take_temp = true;
         //set sleep mode 
-        //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-            esp_deep_sleep(3*TIME_TO_SLEEP * uS_TO_S_FACTOR);
+            esp_deep_sleep(1501962240); // sleep for longest time of the function can sleep
         
     }
 }
