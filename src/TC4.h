@@ -16,7 +16,7 @@
 
 
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP  450      /* Time ESP32 will go to sleep (in seconds) */
+#define TIME_TO_SLEEP  450     /* Time ESP32 will go to sleep (in seconds) */
 #define BAUDRATE 57600  //serial port baudrate
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
@@ -24,13 +24,13 @@
 #define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
-    #define VERSION "1.0.6f"
+    #define VERSION "1.0.7f"
 #endif    
 #if defined(WIFI_VERSION)
-    #define VERSION "1.0.6w"
+    #define VERSION "1.0.7w"
 #endif 
 #if defined(BLUETOOTH_VERSION)
-    #define VERSION "1.0.6b"
+    #define VERSION "1.0.7b"
 #endif
 
 

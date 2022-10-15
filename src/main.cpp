@@ -70,6 +70,17 @@ uint32_t lastTimestamp =millis();
 float last_BT_temp = -273.0 ;
 bool take_temp  = true ;
 
+TaskHandle_t xHandle_indicator;
+/*
+     // Create a task, storing the handle.
+     xTaskCreate( vTaskCode, "NAME", STACK_SIZE, NULL, tskIDLE_PRIORITY, &xHandle );
+
+     // ...
+
+     // Use the handle to suspend the created task.
+     vTaskSuspend( xHandle );
+
+*/
 user_wifi_t  user_wifi = {" "," ",0.0,0.0} ;
 
 //object declare 
@@ -254,16 +265,20 @@ void checkLowPowerMode(float temp_in) {
         //Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
     if ((millis() - lastTimestamp ) > TIME_TO_SLEEP*1000  && abs(last_BT_temp - temp_in )<10 ) {//60s
-
-          // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
-            display.clearDisplay(); //disable OLED
-            delay(3000);
-            display.display();
             take_temp = true;
+         vTaskSuspend(xHandle_indicator); 
+          // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
+            //display.dim(true); //set OLED DIM
+            display.clearDisplay(); //disable OLED
+            display.display(); //disable OLE 
+
+
+            delay(1000);
+
         //set sleep mode 
         //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-        esp_deep_sleep_start();
-        // esp_deep_sleep(86400 * uS_TO_S_FACTOR); // sleep for 1days
+          esp_deep_sleep_start();
+         //esp_deep_sleep(6*3600 * uS_TO_S_FACTOR); // sleep for 1days
         
     }
 }
@@ -316,7 +331,7 @@ EEPROM.get( 0, user_wifi);
     ,   2048            // This stack size can be checked & adjusted by reading the Stack Highwater
     ,   NULL
     ,   2               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-    ,   NULL 
+    ,   &xHandle_indicator 
     ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
     );
 
