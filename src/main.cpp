@@ -36,6 +36,7 @@
 #include "ArduinoJson.h"
 
 #include "TC4_Indicator.h"
+#include "TC4_ThermalMeter.h"
 
 #include <EEPROM.h>
 

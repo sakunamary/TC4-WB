@@ -41,6 +41,8 @@ extern String   local_IP ;
 extern String   BT_EVENT;
 extern uint8_t  charging  ; 
 extern int      b_drop;  
+extern bool bAbnormalValue ;
+
 
 #define TASKINDICATOR_INDICATOR_INTERVEL      750    // Task re-entry intervel (ms)
 
@@ -124,7 +126,7 @@ String ver= VERSION ;
 
 //显示温度
 
-if (b_drop > 0)  {
+if (bAbnormalValue == true )  {
     display.invertDisplay(true);
 } else     display.invertDisplay(false);
 

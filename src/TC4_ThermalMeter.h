@@ -14,6 +14,10 @@
     That is, the measured temperature is avaraged from 4 times of MAX6675 temperature reading.
    
 */
+#ifndef __TC4_THERMALMETER_H__
+#define __TC4_THERMALMETER_H__
+
+
 
 #include <Arduino.h>
 #include "TC4.h"
@@ -31,7 +35,8 @@ float		ET_CurTemp = 0.0;
 bool		bReady = false;                             // flag to indicate temperature array whether is ready or not
 bool 		bUnit_C = true;                             // flag to indicate temperature unit from Artisan requested 
 bool		bAbnormalValue = false;                     // indicate temperature value is unexpect or not
-int         b_drop = 0;
+
+
 int thermoDO = 19;
 int thermoCLK = 5;
 int thermoCS_ET =16;
@@ -68,7 +73,7 @@ void TaskThermalMeter(void *pvParameters)
         // Read BT from MAX6675 thermal couple
         BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;
 
-	    if ( bReady )
+	    if ( bReady ) //bReady = false 
         {
             // Means, first round of temperature array is done,
             // The averaged temperyure is ready for reading  
@@ -80,20 +85,18 @@ void TaskThermalMeter(void *pvParameters)
             {
 	            // temperature is in-arrange, store it
 	    	    BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
-                b_drop =0 ;
 	        }
 	        else
             {
 	            // set abnormal flag
 	    	    bAbnormalValue = true;
-                b_drop++;
 	    	    // print ? with temperature value in newline
                 Serial.println(" ");
                 Serial.print(" ?");
                 Serial.println(BT_CurTemp);
 	        }
 	    }
-	    else
+	    else  //bReady = true
         {
 	   	    // just read current temperature
 	   	    BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
@@ -162,3 +165,8 @@ float averageTemperature ( float *pTemp )
 	avg = (avg + *pTemp)/2;
 	return avg;
 }
+
+
+
+
+#endif
