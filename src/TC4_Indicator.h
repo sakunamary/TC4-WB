@@ -53,7 +53,7 @@ void TaskIndicator(void *pvParameters)
     /* Variable Definition */
     (void) pvParameters;
     TickType_t xLastWakeTime;
-    const TickType_t xIntervel = TASKINDICATOR_INDICATOR_INTERVEL / portTICK_PERIOD_MS;
+    const TickType_t xIntervel = user_wifi.sampling_time / portTICK_PERIOD_MS;
 
 
  if(!display.begin(SSD1306_SWITCHCAPVCC,SCREEN_ADDRESS)) {
@@ -110,7 +110,7 @@ String ver= VERSION ;
 
             display.display();
             display.setFont();
-    vTaskDelay( TASKINDICATOR_INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
+    vTaskDelay(  user_wifi.sampling_time / portTICK_RATE_MS ); //dealy 1s showup
     }
 
     else {
@@ -193,7 +193,7 @@ if (bAbnormalValue == true )  {
     display.display();
 
 
-    vTaskDelay( TASKINDICATOR_INDICATOR_INTERVEL / portTICK_RATE_MS ); //dealy 1s showup
+    vTaskDelay(  user_wifi.sampling_time / portTICK_RATE_MS ); //dealy 1s showup
     }
   } 
 

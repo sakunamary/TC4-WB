@@ -42,6 +42,8 @@ int thermoCLK = 5;
 int thermoCS_ET =16;
 int thermoCS_BT = 17;
 
+
+
 // Create Variables and Object for Environment Temperature (ET) if exist
 MAX6675 thermocouple_ET(thermoCLK, thermoCS_ET, thermoDO);
 
@@ -57,7 +59,9 @@ void TaskThermalMeter(void *pvParameters)
     /* Variable Definition */
     (void) pvParameters;
     TickType_t xLastWakeTime;
-    const TickType_t xIntervel = THERMAL_READING_INTERVEL / portTICK_PERIOD_MS;
+
+
+    const TickType_t xIntervel = (user_wifi.sampling_time * 1000) / portTICK_PERIOD_MS;
 
     /* Task Setup and Initialize */
     // Initial the xLastWakeTime variable with the current time.

@@ -82,7 +82,7 @@ TaskHandle_t xHandle_indicator;
      vTaskSuspend( xHandle );
 
 */
-user_wifi_t  user_wifi = {" "," ",0.0,0.0} ;
+user_wifi_t  user_wifi = {" "," ",0.0,0.0,0.75,300} ;
 
 //object declare 
 AsyncWebServer server_OTA(80);
@@ -246,6 +246,12 @@ String processor(const String& var){
   }
     else if(var == "version"){
     return  VERSION;
+  } 
+  else if(var == "sampling_time") { //
+    return String(user_wifi.sampling_time) ; 
+  } 
+  else if (var == "sleeping_time") {
+    return String(user_wifi.sleeping_time);
   }
   return String();
 }
@@ -265,23 +271,26 @@ void checkLowPowerMode(float temp_in) {
         take_temp = false;
         //Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
      }
-    if ((millis() - lastTimestamp ) > TIME_TO_SLEEP*1000  && abs(last_BT_temp - temp_in )<10 ) {//60s
-            take_temp = true;
-         vTaskSuspend(xHandle_indicator); 
-          // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
-            //display.dim(true); //set OLED DIM
-            display.clearDisplay(); //disable OLED
-            display.display(); //disable OLE 
 
 
-            delay(1000);
+    if ((millis() - lastTimestamp ) > user_wifi.sleeping_time * 1000 )
+     {
+        if (abs(last_BT_temp - temp_in )<10 ) {//60s
+                take_temp = true;
+            vTaskSuspend(xHandle_indicator); 
+            // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
+                //display.dim(true); //set OLED DIM
+                display.clearDisplay(); //disable OLED
+                display.display(); //disable OLE 
+                delay(1000);
+            //set sleep mode 
+            esp_deep_sleep_start();
+        } else {
+                lastTimestamp = millis(); //update timestamp
 
-        //set sleep mode 
-        //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-          esp_deep_sleep_start();
-         //esp_deep_sleep(6*3600 * uS_TO_S_FACTOR); // sleep for 1days
-        
-    }
+     }
+     }
+
 }
 
 
@@ -320,10 +329,11 @@ void setup() {
 //set up eeprom data 
 EEPROM.begin(sizeof(user_wifi) );
 EEPROM.get( 0, user_wifi);
- /*
- btemp_fix_in = user_wifi.btemp_fix + 0.0 ; //fixbug make sure btemp_fix_in has value
- etemp_fix_in = user_wifi.etemp_fix + 0.0 ; //fixbug make sure etemp_fix_in has value
-*/
+
+//避免初始化和非法值的初始化。
+if (user_wifi.sampling_time <= 0.75 ) {user_wifi.sampling_time =0.75;  } 
+if (user_wifi.sleeping_time <=300 ) {user_wifi.sleeping_time = 300; }
+
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
     xTaskCreatePinnedToCore (
@@ -333,7 +343,7 @@ EEPROM.get( 0, user_wifi);
     ,   NULL
     ,   2               // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,   &xHandle_indicator 
-    ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
+    ,   0  // Running Core decided by FreeRTOS , let core1 run wifi and BT 
     );
 
   xTaskCreatePinnedToCore (
@@ -343,7 +353,7 @@ EEPROM.get( 0, user_wifi);
     ,   NULL
     ,   3               // Priority
     ,   NULL 
-    ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
+    ,   0  // Running Core decided by FreeRTOS,let core1 run wifi and BT 
     );
 
  xTaskCreatePinnedToCore (
@@ -353,7 +363,7 @@ EEPROM.get( 0, user_wifi);
     ,   NULL
     ,   1               // Priority, with 1 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,   NULL 
-    ,   tskNO_AFFINITY  // Running Core decided by FreeRTOS
+    ,   0  // Running Core decided by FreeRTOS,let core1 run wifi and BT 
     );
 
 //初始化网络服务
@@ -420,19 +430,33 @@ Serial.print("TC4-WB's IP:");
 
   server_OTA.on("/compens", HTTP_GET, [](AsyncWebServerRequest *request){
 //get value form webpage   
-    user_wifi.btemp_fix = request->getParam("Btemp_fix")->value().toFloat();
-    user_wifi.etemp_fix = request->getParam("Etemp_fix")->value().toFloat();
+   if (request->getParam("Btemp_fix")->value() !="") {
+        user_wifi.btemp_fix = request->getParam("Btemp_fix")->value().toFloat();
+   }
+    if (request->getParam("Etemp_fix")->value() !="" ) {
+        user_wifi.etemp_fix = request->getParam("Etemp_fix")->value().toFloat();
+    }
+//Svae EEPROM 
+    EEPROM.put(0, user_wifi);
+    EEPROM.commit(); 
 
+  });
+
+
+  server_OTA.on("/other", HTTP_GET, [](AsyncWebServerRequest *request){
+//get value form webpage    
+    if (request->getParam("sampling_time")->value() != "") {
+        user_wifi.sampling_time = request->getParam("sampling_time")->value().toFloat();
+    }
+    if (request->getParam("sleeping_time")->value() != ""){
+        user_wifi.sleeping_time = request->getParam("sleeping_time")->value().toInt() * 60; //input in MINUTES covernet to seconds
+    }
 //Svae EEPROM 
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
 
-/*
-     btemp_fix_in = user_wifi.btemp_fix ;
-    etemp_fix_in = user_wifi.etemp_fix ;
-*/
-
   });
+
 
 
   server_OTA.onNotFound(notFound); //404 page seems not necessary...
@@ -447,9 +471,10 @@ Serial.print("TC4-WB's IP:");
 
 }
 
+
+
+
 void loop()
-
-
 
 {
 #if defined(FULL_VERSION) ||defined(WIFI_VERSION)

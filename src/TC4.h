@@ -20,31 +20,44 @@
 #define BAUDRATE 57600  //serial port baudrate
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-//#define  WIFI_VERSION       //only wifi version 
-#define  BLUETOOTH_VERSION  //only bluetooth version
+#define  WIFI_VERSION       //only wifi version 
+//#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
-    #define VERSION "1.0.7f"
+    #define VERSION "1.0.8f"
 #endif    
 #if defined(WIFI_VERSION)
-    #define VERSION "1.0.7w"
+    #define VERSION "1.0.8w"
 #endif 
 #if defined(BLUETOOTH_VERSION)
-    #define VERSION "1.0.7b"
+    #define VERSION "1.0.8b"
 #endif
 
 
 
-//wiif 网页设置的参数
+// 网页设置的参数
  typedef struct eeprom_settings 
 {
   char ssid[60]; //增加到30个字符
   char password[60]; //增加到30个字符
   float  btemp_fix;
   float  etemp_fix;
+  double sampling_time;//采样时间 
+  int    sleeping_time ;
 } user_wifi_t;
 
 extern user_wifi_t  user_wifi ;
+
+//检测数据结构体定义
+/*
+typedef struct moudle_data 
+{
+float  ET_CurTemp;
+float  BT_CurTemp;
+} mod_data_t ;
+
+extern mod_data_t mod_data ;
+*/
 
 
 ////////////////////////////////////////////////////////////////
@@ -128,24 +141,39 @@ const char index_html[] PROGMEM = R"rawliteral(
             提示:输入空白即恢复AP模式直链模式
             </p>
             <br/>
-            <button type='submit'>Save WIFI</button>
+            <button type='submit'>SAVE WIFI INFO </button>
         </form>     
         <form action='/compens' method='get'>                
             <br/>
             <br/>
-            <h2 class=''>Thermo compensate SETUP <br/>电偶温度补偿设置</h2>
+            <h2 class=''>THERMO COMPENSATE SETUP <br/>电偶温度补偿设置</h2>
             <div class='form-floating'>
-            <label>Bean Temp/豆温 (current value: %bt_compens%) </label>
+            <label>Bean Temp/豆温 (current: %bt_compens%) </label>
             <input type='number' step = '0.01' max = '20' min='-20' class='form-control'  name='Btemp_fix'> 
             </div>
             <br/>
             <div class='form-floating'>
-            <label>Env  Temp/炉温 (current value:%et_compens%)</label>
+            <label>Env  Temp/炉温 (current:%et_compens%)</label>
             <input type='number' step = '0.01' max = '20' min='-20' class='form-control' name='Etemp_fix'> 
             </div>
             <br/>
+            <button type='submit'onclick="submitMessage()">SAVE</button>
+        </form> 
+        <form action='/other' method='get'>   
             <br/>
-            <button type='submit'onclick="submitMessage()">SAVE DATA</button>
+            <br/>
+            <div class='form-floating'>
+            <h2 class=''>OTHER SETTING <br/>杂项</h2>  
+            <label>Sampling 采样时间 (current: %sampling_time%) s</label>
+            <input type='number' step = '0.25' max = '4' min='0.75' class='form-control'  name='sampling_time'> 
+            </div>
+            <br/>
+            <div class='form-floating'>
+            <label>Sleeping 休眠 (current:%sleeping_time%) Mins</label>
+            <input type='number' step = '1' max = '30' min='5' class='form-control' name='sleeping_time'> 
+            </div>
+            <br/>
+            <button type='submit'onclick="submitMessage()">SAVE</button>
         </form> 
             <p>
             <a href='/update' target='_blank'>FIRMWARE UPDATE verison:%version%</a>

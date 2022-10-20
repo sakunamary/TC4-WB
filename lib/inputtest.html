@@ -1,8 +1,8 @@
-<!doctype html><html lang='en'>
+<!doctype html><html lang='cn'>
 <head>
 <script>
   function submitMessage() {
-    alert("Saved value");
+    alert("VALUE SAVED  数据已保存");
     setTimeout(function(){ document.location.reload(false); }, 500);
   }
 </script>
@@ -38,41 +38,56 @@
     <main class='form-signin'> 
         <form action='/get' method='get'>
             <h1 class=''>TC4-WB SETTING </h1>
-            <br/>
             <h2 class=''>WIFI SETUP </h2>
-            <br/>
             <div class='form-floating'>
-            <label>SSID NAME</label>
+            <label>SSID/WIFI名字</label>
             <input type='text' class='form-control' name='ssid'> 
             </div>
             <div class='form-floating'>
             <br/>
-            <label>Password</label>
+            <label>PASSWORD</label>
             <input type='password' class='form-control' name='password'>
             </div>
+            <p>NOTICE:INPUT NULL will set back to AP mode <br/>
+            提示:输入空白即恢复AP模式直链模式
+            </p>
             <br/>
-            <br/>
-            <button type='submit'>Save WIFI</button>
+            <button type='submit'>SAVE WIFI INFO </button>
         </form>     
         <form action='/compens' method='get'>                
             <br/>
             <br/>
-            <h2 class=''>Thermo compensate SETUP </h2>
+            <h2 class=''>THERMO COMPENSATE SETUP <br/>电偶温度补偿设置</h2>
             <div class='form-floating'>
-            <label>Bean Temp (current: %bt_compens%) </label>
-            <input type='number' class='form-control'  name='Btemp_fix'> 
+            <label>Bean Temp/豆温 (current: %bt_compens%) </label>
+            <input type='number' step = '0.01' max = '20' min='-20' class='form-control'  name='Btemp_fix'> 
             </div>
             <br/>
             <div class='form-floating'>
-            <label>Env Temp  (current:%et_compens%)</label>
-            <input type='number' class='form-control' name='Etemp_fix'> 
+            <label>Env  Temp/炉温 (current:%et_compens%)</label>
+            <input type='number' step = '0.01' max = '20' min='-20' class='form-control' name='Etemp_fix'> 
             </div>
             <br/>
+            <button type='submit'onclick="submitMessage()">SAVE</button>
+        </form> 
+        <form action='/other' method='get'>   
             <br/>
-            <button type='submit'onclick="submitMessage()">Save TEMP COMPENs</button>
+            <br/>
+            <div class='form-floating'>
+            <h2 class=''>OTHER SETTING <br/>杂项</h2>  
+            <label>Sampling 采样时间 (current: %sampling_time%) s</label>
+            <input type='number' step = '0.25' max = '4' min='0.75' class='form-control'  name='sampling_time'> 
+            </div>
+            <br/>
+            <div class='form-floating'>
+            <label>Sleeping 休眠 (current:%sleeping_time%) Mins</label>
+            <input type='number' step = '1' max = '30' min='5' class='form-control' name='sleeping_time'> 
+            </div>
+            <br/>
+            <button type='submit'onclick="submitMessage()">SAVE</button>
         </form> 
             <p>
-            <a href='/update' target='_blank'>FIRWARE UPDATE </a>
+            <a href='/update' target='_blank'>FIRMWARE UPDATE verison:%version%</a>
             </p>
             <br/>
     </main> 
