@@ -12,5 +12,7 @@
         "functional": "cpp",
         "*.tcc": "cpp",
         "system_error": "cpp"
-    }
+    },
+    "editor.fontFamily": "'Nimbus Sans', 'Nimbus Sans', Nimbus Sans",
+    "editor.fontSize": 16
 }

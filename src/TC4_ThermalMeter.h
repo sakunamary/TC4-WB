@@ -23,7 +23,7 @@
 #include "TC4.h"
 #include "max6675.h"
 
-#define THERMAL_READING_INTERVEL 			    750     // read MAX6675 value every 750 ms
+//#define THERMAL_READING_INTERVEL 			    750     // read MAX6675 value every 750 ms
 #define TEMPERATURE_ARRAY_LENGTH		        4	    // for averagging temperature purpose
 #define ABNORMAL_TEMPERATURE_DEGREE             5     // defin abnormal temperature value
 
@@ -73,8 +73,12 @@ void TaskThermalMeter(void *pvParameters)
         // Wait for the next cycle (intervel 750ms).
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
 
+
+
         // Perform task actions from here
         // Read BT from MAX6675 thermal couple
+if ()
+
         BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;
 
 	    if ( bReady ) //bReady = false 
