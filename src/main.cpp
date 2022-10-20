@@ -84,6 +84,10 @@ TaskHandle_t xHandle_indicator;
 */
 user_wifi_t  user_wifi = {" "," ",0.0,0.0,0.75,300} ;
 
+xSemaphoreHandle   xThermoMutex = NULL; 
+
+
+
 //object declare 
 AsyncWebServer server_OTA(80);
 //Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -296,6 +300,7 @@ void checkLowPowerMode(float temp_in) {
 
 void setup() {
   
+  xThermoMutex =  xSemaphoreCreateMutex();
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(BAUDRATE);
     while (!Serial) {
