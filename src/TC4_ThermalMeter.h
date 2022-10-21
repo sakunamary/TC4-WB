@@ -25,6 +25,8 @@
 #define TEMPERATURE_ARRAY_LENGTH 4    // for averagging temperature purpose
 #define ABNORMAL_TEMPERATURE_DEGREE 5 // defin abnormal temperature value
 
+
+
 float BT_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
 int BT_ArrayIndex = 0;                                // A pointer of temperature array
 float BT_CurTemp = 0.0;
