@@ -48,6 +48,7 @@
 
 extern user_wifi_t  user_wifi ;
 
+
 //检测数据结构体定义
 /*
 typedef struct moudle_data 
