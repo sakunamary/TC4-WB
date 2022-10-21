@@ -16,7 +16,6 @@
 
 
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP  450     /* Time ESP32 will go to sleep (in seconds) */
 #define BAUDRATE 57600  //serial port baudrate
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
@@ -42,23 +41,11 @@
   char password[60]; //增加到30个字符
   float  btemp_fix;
   float  etemp_fix;
-  double sampling_time;//采样时间 
-  int    sleeping_time ;
+  double sampling_time;//采样时间   单位：s
+  int    sleeping_time ;//休眠时间  单位：s
 } user_wifi_t;
 
 extern user_wifi_t  user_wifi ;
-
-
-//检测数据结构体定义
-/*
-typedef struct moudle_data 
-{
-float  ET_CurTemp;
-float  BT_CurTemp;
-} mod_data_t ;
-
-extern mod_data_t mod_data ;
-*/
 
 
 ////////////////////////////////////////////////////////////////

@@ -138,6 +138,11 @@ void TaskThermalMeter(void *pvParameters)
                     Serial.print(user_wifi.btemp_fix);
                     Serial.println(" ");
 #endif
+
+            // The ET is reference temperature, don't need averaging
+            // read ET from MAX6675 thermal couple
+            ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
+
                 }
             }
             else
@@ -145,6 +150,7 @@ void TaskThermalMeter(void *pvParameters)
                 // After bypass abnormal value, reset flag here
                 bAbnormalValue = false;
             }
+
             xSemaphoreGive(xThermoDataMutex);
         }
     }

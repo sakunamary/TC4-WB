@@ -253,7 +253,7 @@ String processor(const String &var)
     }
     else if (var == "sleeping_time")
     {
-        return String(user_wifi.sleeping_time);
+        return String(user_wifi.sleeping_time/60);
     }
     return String();
 }
@@ -275,9 +275,9 @@ void checkLowPowerMode(float temp_in)
         // Serial.printf("last_BT_temp is : %f ",BT_AvgTemp);
     }
 
-    if ((millis() - lastTimestamp) > user_wifi.sleeping_time * 1000)
+    if ((millis() - lastTimestamp) > (user_wifi.sleeping_time * 1000))
     {
-        if (abs(last_BT_temp - temp_in) < 10)
+        if (abs(last_BT_temp - temp_in) < 5)
         { // 60s
             take_temp = true;
             vTaskSuspend(xHandle_indicator);
@@ -301,6 +301,7 @@ void setup()
 
     xThermoDataMutex = xSemaphoreCreateMutex();
     xIndicatorDataMutex = xSemaphoreCreateMutex();
+
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(BAUDRATE);
     while (!Serial)
@@ -350,13 +351,13 @@ void setup()
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
     xTaskCreatePinnedToCore(
-        TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
+        TaskBatCheck, "bat_check" // 测量电池电源数据，每分钟测量一次
         ,
-        2048 // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
-        NULL, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+        NULL, 1 // Priority, with 1 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
-        &xHandle_indicator, 0 // Running Core decided by FreeRTOS , let core1 run wifi and BT
+        NULL, 0 // Running Core decided by FreeRTOS,let core1 run wifi and BT
     );
 
     xTaskCreatePinnedToCore(
@@ -370,14 +371,17 @@ void setup()
     );
 
     xTaskCreatePinnedToCore(
-        TaskBatCheck, "bat_check" // 测量电池电源数据，每分钟测量一次
+        TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
         ,
-        1024 // This stack size can be checked & adjusted by reading the Stack Highwater
+        2048 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
-        NULL, 1 // Priority, with 1 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+        NULL, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
-        NULL, 0 // Running Core decided by FreeRTOS,let core1 run wifi and BT
+        &xHandle_indicator, 0 // Running Core decided by FreeRTOS , let core1 run wifi and BT
     );
+
+
+
 
     //初始化网络服务
     WiFi.mode(WIFI_STA);
@@ -543,5 +547,9 @@ void loop()
     }
 #endif
 
+
     checkLowPowerMode(BT_AvgTemp); //测量是否进入睡眠模式
+
+
+
 }

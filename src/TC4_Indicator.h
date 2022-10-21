@@ -36,12 +36,12 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 SemaphoreHandle_t xIndicatorDataMutex = NULL;
 
-
 extern float BT_AvgTemp;
 extern float ET_CurTemp;
 extern String local_IP;
 extern String BT_EVENT;
 extern uint8_t charging;
+extern float volts;
 extern int b_drop;
 extern bool bAbnormalValue;
 
@@ -52,7 +52,7 @@ void TaskIndicator(void *pvParameters)
     /* Variable Definition */
     (void)pvParameters;
     TickType_t xLastWakeTime;
-    const TickType_t xIntervel = user_wifi.sampling_time / portTICK_PERIOD_MS;
+    const TickType_t xIntervel = (user_wifi.sampling_time * 1000) / portTICK_PERIOD_MS;
 
     if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
     {
@@ -131,9 +131,10 @@ void TaskIndicator(void *pvParameters)
 
             display.setCursor(20 + 16, 0 + 2);
 
-            if (xSemaphoreTake(xIndicatorDataMutex, xIntervel) == pdPASS) //Mutex to make the data more clean 
+            if (xSemaphoreTake(xIndicatorDataMutex, xIntervel) == pdPASS) // Mutex to make the data more clean
             {
                 display.print(BT_AvgTemp);
+                display.setCursor(20 + 16, 18 + 2);
                 display.print(ET_CurTemp);
             }
             xSemaphoreGive(xIndicatorDataMutex);
@@ -143,9 +144,7 @@ void TaskIndicator(void *pvParameters)
 
             display.setCursor(2 + 16, 18 + 2);
             display.print(F("ET:"));
-            display.setCursor(20 + 16, 18 + 2);
 
-            // display.print(ET_CurTemp);
             display.setCursor(62 + 16, 18 + 2);
             display.println(F("C"));
 
@@ -180,23 +179,32 @@ void TaskIndicator(void *pvParameters)
 #endif
 
             //显示电池电量情况
-            if (charging >= 85)
+            if (charging >= 75)
             {
-                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, BAT_100, 16, 14, WHITE);
+                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11, BAT_100, 16, 12, WHITE);
             }
             else if (charging >= 55)
             {
-                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, BAT_75, 16, 14, WHITE);
+                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11, BAT_75, 16, 12, WHITE);
             }
             else if (charging >= 35)
             {
-                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, BAT_50, 16, 14, WHITE);
+                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11, BAT_50, 16, 12, WHITE);
+            }
+            else if (charging >= 15)
+            {
+                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11, BAT_25, 16, 12, WHITE);
             }
             else
             {
-                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, BAT_25, 16, 14, WHITE);
+                display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11, BAT_0, 16, 12, WHITE);
             }
-
+/*
+            display.setCursor(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11 - 24);
+            display.print(charging);
+            display.setCursor(SCREEN_WIDTH - 17-15, SCREEN_HEIGHT - 11 - 36);
+            display.print(volts);
+*/
             display.display();
 
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
