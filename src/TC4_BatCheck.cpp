@@ -22,7 +22,7 @@
 
 Battery18650Stats battery(ADC_PIN);
 
-uint8_t charging = 10;
+uint8_t charging;
 float volts;
 
 void TaskBatCheck(void *pvParameters)
