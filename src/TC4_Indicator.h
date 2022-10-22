@@ -199,12 +199,12 @@ void TaskIndicator(void *pvParameters)
             {
                 display.drawBitmap(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11, BAT_0, 16, 12, WHITE);
             }
-            /*
+  /*
                         display.setCursor(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 11 - 24);
                         display.print(charging);
                         display.setCursor(SCREEN_WIDTH - 17-15, SCREEN_HEIGHT - 11 - 36);
                         display.print(volts);
-            */
+    */                  
                         display.display();
 
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
