@@ -357,7 +357,7 @@ void setup()
         ,
         NULL, 1 // Priority, with 1 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
-        NULL, 0 // Running Core decided by FreeRTOS,let core1 run wifi and BT
+        NULL, 1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
 
     xTaskCreatePinnedToCore(
@@ -367,17 +367,17 @@ void setup()
         ,
         NULL, 3 // Priority
         ,
-        NULL, 0 // Running Core decided by FreeRTOS,let core1 run wifi and BT
+        NULL, 0 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
 
     xTaskCreatePinnedToCore(
         TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
         ,
-        2048 // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024*6 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
         NULL, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
-        &xHandle_indicator, 0 // Running Core decided by FreeRTOS , let core1 run wifi and BT
+        &xHandle_indicator, 1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
     );
 
 

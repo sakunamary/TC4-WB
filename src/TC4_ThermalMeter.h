@@ -23,7 +23,7 @@
 
 //#define THERMAL_READING_INTERVEL 			    750     // read MAX6675 value every 750 ms
 #define TEMPERATURE_ARRAY_LENGTH 4    // for averagging temperature purpose
-#define ABNORMAL_TEMPERATURE_DEGREE 5 // defin abnormal temperature value
+#define ABNORMAL_TEMPERATURE_DEGREE 30 // defin abnormal temperature value
 
 
 
