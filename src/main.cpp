@@ -339,14 +339,22 @@ void setup()
     EEPROM.get(0, user_wifi);
 
     //避免初始化和非法值的初始化。
-    if (user_wifi.sampling_time <= 0.75)
+    if (user_wifi.sampling_time <= 0.75)  || (user_wifi.sampling_time >=  4) 
     {
         user_wifi.sampling_time = 0.75;
+        EEPROM.put(0, user_wifi);
+        EEPROM.commit();
     }
     if (user_wifi.sleeping_time <= 300)
     {
         user_wifi.sleeping_time = 300;
+      EEPROM.put(0, user_wifi);
+      EEPROM.commit();
     }
+
+
+
+
 
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
@@ -357,7 +365,9 @@ void setup()
         ,
         NULL, 1 // Priority, with 1 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
-        NULL, 1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
+        NULL, 
+
+        1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
 
     xTaskCreatePinnedToCore(

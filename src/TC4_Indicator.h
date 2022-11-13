@@ -109,7 +109,6 @@ void TaskIndicator(void *pvParameters)
 
         else
         {
-            display.clearDisplay();
             display.setTextColor(SSD1306_WHITE);
             display.setTextSize(1);
 

@@ -49,6 +49,7 @@ void TaskBatCheck(void *pvParameters)
         Serial.print(F("Pwr_level %: "));
         charging = battery.getBatteryChargeLevel();
         volts = battery.getBatteryVolts();
+        
         Serial.println(charging);
     }
 }
