@@ -339,7 +339,7 @@ void setup()
     EEPROM.get(0, user_wifi);
 
     //避免初始化和非法值的初始化。
-    if (user_wifi.sampling_time <= 0.75)  || (user_wifi.sampling_time >=  4) 
+    if (user_wifi.sampling_time <= 0.75 || user_wifi.sampling_time >=  4) 
     {
         user_wifi.sampling_time = 0.75;
         EEPROM.put(0, user_wifi);
