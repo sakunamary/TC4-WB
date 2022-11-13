@@ -79,7 +79,7 @@ TaskHandle_t xHandle_indicator;
      vTaskSuspend( xHandle );
 
 */
-user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300};
+user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 1.5, 300};
 
 // object declare
 AsyncWebServer server_OTA(80);

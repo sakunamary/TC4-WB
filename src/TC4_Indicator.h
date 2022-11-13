@@ -109,6 +109,7 @@ void TaskIndicator(void *pvParameters)
 
         else
         {
+            display.clearDisplay();
             display.setTextColor(SSD1306_WHITE);
             display.setTextSize(1);
 
@@ -206,7 +207,6 @@ void TaskIndicator(void *pvParameters)
                         display.print(volts);
     */                  
                         display.display();
-
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
         }
     }
