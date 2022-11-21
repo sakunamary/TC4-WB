@@ -19,8 +19,8 @@
 #define BAUDRATE 57600  //serial port baudrate
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-//#define  WIFI_VERSION       //only wifi version 
-#define  BLUETOOTH_VERSION  //only bluetooth version
+#define  WIFI_VERSION       //only wifi version 
+//#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
     #define VERSION "1.1.0f"
@@ -43,6 +43,7 @@
   float  etemp_fix;
   double sampling_time;//采样时间   单位：s
   int    sleeping_time ;//休眠时间  单位：s
+  bool   Init_mode ; //是否初始化模式
 } user_wifi_t;
 
 extern user_wifi_t  user_wifi ;

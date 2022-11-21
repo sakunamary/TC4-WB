@@ -79,7 +79,7 @@ TaskHandle_t xHandle_indicator;
      vTaskSuspend( xHandle );
 
 */
-user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 1.5, 300};
+user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
 
 // object declare
 AsyncWebServer server_OTA(80);
@@ -267,6 +267,18 @@ void notFound(AsyncWebServerRequest *request)
 void checkLowPowerMode(float temp_in)
 {
 
+// for debug 
+//  user_wifi.Init_mode = true ;
+//   user_wifi.sampling_time = 0.25; 
+//   user_wifi.sleeping_time = 100;
+//   EEPROM.put(0, user_wifi);
+//    EEPROM.commit();
+
+//    Serial.println("reset function done!");
+//
+
+
+
     if (take_temp)
     {
         last_BT_temp = temp_in;   //设置第一次温度戳
@@ -334,26 +346,28 @@ void setup()
 
 #endif
 
+
+
+
     // set up eeprom data
     EEPROM.begin(sizeof(user_wifi));
     EEPROM.get(0, user_wifi);
 
-    //避免初始化和非法值的初始化。
-    if (user_wifi.sampling_time < 0.75 || user_wifi.sampling_time >  4) 
-    {
-        user_wifi.sampling_time = 0.75;
-        EEPROM.put(0, user_wifi);
-        EEPROM.commit();
-    }
-    if (user_wifi.sleeping_time < 5*60 || user_wifi.sleeping_time > 30*60)
-    {
-        user_wifi.sleeping_time = 300;
-      EEPROM.put(0, user_wifi);
-      EEPROM.commit();
-    }
+
+if (user_wifi.Init_mode) 
+{
+    user_wifi.Init_mode = false ;
+    user_wifi.sampling_time = 0.75; 
+    user_wifi.sleeping_time = 300;
+    EEPROM.put(0, user_wifi);
+    EEPROM.commit();
+}
 
 
-
+    Serial.printf("Init samplint_time:%f",user_wifi.sampling_time);
+    Serial.println("");
+    Serial.printf("Init sleeping_time:%d",user_wifi.sleeping_time);
+    Serial.println("");
 
 
     /*---------- Task Definition ---------------------*/

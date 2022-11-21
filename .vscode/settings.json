@@ -11,7 +11,11 @@
         "initializer_list": "cpp",
         "functional": "cpp",
         "*.tcc": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "memory": "cpp",
+        "istream": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     },
     "editor.fontFamily": "'Nimbus Sans', 'Nimbus Sans', Nimbus Sans",
     "editor.fontSize": 16,
