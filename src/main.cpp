@@ -180,6 +180,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
         // char* entspricht String
         String command = doc["command"].as<char *>();
+        WebSerial.print("websocket get msg : ");
+        WebSerial.println(command);
 
         // Serial_debug.printf("Command received: %s \n",command);
 
@@ -214,6 +216,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         size_t len = serializeJson(doc, buffer); // serialize to buffer
 
         webSocket.sendTXT(num, buffer);
+        WebSerial.print("websocket send back: ");
+        WebSerial.println(buffer);
 
         // send message to client
         // webSocket.sendTXT(num, "message here");
@@ -334,7 +338,7 @@ void setup()
         ; // wait for serial port ready
     }
 
-    Serial.printf("\nTC4-WB v VERSION STARTING...\n");
+    Serial.printf("\nTC4-WB  STARTING...\n");
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
     // Initial Bluetooth Serial Port Profile (SPP)
@@ -378,23 +382,22 @@ if (user_wifi.Init_mode)
     xTaskCreatePinnedToCore(
         TaskBatCheck, "bat_check" // 测量电池电源数据，每分钟测量一次
         ,
-        1024 // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024*2 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
         NULL, 1 // Priority, with 1 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
-        NULL, 
-
-        1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
+        NULL,  1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
 
     xTaskCreatePinnedToCore(
         TaskThermalMeter, "ThermalMeter" // MAX6675 thermal task to read Bean-Temperature (BT)
         ,
-        2048 // Stack size
+        1024*4 // Stack size
         ,
         NULL, 3 // Priority
         ,
-        NULL, 0 // Running Core decided by FreeRTOS,let core0 run wifi and BT
+        NULL, 
+        0 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
 
     xTaskCreatePinnedToCore(
@@ -504,7 +507,7 @@ if (user_wifi.Init_mode)
 
 
     WebSerial.begin(&server_OTA);
-   // WebSerial.msgCallback(recvMsg);
+    WebSerial.msgCallback(recvMsg);
 
     AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
 
@@ -512,9 +515,6 @@ if (user_wifi.Init_mode)
     server_OTA.begin();
    // WebSerial.println("HTTP server started");
     Serial.println("HTTP server started");
-
-
-    // lastTimestamp = millis(); //init lastTimestamp
 }
 
 void loop()

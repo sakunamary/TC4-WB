@@ -20,7 +20,7 @@
 #include <Arduino.h>
 #include "TC4.h"
 #include "max6675.h"
-#include "WebSerial.h"
+//#include "WebSerial.h"
 
 #define TEMPERATURE_ARRAY_LENGTH 4    // for averagging temperature purpose
 #define ABNORMAL_TEMPERATURE_DEGREE 100 // defin abnormal temperature value
@@ -102,9 +102,9 @@ void TaskThermalMeter(void *pvParameters)
                     Serial.print(" ?");
                     Serial.println(BT_CurTemp);
 
-                    WebSerial.println(" ");
-                    WebSerial.print(" ?");
-                    WebSerial.println(BT_CurTemp);
+                    //WebSerial.println(" ");
+                    //WebSerial.print(" ?");
+                   // WebSerial.println(BT_CurTemp);
                 }
 
 
@@ -125,15 +125,15 @@ void TaskThermalMeter(void *pvParameters)
                     Serial.println(" ");
                     Serial.print("Temperature: ");
 
-                    WebSerial.println(" ");
-                    WebSerial.print("Temperature: ");
+                    //WebSerial.println(" ");
+                    //WebSerial.print("Temperature: ");
                 }
 
                 Serial.print(" ");
                 Serial.print(BT_CurTemp);
 
-                WebSerial.print(" ");
-                WebSerial.print(BT_CurTemp);
+                ///WebSerial.print(" ");
+                //WebSerial.print(BT_CurTemp);
 
 
                 BT_ArrayIndex++;
@@ -153,12 +153,12 @@ void TaskThermalMeter(void *pvParameters)
                     Serial.print(user_wifi.btemp_fix);
                     Serial.println(" ");
 
-                    WebSerial.println(" ");
-                    WebSerial.print("Average: ");
-                    WebSerial.print(BT_AvgTemp);
-                    WebSerial.print("BT compensate:");
-                    WebSerial.print(user_wifi.btemp_fix);
-                    WebSerial.println(" ");
+                    //WebSerial.println(" ");
+                   // WebSerial.print("Average: ");
+                   // WebSerial.print(BT_AvgTemp);
+                   // WebSerial.print("BT compensate:");
+                   // WebSerial.print(user_wifi.btemp_fix);
+                   // WebSerial.println(" ");
 
             // The ET is reference temperature, don't need averaging
             // read ET from MAX6675 thermal couple
