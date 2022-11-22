@@ -27,7 +27,7 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
 #include "BluetoothSerial.h"
-#include  <WebSerial.h>
+#include "WebSerial.h"
 
 // Thermo lib for MX6675
 #include "max6675.h"
@@ -365,13 +365,6 @@ if (user_wifi.Init_mode)
     EEPROM.commit();
 }
 
-
-    Serial.printf("Init samplint_time:%f",user_wifi.sampling_time);
-    Serial.println("");
-    Serial.printf("Init sleeping_time:%d",user_wifi.sleeping_time);
-    Serial.println("");
-
-
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
     xTaskCreatePinnedToCore(
@@ -430,7 +423,7 @@ if (user_wifi.Init_mode)
         // show AP's IP
     }
 
-    WebSerail.begin(&server);
+    
 
     Serial.print("TC4-WB's IP:");
 
@@ -506,7 +499,11 @@ if (user_wifi.Init_mode)
     server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
     AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
+    // WebSerial is accessible at "<IP Address>/webserial" in browser
+  //  WebSerial.begin(&server);
 
+
+    WebSerail.begin(&server_OTA);
     server_OTA.begin();
 
     Serial.println("HTTP server started");
