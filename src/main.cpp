@@ -368,11 +368,17 @@ void setup()
     EEPROM.get(0, user_wifi);
 
 
+   // user_wifi.Init_mode = true ;
+
 if (user_wifi.Init_mode) 
 {
     user_wifi.Init_mode = false ;
     user_wifi.sampling_time = 0.75; 
     user_wifi.sleeping_time = 300;
+    user_wifi.btemp_fix = 0;
+    user_wifi.etemp_fix = 0;
+    
+
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
 }
@@ -382,7 +388,7 @@ if (user_wifi.Init_mode)
     xTaskCreatePinnedToCore(
         TaskBatCheck, "bat_check" // 测量电池电源数据，每分钟测量一次
         ,
-        1024*2 // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
         NULL, 1 // Priority, with 1 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
@@ -392,12 +398,12 @@ if (user_wifi.Init_mode)
     xTaskCreatePinnedToCore(
         TaskThermalMeter, "ThermalMeter" // MAX6675 thermal task to read Bean-Temperature (BT)
         ,
-        1024*4 // Stack size
+        1024 // Stack size
         ,
         NULL, 3 // Priority
         ,
         NULL, 
-        0 // Running Core decided by FreeRTOS,let core0 run wifi and BT
+        1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
 
     xTaskCreatePinnedToCore(
@@ -425,7 +431,7 @@ if (user_wifi.Init_mode)
 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            WiFi.softAP("TC4_THRMO", "TC4_THRMO"); // defualt IP address :192.168.4.1 password min 8 digis
+            WiFi.softAP("TC4_THRMO", "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
         // show AP's IP

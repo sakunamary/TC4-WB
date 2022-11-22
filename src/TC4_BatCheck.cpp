@@ -15,7 +15,7 @@
 
 #include <Arduino.h>
 #include "TC4.h"
-#include "WebSerial.h"
+//#include "WebSerial.h"
 
 #include <Battery18650Stats.h>
 
@@ -52,9 +52,9 @@ void TaskBatCheck(void *pvParameters)
         volts = battery.getBatteryVolts();
         
         Serial.println(charging);
-        WebSerial.print("battery volts: ");
-        WebSerial.println(volts);
-        WebSerial.print("battery %: ");
-        WebSerial.println(charging);
+    //WebSerial.print("battery volts: ");
+     //  WebSerial.println(volts);
+     //  WebSerial.print("battery %: ");
+       // WebSerial.println(charging);
     }
 }
