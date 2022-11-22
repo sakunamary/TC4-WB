@@ -20,8 +20,8 @@
 #include <Arduino.h>
 #include "TC4.h"
 #include "max6675.h"
+#include "WebSerial.h"
 
-//#define THERMAL_READING_INTERVEL 			    750     // read MAX6675 value every 750 ms
 #define TEMPERATURE_ARRAY_LENGTH 4    // for averagging temperature purpose
 #define ABNORMAL_TEMPERATURE_DEGREE 100 // defin abnormal temperature value
 
@@ -101,28 +101,41 @@ void TaskThermalMeter(void *pvParameters)
                     Serial.println(" ");
                     Serial.print(" ?");
                     Serial.println(BT_CurTemp);
+
+                    WebSerial.println(" ");
+                    WebSerial.print(" ?");
+                    WebSerial.println(BT_CurTemp);
                 }
-            }
+
+
+                }
+        }
             else // bReady = true
-            {
+        {
                 // just read current temperature
                 BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
-            }
+        }
 
             if (!bAbnormalValue)
-            {
+        {
                 // Normal temperature will into this loop
-#if PRINT_TEAMPERATURE_EACH_READING
                 // print MAX6675 reading value on serial monitor
                 if (BT_ArrayIndex == 0)
                 {
                     Serial.println(" ");
                     Serial.print("Temperature: ");
+
+                    WebSerial.println(" ");
+                    WebSerial.print("Temperature: ");
                 }
 
                 Serial.print(" ");
                 Serial.print(BT_CurTemp);
-#endif
+
+                WebSerial.print(" ");
+                WebSerial.print(BT_CurTemp);
+
+
                 BT_ArrayIndex++;
                 if (BT_ArrayIndex >= TEMPERATURE_ARRAY_LENGTH)
                 {
@@ -132,31 +145,37 @@ void TaskThermalMeter(void *pvParameters)
                     {
                         bReady = true;
                     }
-#if PRINT_TEAMPERATURE_EACH_READING
+
                     Serial.println(" ");
                     Serial.print("Average: ");
                     Serial.print(BT_AvgTemp);
                     Serial.print("BT compensate:");
                     Serial.print(user_wifi.btemp_fix);
                     Serial.println(" ");
-#endif
+
+                    WebSerial.println(" ");
+                    WebSerial.print("Average: ");
+                    WebSerial.print(BT_AvgTemp);
+                    WebSerial.print("BT compensate:");
+                    WebSerial.print(user_wifi.btemp_fix);
+                    WebSerial.println(" ");
 
             // The ET is reference temperature, don't need averaging
             // read ET from MAX6675 thermal couple
             ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
 
                 }
-            }
+        }
             else
-            {
+        {
                 // After bypass abnormal value, reset flag here
                 bAbnormalValue = false;
-            }
+        }
 
             xSemaphoreGive(xThermoDataMutex);
-        }
     }
 }
+
 
 // A function to average temperature array
 float averageTemperature(float *pTemp)

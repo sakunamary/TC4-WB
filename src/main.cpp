@@ -85,7 +85,7 @@ user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
 
 // object declare
 AsyncWebServer server_OTA(80);
-// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
 // WebSocketsServer declare
@@ -279,8 +279,6 @@ void checkLowPowerMode(float temp_in)
 //    Serial.println("reset function done!");
 //
 
-
-
     if (take_temp)
     {
         last_BT_temp = temp_in;   //设置第一次温度戳
@@ -309,6 +307,19 @@ void checkLowPowerMode(float temp_in)
         }
     }
 }
+
+
+
+/* Message callback of WebSerial */
+void recvMsg(uint8_t *data, size_t len){
+  WebSerial.println("Received Data...");
+  String d = "";
+  for(int i=0; i < len; i++){
+    d += char(data[i]);
+  }
+  WebSerial.println(d);
+}
+
 
 void setup()
 {
@@ -347,9 +358,6 @@ void setup()
     }
 
 #endif
-
-
-
 
     // set up eeprom data
     EEPROM.begin(sizeof(user_wifi));
@@ -399,10 +407,7 @@ if (user_wifi.Init_mode)
         &xHandle_indicator, 1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
     );
 
-
-
-
-    //初始化网络服务
+  //初始化网络服务
     WiFi.mode(WIFI_STA);
     WiFi.begin(user_wifi.ssid, user_wifi.password);
 
@@ -423,7 +428,6 @@ if (user_wifi.Init_mode)
         // show AP's IP
     }
 
-    
 
     Serial.print("TC4-WB's IP:");
 
@@ -498,15 +502,17 @@ if (user_wifi.Init_mode)
 
     server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
+
+    WebSerial.begin(&server_OTA);
+   // WebSerial.msgCallback(recvMsg);
+
     AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
-    // WebSerial is accessible at "<IP Address>/webserial" in browser
-  //  WebSerial.begin(&server);
 
 
-    WebSerail.begin(&server_OTA);
     server_OTA.begin();
-
+   // WebSerial.println("HTTP server started");
     Serial.println("HTTP server started");
+
 
     // lastTimestamp = millis(); //init lastTimestamp
 }
@@ -536,6 +542,14 @@ void loop()
             BTSerial.print(",");
             BTSerial.print(BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
             BTSerial.println(",0.00,0.00"); // channel 3,4 : A vaule of zero indicates the channel is inactive
+
+            WebSerial.print(ET_CurTemp); // channel 1 : Environment Temperature (ET);
+            WebSerial.print(",");
+            WebSerial.print(BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
+            WebSerial.println(",0.00,0.00"); // channel 3,4 : A vaule of zero indicates the channel is inactive
+
+
+
         }
         /* UNIT command ONLY PROVIED C NOT F */
         /*
@@ -556,18 +570,22 @@ void loop()
         {
             BTSerial.print("#OK");
             Serial.println("Artisan \"CHAN\"");
+            WebSerial.println("Artisan \"CHAN\"");
+
         }
         /* FILT command */
         else if (msg.indexOf("FILT;") == 0)
         {
             BTSerial.print("#OK");
             Serial.println("Artisan \"FILT\"");
+            WebSerial.println("Artisan \"FILT\"");
         }
         /* Unhandle command */
         else
         {
             Serial.println("Artisan Unhandle command");
             Serial.println(msg);
+            WebSerial.println(msg);
         }
     }
 #endif
