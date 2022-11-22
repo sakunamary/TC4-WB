@@ -104,6 +104,8 @@ void TaskIndicator(void *pvParameters)
 
             display.display();
             display.setFont();
+            
+
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
         }
 
