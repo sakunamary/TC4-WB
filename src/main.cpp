@@ -27,6 +27,8 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
 #include "BluetoothSerial.h"
+#include  <WebSerial.h>
+
 // Thermo lib for MX6675
 #include "max6675.h"
 // Websockets Lib by links2004
@@ -427,6 +429,8 @@ if (user_wifi.Init_mode)
         }
         // show AP's IP
     }
+
+    WebSerail.begin(&server);
 
     Serial.print("TC4-WB's IP:");
 
