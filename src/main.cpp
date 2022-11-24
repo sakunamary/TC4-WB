@@ -299,7 +299,8 @@ void checkLowPowerMode(float temp_in)
             vTaskSuspend(xHandle_indicator);
             // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
             // display.dim(true); //set OLED DIM
-            display.clearDisplay(); // disable OLED
+            display.clear(); // disable OLED
+            
             display.display();      // disable OLE
             delay(1000);
             // set sleep mode
