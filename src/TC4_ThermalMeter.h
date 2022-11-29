@@ -75,7 +75,7 @@ void TaskThermalMeter(void *pvParameters)
         {
             // The ET is reference temperature, don't need averaging
             // read ET from MAX6675 thermal couple
-            ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
+            //ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
             // Serial.printf("ET:%f ,ET compensate:%f",ET_CurTemp,etemp_fix_in);
             // Serial.println("");
             BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;

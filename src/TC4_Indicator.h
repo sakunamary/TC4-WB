@@ -80,8 +80,6 @@ void TaskIndicator(void *pvParameters)
    display.display();
 
 
-
-
 /*
 
     // Show initial display buffer contents on the screen --
