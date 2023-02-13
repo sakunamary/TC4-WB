@@ -4,7 +4,7 @@
 1) it can get **two channels**  temperture data by MX6675 For BT channel, data updates every 750ms and ET channel data updates every 3s .
 
 2) The temperture datas can transmit with Artisan by wifi-websocket and/or bluetooth-TC4:
-3) 
+
 **base on the version you chioced .**
 
 **full version :**  Both wifi-websocket and bluetooth ,so you can monitor the data on PC and cellphone both 
@@ -33,9 +33,9 @@
 
 **bluetooth version**：只有蓝牙数据输出方式
 
-3）所有版本都可以通过OTA方式在本地wifi环境下升级固件
+3) 所有版本都可以通过OTA方式在本地wifi环境下升级固件
 
-4）包含了温度补偿自定义的方式
+4) 包含了温度补偿自定义的方式
 
 
 ### 公测版说明
