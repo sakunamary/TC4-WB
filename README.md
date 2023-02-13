@@ -4,10 +4,10 @@
 1) it can get **two channels**  temperture data by MX6675 For BT channel, data updates every 750ms and ET channel data updates every 3s .
 <br>
 2) The temperture datas can transmit with Artisan by wifi-websocket and/or bluetooth-TC4:<br>
-      **base on the version you chioced .**<br>
-       **full version** : Both wifi-websocket and bluetooth ,so you can monitor the data on PC and cellphone both .<br>
-       **wifi version** : Only wifi-websocket,so you can monitor data on PC on tablet by wifi.<br>
-       **bluetooth version** : Only bluetooth ,you can monitor data by bluetooth .
+**base on the version you chioced .**<br>
+**full version** : Both wifi-websocket and bluetooth ,so you can monitor the data on PC and cellphone both .<br>
+**wifi version** : Only wifi-websocket,so you can monitor data on PC on tablet by wifi.<br>
+**bluetooth version** : Only bluetooth ,you can monitor data by bluetooth .
 <br>      
 3) ALL version can use OTA to update firmware by wifi .
 <br>
