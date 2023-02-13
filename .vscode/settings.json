@@ -19,5 +19,23 @@
     },
     "editor.fontFamily": "'Nimbus Sans', 'Nimbus Sans', Nimbus Sans",
     "editor.fontSize": 16,
-    "workbench.fontAliasing": "auto"
+    "workbench.fontAliasing": "auto",
+    "MicroPython.executeButton": [
+        {
+            "text": "▶",
+            "tooltip": "运行",
+            "alignment": "left",
+            "command": "extension.executeFile",
+            "priority": 3.5
+        }
+    ],
+    "MicroPython.syncButton": [
+        {
+            "text": "$(sync)",
+            "tooltip": "同步",
+            "alignment": "left",
+            "command": "extension.execute",
+            "priority": 4
+        }
+    ]
 }
