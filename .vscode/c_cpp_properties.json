@@ -481,7 +481,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60105",
+                "PLATFORMIO=60106",
                 "ARDUINO_NodeMCU_32S",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",

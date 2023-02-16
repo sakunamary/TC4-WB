@@ -24,6 +24,7 @@
 
 #define TEMPERATURE_ARRAY_LENGTH 4    // for averagging temperature purpose
 #define ABNORMAL_TEMPERATURE_DEGREE 100 // defin abnormal temperature value
+#define ROR_INDEX                6    //for ROR counting number
 
 
 
@@ -40,6 +41,8 @@ int thermoDO = 19;
 int thermoCLK = 5;
 int thermoCS_ET = 16;
 int thermoCS_BT = 17;
+
+int ROR_idx = 3;
 
 SemaphoreHandle_t xThermoDataMutex = NULL;
 
