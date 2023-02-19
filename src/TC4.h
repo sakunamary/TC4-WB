@@ -23,13 +23,13 @@
 //#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
-    #define VERSION "1.1.3f"
+    #define VERSION "1.1.4f"
 #endif    
 #if defined(WIFI_VERSION)
-    #define VERSION "1.1.3w"
+    #define VERSION "1.1.4w"
 #endif 
 #if defined(BLUETOOTH_VERSION)
-    #define VERSION "1.1.3b"
+    #define VERSION "1.1.4b"
 #endif
 
 
