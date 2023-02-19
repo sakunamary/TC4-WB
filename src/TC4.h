@@ -18,8 +18,8 @@
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
 #define BAUDRATE 57600  //serial port baudrate
 
-#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-//#define  WIFI_VERSION       //only wifi version 
+//#define  FULL_VERSION         //full function version ,with wifi and bluetooth
+ #define  WIFI_VERSION       //only wifi version 
 //#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)

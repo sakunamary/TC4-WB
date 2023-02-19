@@ -188,7 +188,7 @@ float ROR_Temp(float Temp_in)
   float Temp_last ;
   float ROR_out;
    
-   ROR_out = ((Temp_in-Temp_last) / user_wifi.sampling_time )* (60/user_wifi.sampling_time);
+   ROR_out = ((Temp_in-Temp_last) / user_wifi.sampling_time );
    Temp_last;
    return ROR_out;
 
