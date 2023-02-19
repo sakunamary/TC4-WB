@@ -40,6 +40,8 @@ SemaphoreHandle_t xIndicatorDataMutex = NULL;
 
 extern float BT_AvgTemp;
 extern float ET_CurTemp;
+extern float BT_ROR;
+extern float ET_ROR;
 extern String local_IP;
 extern String BT_EVENT;
 extern uint8_t charging;
@@ -80,18 +82,6 @@ void TaskIndicator(void *pvParameters)
    display.display();
 
 
-/*
-
-    // Show initial display buffer contents on the screen --
-    display.clearDisplay();
-    display.setTextColor(SSD1306_WHITE);
-    display.setTextSize(1);
-    display.setCursor(86, 0 + 2);
-
-    display.print(ver);
-    display.drawBitmap(17, 19, logo_bmp, 94, 45, WHITE);
-    display.display();
-*/
     vTaskDelay(3000 / portTICK_RATE_MS); // dealy 3s showup
 
     // Initial the xLastWakeTime variable with the current time.
@@ -103,39 +93,22 @@ void TaskIndicator(void *pvParameters)
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
         display.clear();
 
-/*
-        display.clearDisplay();
-        display.setTextColor(SSD1306_WHITE);
-        display.setTextSize(1);
-*/
         if (charging <= 5)
         {
            
             display.clear();
             display.setFont(ArialMT_Plain_16);
-            // display.drawLine(64,0,64,64,WHITE);
-            // display.drawLine(0,32,128,32,WHITE);
-            
             display.drawString(48, 14-4 + 4,"LOW");
-            
             display.drawString(28, 30-4 + 4,"BATTERY");
             display.drawRect(19, 7, 90, 45);
-
             display.display();
-
-            display.setFont(ArialMT_Plain_10);
-    
-
+            display.setFont(ArialMT_Plain_10);   
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
         }
 
         else
         {
            
-           /*
-            display.setTextColor(SSD1306_WHITE);
-            display.setTextSize(1);
-           */
             //显示logo
 
             display.drawXbm(0, 0, 16, 16, BEAN_LOGO);
@@ -148,14 +121,14 @@ void TaskIndicator(void *pvParameters)
             display.invertDisplay();
             }
             else
-                       display.normalDisplay();
-                //display.invertDisplay(false);
-
+                display.normalDisplay();
 
             if (xSemaphoreTake(xIndicatorDataMutex, xIntervel) == pdPASS) // Mutex to make the data more clean
             {
                 display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",BT_AvgTemp);
                 display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",ET_CurTemp);
+                display.drawStringf(128-32, 0 + 2,buffer,"dB:%4.2f",BT_ROR);
+                display.drawStringf(128-32, 18 + 2,buffer,"dE:%4.2f",ET_ROR);
             }
             xSemaphoreGive(xIndicatorDataMutex);
 
@@ -203,7 +176,7 @@ void TaskIndicator(void *pvParameters)
                 display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_0);
             }
               
-                        display.display();
+            display.display();
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
         }
     }
