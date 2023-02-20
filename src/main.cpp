@@ -519,8 +519,8 @@ if (user_wifi.Init_mode)
     server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
 
-   WebSerial.begin(&server_OTA);
-    WebSerial.msgCallback(recvMsg);
+   //WebSerial.begin(&server_OTA);
+    //WebSerial.msgCallback(recvMsg);
 
     AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
 

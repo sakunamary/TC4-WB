@@ -127,8 +127,8 @@ void TaskIndicator(void *pvParameters)
             {
                 display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",BT_AvgTemp);
                 display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",ET_CurTemp);
-                display.drawStringf(128-42, 0 + 2,buffer,"dB:%4.2f",BT_ROR);
-                display.drawStringf(128-42, 18 + 2,buffer,"dE:%4.2f",ET_ROR);
+                display.drawStringf(128-48, 0 + 2,buffer,"dB:%4.2f",BT_ROR);
+                display.drawStringf(128-48, 18 + 2,buffer,"dE:%4.2f",ET_ROR);
             }
             xSemaphoreGive(xIndicatorDataMutex);
 
