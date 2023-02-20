@@ -187,9 +187,21 @@ float ROR_Temp(float Temp_in)
 {
   float Temp_last ;
   float ROR_out;
-   
-   ROR_out = ((Temp_in-Temp_last) / user_wifi.sampling_time );
-   Temp_last;
+
+  if (Temp_in == 0) 
+  {
+    Temp_last= Temp_in;
+  }
+   else {
+   ROR_out = (Temp_in-Temp_last );
+   Temp_last= Temp_in;
+   WebSerial.print("Temp_in: ");
+   WebSerial.println(Temp_in);
+   WebSerial.print("Temp_last: ");
+   WebSerial.println(Temp_last);
+   }
+
+
    return ROR_out;
 
 }
