@@ -59,14 +59,7 @@ void TaskIndicator(void *pvParameters)
     (void)pvParameters;
     TickType_t xLastWakeTime;
     const TickType_t xIntervel = (user_wifi.sampling_time * 1000) / portTICK_PERIOD_MS;
-/*
-    if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
-    {
-        Serial.println(F("SSD1306 allocation failed"));
-        for (;;)
-            ; // Don't proceed, loop forever
-    }
-*/
+
     String ver = VERSION;
 
    display.init();

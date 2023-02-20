@@ -31,9 +31,7 @@ int BT_ArrayIndex = 0;                                // A pointer of temperatur
 float BT_CurTemp = 0.0;
 float BT_AvgTemp = 0.0;
 float ET_CurTemp = 0.0;
-float Temp_last ;
-float BT_ROR = 0.0;
-float ET_ROR = 0.0;
+
 bool bReady = false;         // flag to indicate temperature array whether is ready or not
 bool bUnit_C = true;         // flag to indicate temperature unit from Artisan requested
 bool bAbnormalValue = false; // indicate temperature value is unexpect or not
@@ -53,7 +51,7 @@ MAX6675 thermocouple_ET(thermoCLK, thermoCS_ET, thermoDO);
 MAX6675 thermocouple_BT(thermoCLK, thermoCS_BT, thermoDO);
 
 float averageTemperature(float *pTemp);
-float ROR_Temp(float Temp_in,float count_time);
+
 
 
 void TaskThermalMeter(void *pvParameters)
@@ -90,7 +88,7 @@ void TaskThermalMeter(void *pvParameters)
                 // Means, first round of temperature array is done,
                 // The averaged temperyure is ready for reading
                 BT_AvgTemp = averageTemperature(&BT_TempArray[0]);
-                BT_ROR = ROR_Temp(BT_AvgTemp , user_wifi.sampling_time );
+    
 
                 // Filter out abnormal temperature-up only (Bypass temperature-down)
                 // Because in "CHARGE" period, the temperature-down may large than 10 degree
@@ -153,7 +151,7 @@ void TaskThermalMeter(void *pvParameters)
             // The ET is reference temperature, don't need averaging
             // read ET from MAX6675 thermal couple
             ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
-            ET_ROR = ROR_Temp(ET_CurTemp , (user_wifi.sampling_time * TEMPERATURE_ARRAY_LENGTH) );
+
 
                 }
             }
@@ -184,23 +182,6 @@ float averageTemperature(float *pTemp)
 }
 
 
-float ROR_Temp(float Temp_in , float count_time)
-{
-
-  float ROR_out;
-
-  if (Temp_in == 0) 
-  {
-    Temp_last= Temp_in;
-  }
-   else {
-   ROR_out = (Temp_in-Temp_last ) * (60/count_time);
-   Temp_last= Temp_in;
-   }
-
-   return ROR_out;
-
-}
 
 
 #endif
