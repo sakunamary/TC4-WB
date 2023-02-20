@@ -41,6 +41,7 @@
 
 #include "TC4_Indicator.h"
 #include "TC4_ThermalMeter.h"
+#include "TC4_RoR.h"
 
 #include <EEPROM.h>
 
@@ -422,6 +423,16 @@ if (user_wifi.Init_mode)
         1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
     );
 
+    xTaskCreatePinnedToCore(
+        TaskROR, "IRORTask" // 计算ROR的任务
+        ,
+        1024 // This stack size can be checked & adjusted by reading the Stack Highwater
+        ,
+        NULL, 3 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+        ,
+        NULL, 
+        1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
+    );
 
   //初始化网络服务
     WiFi.mode(WIFI_STA);
