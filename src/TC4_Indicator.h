@@ -49,7 +49,7 @@ extern float volts;
 extern int b_drop;
 extern bool bAbnormalValue;
 
-static char buffer[32];
+static char buffer[48];
 
 //#define TASKINDICATOR_INDICATOR_INTERVEL 750 // Task re-entry intervel (ms)
 
