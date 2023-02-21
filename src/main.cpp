@@ -424,7 +424,7 @@ if (user_wifi.Init_mode)
     );
 
     xTaskCreatePinnedToCore(
-        TaskROR, "IRORTask" // 计算ROR的任务
+        TaskROR, "RORTask" // 计算ROR的任务
         ,
         1024 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,

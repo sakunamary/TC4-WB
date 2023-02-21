@@ -74,14 +74,18 @@ void TaskThermalMeter(void *pvParameters)
 
         // Perform task actions from here
         // Read BT from MAX6675 thermal couple
-        if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
-        {//lock the  mutex
+
             // The ET is reference temperature, don't need averaging
             // read ET from MAX6675 thermal couple
             //ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
             // Serial.printf("ET:%f ,ET compensate:%f",ET_CurTemp,etemp_fix_in);
             // Serial.println("");
-            BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
+
+                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
+                {//lock the  mutex            
+                    BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
+                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+                }            
 
             if (bReady) // bReady = false -- a new loop
             {
@@ -147,12 +151,13 @@ void TaskThermalMeter(void *pvParameters)
                     Serial.print(BT_ROR);
                     Serial.println(" ");
 
-
-            // The ET is reference temperature, don't need averaging
-            // read ET from MAX6675 thermal couple
-            ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
-
-
+                    if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
+                    {
+                        ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
+                        xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+                    }
+                        // The ET is reference temperature, don't need averaging
+                        // read ET from MAX6675 thermal couple
                 }
             }
             else //bAbnormalValue
@@ -160,9 +165,6 @@ void TaskThermalMeter(void *pvParameters)
                     // After bypass abnormal value, reset flag here
                     bAbnormalValue = false;
                 }
-
-            xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-        }//lock the  mutex
     }//for loop
 } //function 
 
