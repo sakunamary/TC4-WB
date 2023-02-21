@@ -37,6 +37,7 @@
 SSD1306Wire display(SCREEN_ADDRESS, SDA, SCL);   // ADDRESS, SDA, SCL  -  SDA and SCL usually populate automatically based on your board's pins_arduino.h e.g. https://github.com/esp8266/Arduino/blob/master/variants/nodemcu/pins_arduino.h
 
 //SemaphoreHandle_t xIndicatorDataMutex = NULL;
+//SemaphoreHandle_t xThermoDataMutex = NULL;
 
 extern float BT_AvgTemp;
 extern float ET_CurTemp;
