@@ -36,7 +36,7 @@
 //Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 SSD1306Wire display(SCREEN_ADDRESS, SDA, SCL);   // ADDRESS, SDA, SCL  -  SDA and SCL usually populate automatically based on your board's pins_arduino.h e.g. https://github.com/esp8266/Arduino/blob/master/variants/nodemcu/pins_arduino.h
 
-SemaphoreHandle_t xIndicatorDataMutex = NULL;
+//SemaphoreHandle_t xIndicatorDataMutex = NULL;
 
 extern float BT_AvgTemp;
 extern float ET_CurTemp;
@@ -116,14 +116,16 @@ void TaskIndicator(void *pvParameters)
             else
                 display.normalDisplay();
 
-            if (xSemaphoreTake(xIndicatorDataMutex, xIntervel) == pdPASS) // Mutex to make the data more clean
+            if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) // Mutex to make the data more clean
             {
                 display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",BT_AvgTemp);
                 display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",ET_CurTemp);
+                xSemaphoreGive(xThermoDataMutex);
+                }
                 display.drawStringf(128-48, 0 + 2,buffer,"dB:%4.2f",BT_ROR);
                 display.drawStringf(128-48, 18 + 2,buffer,"dE:%4.2f",ET_ROR);
-            }
-            xSemaphoreGive(xIndicatorDataMutex);
+           
+
 
 #if defined(FULL_VERSION) // full version
             //显示IP地址和蓝牙状态
