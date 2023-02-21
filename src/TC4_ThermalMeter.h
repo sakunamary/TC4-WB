@@ -42,7 +42,7 @@ int thermoCS_ET = 16;
 int thermoCS_BT = 17;
 
 
-//SemaphoreHandle_t xThermoDataMutex = NULL;
+SemaphoreHandle_t xThermoDataMutex = NULL;
 
 // Create Variables and Object for Environment Temperature (ET) if exist
 MAX6675 thermocouple_ET(thermoCLK, thermoCS_ET, thermoDO);
@@ -146,9 +146,6 @@ void TaskThermalMeter(void *pvParameters)
                     Serial.print(BT_AvgTemp);
                     Serial.print("BT compensate:");
                     Serial.print(user_wifi.btemp_fix);
-                    Serial.println(" ");
-                    Serial.print("BT ROR:");
-                    Serial.print(BT_ROR);
                     Serial.println(" ");
 
                     if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 

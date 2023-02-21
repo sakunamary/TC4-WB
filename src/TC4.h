@@ -49,7 +49,7 @@
 extern user_wifi_t  user_wifi ;
 
 
-SemaphoreHandle_t xThermoDataMutex = NULL;
+//SemaphoreHandle_t xThermoDataMutex = NULL;
 
 ////////////////////////////////////////////////////////////////
 //

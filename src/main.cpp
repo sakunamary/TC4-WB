@@ -39,8 +39,8 @@
 // JSON for Artisan Websocket implementation
 #include "ArduinoJson.h"
 
-#include "TC4_Indicator.h"
 #include "TC4_ThermalMeter.h"
+#include "TC4_Indicator.h"
 #include "TC4_RoR.h"
 
 #include <EEPROM.h>
@@ -73,8 +73,6 @@ float last_BT_temp = -273.0;
 bool take_temp = true;
 
 TaskHandle_t xHandle_indicator;
-
-
 
 /*
      // Create a task, storing the handle.
