@@ -335,7 +335,7 @@ void setup()
 {
 
     xThermoDataMutex = xSemaphoreCreateMutex();
-    xIndicatorDataMutex = xSemaphoreCreateMutex();
+    //xIndicatorDataMutex = xSemaphoreCreateMutex();
 
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(BAUDRATE);

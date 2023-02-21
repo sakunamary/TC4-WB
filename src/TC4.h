@@ -49,6 +49,8 @@
 extern user_wifi_t  user_wifi ;
 
 
+SemaphoreHandle_t xThermoDataMutex = NULL;
+
 ////////////////////////////////////////////////////////////////
 //
 //  web page raw data 
