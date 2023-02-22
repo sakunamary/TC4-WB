@@ -52,7 +52,10 @@ extern user_wifi_t  user_wifi ;
 
 typedef struct temp_data
 {
-    
+    float BT_AvgTemp ; 
+    float ET_CurTemp ;
+    float BT_ROR ;
+    float ET_ROR ;
 }
 
 
