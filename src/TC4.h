@@ -56,8 +56,9 @@ typedef struct temp_data
     float ET_CurTemp ;
     float BT_ROR ;
     float ET_ROR ;
-}
+} temperature_data_t;
 
+extern temperature_data_t temperature_data;
 
 
 

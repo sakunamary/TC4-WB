@@ -4,13 +4,13 @@
 
 #include "TC4.h"
 
-extern float BT_AvgTemp;
-extern float ET_CurTemp;
+//extern float BT_AvgTemp;
+//extern float ET_CurTemp;
 float ROR_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
 
 float Temp_last ;
-float BT_ROR = 0.0;
-float ET_ROR = 0.0;
+//float BT_ROR = 0.0;
+//float ET_ROR = 0.0;
 
 float ROR_Temp(float Temp_in,float count_time);
 
@@ -31,8 +31,8 @@ void TaskROR(void *pvParameters)
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
        if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
        {
-        BT_ROR = ROR_Temp(BT_AvgTemp  ,4);
-        ET_ROR = ROR_Temp(ET_CurTemp ,4);
+        temperature_data.BT_ROR = ROR_Temp(temperature_data.BT_AvgTemp  ,4);
+        temperature_data.ET_ROR = ROR_Temp(temperature_data.ET_CurTemp ,4);
         xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
        }
 
