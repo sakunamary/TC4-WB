@@ -48,6 +48,15 @@
 
 extern user_wifi_t  user_wifi ;
 
+//温度数据数组
+
+typedef struct temp_data
+{
+    
+}
+
+
+
 
 //SemaphoreHandle_t xThermoDataMutex = NULL;
 
