@@ -29,8 +29,8 @@
 float BT_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
 int BT_ArrayIndex = 0;                                // A pointer of temperature array
 float BT_CurTemp = 0.0;
-float BT_AvgTemp = 0.0;
-float ET_CurTemp = 0.0;
+//float BT_AvgTemp = 0.0;
+//float ET_CurTemp = 0.0;
 
 bool bReady = false;         // flag to indicate temperature array whether is ready or not
 bool bUnit_C = true;         // flag to indicate temperature unit from Artisan requested
@@ -81,35 +81,37 @@ void TaskThermalMeter(void *pvParameters)
             // Serial.printf("ET:%f ,ET compensate:%f",ET_CurTemp,etemp_fix_in);
             // Serial.println("");
 
-                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
-                {//lock the  mutex            
-                    BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
-                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-                }            
+     
+            BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
 
             if (bReady) // bReady = false -- a new loop
             {
                 // Means, first round of temperature array is done,
                 // The averaged temperyure is ready for reading
-                BT_AvgTemp = averageTemperature(&BT_TempArray[0]);
-    
 
+                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
+                {//lock the  mutex       
+                temperature_data.BT_AvgTemp  = averageTemperature(&BT_TempArray[0]);
                 // Filter out abnormal temperature-up only (Bypass temperature-down)
                 // Because in "CHARGE" period, the temperature-down may large than 10 degree
-                if (BT_CurTemp < (BT_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE))
-                    {
-                    // temperature is in-arrange, store it
-                    BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
-                    }
-                else
-                    {
-                    // set abnormal flag
-                    bAbnormalValue = true;
-                    // print ? with temperature value in newline
-                    Serial.println(" ");
-                    Serial.print(" ?");
-                    Serial.println(BT_CurTemp);
-                    }
+                        if (BT_CurTemp < (temperature_data.BT_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE))
+                            {
+                            // temperature is in-arrange, store it
+                            BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
+                            }
+                        else
+                            {
+                                // set abnormal flag
+                                bAbnormalValue = true;
+                                // print ? with temperature value in newline
+                                Serial.println(" ");
+                                Serial.print(" ?");
+                                Serial.println(BT_CurTemp);
+                            }
+
+                        xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+                }          
+
             }
         
             else // bReady = true
@@ -143,14 +145,14 @@ void TaskThermalMeter(void *pvParameters)
 
                     Serial.println(" ");
                     Serial.print("Average: ");
-                    Serial.print(BT_AvgTemp);
+                    Serial.print(temperature_data.BT_AvgTemp);
                     Serial.print("BT compensate:");
                     Serial.print(user_wifi.btemp_fix);
                     Serial.println(" ");
 
                     if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
                     {
-                        ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
+                        temperature_data.ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
                         xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
                     }
                         // The ET is reference temperature, don't need averaging

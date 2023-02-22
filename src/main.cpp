@@ -63,8 +63,8 @@ void notFound(AsyncWebServerRequest *request);                                //
 String processor(const String &var);                                          // webpage function
 
 // define variable
-extern float BT_AvgTemp;
-extern float ET_CurTemp;
+//extern float BT_AvgTemp;
+//extern float ET_CurTemp;
 
 String BT_EVENT;
 String local_IP;
@@ -85,6 +85,7 @@ TaskHandle_t xHandle_indicator;
 
 */
 user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
+temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
 
 // object declare
 AsyncWebServer server_OTA(80);
@@ -196,21 +197,21 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         if (command == "getBT")
         {
             root["id"] = ln_id;
-            data["BT"] = BT_AvgTemp;
+            data["BT"] = temperature_data.BT_AvgTemp;
             // Serial_debug.printf("getBT created BT: %4.2f \n",cmd_M1.TC1);
         }
         else if (command == "getET")
         {
             root["id"] = ln_id;
-            data["ET"] = ET_CurTemp;
+            data["ET"] = temperature_data.ET_CurTemp;
             // Serial_debug.printf("getET created ET: %4.2f \n",cmd_M1.TC2);
         }
 
         else if (command == "getData")
         {
             root["id"] = ln_id;
-            data["BT"] = BT_AvgTemp;
-            data["ET"] = ET_CurTemp;
+            data["BT"] = temperature_data.BT_AvgTemp;
+            data["ET"] = temperature_data.ET_CurTemp;
 
             Serial.println("getData");
         }
@@ -560,14 +561,14 @@ void loop()
         /* READ command */
         if (msg.indexOf("READ") == 0)
         {                               // READ command
-            BTSerial.print(ET_CurTemp); // channel 1 : Environment Temperature (ET);
+            BTSerial.print(temperature_data.ET_CurTemp); // channel 1 : Environment Temperature (ET);
             BTSerial.print(",");
-            BTSerial.print(BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
+            BTSerial.print(temperature_data.BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
             BTSerial.println(",0.00,0.00"); // channel 3,4 : A vaule of zero indicates the channel is inactive
 
-            WebSerial.print(ET_CurTemp); // channel 1 : Environment Temperature (ET);
+            WebSerial.print(temperature_data.ET_CurTemp); // channel 1 : Environment Temperature (ET);
             WebSerial.print(",");
-            WebSerial.print(BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
+            WebSerial.print(temperature_data.BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
             WebSerial.println(",0.00,0.00"); // channel 3,4 : A vaule of zero indicates the channel is inactive
 
 
@@ -613,7 +614,7 @@ void loop()
 #endif
 
 
-    checkLowPowerMode(BT_AvgTemp); //测量是否进入睡眠模式
+    checkLowPowerMode(temperature_data.BT_AvgTemp); //测量是否进入睡眠模式
 
 
 
