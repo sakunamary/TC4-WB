@@ -13,6 +13,7 @@ float Temp_last ;
 //float BT_ROR = 0.0;
 //float ET_ROR = 0.0;
 int ArrayIndex = 0;
+
 float ROR_Temp(float Temp_in,float count_time);
 
 void TaskROR(void *pvParameters)
