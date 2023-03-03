@@ -85,7 +85,7 @@ TaskHandle_t xHandle_indicator;
 
 */
 user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
-temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
+temperature_data_t temperature_data= {0.0,0.0,2.0,3.0};
 
 // object declare
 AsyncWebServer server_OTA(80);
@@ -425,7 +425,7 @@ if (user_wifi.Init_mode)
     xTaskCreatePinnedToCore(
         TaskROR, "RORTask" // 计算ROR的任务
         ,
-        1024 // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024 * 3  // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
         NULL, 3 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
@@ -529,8 +529,8 @@ if (user_wifi.Init_mode)
     server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
 
-   //WebSerial.begin(&server_OTA);
-    //WebSerial.msgCallback(recvMsg);
+  // WebSerial.begin(&server_OTA);
+   //WebSerial.msgCallback(recvMsg);
 
     AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
 
