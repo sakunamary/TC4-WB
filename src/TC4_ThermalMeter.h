@@ -27,8 +27,10 @@
 
 
 float BT_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
+float ET_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
 int BT_ArrayIndex = 0;                                // A pointer of temperature array
 float BT_CurTemp = 0.0;
+float ET_CurTemp = 0.0;
 
 
 bool bReady = false;         // flag to indicate temperature array whether is ready or not
@@ -82,6 +84,7 @@ void TaskThermalMeter(void *pvParameters)
 
      
             BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
+            ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
 
             if (bReady) // bReady = false -- a new loop
             {
@@ -90,26 +93,26 @@ void TaskThermalMeter(void *pvParameters)
 
                 if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
                 {//lock the  mutex       
-                temperature_data.BT_AvgTemp  = averageTemperature(&BT_TempArray[0]);
+                        temperature_data.BT_AvgTemp  = averageTemperature(&BT_TempArray[0]);
+                        temperature_data.ET_AvgTemp  = averageTemperature(&ET_TempArray[0]);
+                        xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+                }   
                 // Filter out abnormal temperature-up only (Bypass temperature-down)
                 // Because in "CHARGE" period, the temperature-down may large than 10 degree
-                        if (BT_CurTemp < (temperature_data.BT_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE))
+                if (BT_CurTemp < (temperature_data.BT_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE) 
+                && ET_CurTemp < (temperature_data.ET_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE) 
+                )
                             {
                             // temperature is in-arrange, store it
                             BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
+                            ET_TempArray[BT_ArrayIndex] = ET_CurTemp;
+                            
                             }
                         else
                             {
                                 // set abnormal flag
                                 bAbnormalValue = true;
-                                // print ? with temperature value in newline
-                                Serial.println(" ");
-                                Serial.print(" ?");
-                                Serial.println(BT_CurTemp);
                             }
-
-                        xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-                }          
 
             }
         
@@ -117,20 +120,13 @@ void TaskThermalMeter(void *pvParameters)
             {   
                  // just read current temperature
                  BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
+                 ET_TempArray[BT_ArrayIndex] = ET_CurTemp;
             }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (!bAbnormalValue)
             {
                 // Normal temperature will into this loop
                 // print MAX6675 reading value on serial monitor
-                if (BT_ArrayIndex == 0)
-                {
-                    Serial.println(" ");
-                    Serial.print("Temperature: ");
-                }
-
-                Serial.print(" ");
-                Serial.print(BT_CurTemp);
 
                 BT_ArrayIndex++;
                 if (BT_ArrayIndex >= TEMPERATURE_ARRAY_LENGTH)
@@ -142,29 +138,16 @@ void TaskThermalMeter(void *pvParameters)
                         bReady = true;
                     }
 
-                    Serial.println(" ");
-                    Serial.print("Average: ");
-                    Serial.print(temperature_data.BT_AvgTemp);
-                    Serial.print("BT compensate:");
-                    Serial.print(user_wifi.btemp_fix);
-                    Serial.println(" ");
-
-                    if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
-                    {
-                        temperature_data.ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
-                        xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
                     }
-                        // The ET is reference temperature, don't need averaging
-                        // read ET from MAX6675 thermal couple
                 }
-            }
             else //bAbnormalValue
                 {
                     // After bypass abnormal value, reset flag here
                     bAbnormalValue = false;
                 }
-    }//for loop
-} //function 
+    } 
+}//function 
+
 
 
 // A function to average temperature array

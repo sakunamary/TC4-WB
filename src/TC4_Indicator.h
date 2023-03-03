@@ -39,10 +39,10 @@ SSD1306Wire display(SCREEN_ADDRESS, SDA, SCL);   // ADDRESS, SDA, SCL  -  SDA an
 //SemaphoreHandle_t xIndicatorDataMutex = NULL;
 //SemaphoreHandle_t xThermoDataMutex = NULL;
 
-extern float BT_AvgTemp;
-extern float ET_CurTemp;
-extern float BT_ROR;
-extern float ET_ROR;
+// extern float BT_AvgTemp;
+// extern float ET_CurTemp;
+// extern float BT_ROR;
+// extern float ET_ROR;
 extern String local_IP;
 extern String BT_EVENT;
 extern uint8_t charging;
@@ -120,7 +120,7 @@ void TaskIndicator(void *pvParameters)
             if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) // Mutex to make the data more clean
             {
                 display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",temperature_data.BT_AvgTemp);
-                display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",temperature_data.ET_CurTemp);
+                display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",temperature_data.ET_AvgTemp);
                 display.drawStringf(128-48, 0 + 2,buffer,"dB:%4.2f",temperature_data.BT_ROR);
                 display.drawStringf(128-48, 18 + 2,buffer,"dE:%4.2f",temperature_data.ET_ROR);
                 xSemaphoreGive(xThermoDataMutex);
