@@ -85,7 +85,7 @@ void TaskThermalMeter(void *pvParameters)
      
             BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
             ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
-
+     vTaskDelay(100);
             if (bReady) // bReady = false -- a new loop
             {
                 // Means, first round of temperature array is done,
