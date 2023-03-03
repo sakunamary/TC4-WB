@@ -53,7 +53,7 @@
 extern void TaskIndicator(void *pvParameters);
 extern void TaskThermalMeter(void *pvParameters);
 extern void TaskBatCheck(void *pvParameters);
-
+extern void TaskROR(void *pvParameters);
 
 // define other functions
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
@@ -85,7 +85,7 @@ TaskHandle_t xHandle_indicator;
 
 */
 user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
-temperature_data_t temperature_data= {0.0,0.0,2.0,3.0};
+temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
 
 // object declare
 AsyncWebServer server_OTA(80);
@@ -203,7 +203,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         else if (command == "getET")
         {
             root["id"] = ln_id;
-            data["ET"] = temperature_data.ET_CurTemp;
+            data["ET"] = temperature_data.ET_AvgTemp;
             // Serial_debug.printf("getET created ET: %4.2f \n",cmd_M1.TC2);
         }
 
@@ -211,7 +211,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         {
             root["id"] = ln_id;
             data["BT"] = temperature_data.BT_AvgTemp;
-            data["ET"] = temperature_data.ET_CurTemp;
+            data["ET"] = temperature_data.ET_AvgTemp;
 
             Serial.println("getData");
         }
