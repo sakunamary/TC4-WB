@@ -26,9 +26,9 @@ void TaskROR(void *pvParameters)
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
 
    
-        //读取数据，并移位
+        //读取数据，并移位温度数组
          while (j <= TEMPERATURE_ROR_LENGTH){
-            if (j==TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
+            if (j == TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
                 if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
                  {
                    BT_ROR_TempArray[j] = temperature_data.BT_AvgTemp ;
@@ -36,7 +36,7 @@ void TaskROR(void *pvParameters)
                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
                     }
                     j=1;
-                    break;
+                    //break;
                 }else { //如果不是数据第一位就移动位置
                     BT_ROR_TempArray[j] = BT_ROR_TempArray[j-1];
                     ET_ROR_TempArray[j] = ET_ROR_TempArray[j-1];
