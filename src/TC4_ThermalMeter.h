@@ -21,7 +21,7 @@
 #include "TC4.h"
 #include "max6675.h"
 
-#define TEMPERATURE_ARRAY_LENGTH 4    // for averagging temperature purpose
+
 #define ABNORMAL_TEMPERATURE_DEGREE 100 // defin abnormal temperature value
 
 
@@ -29,8 +29,7 @@
 float BT_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
 int BT_ArrayIndex = 0;                                // A pointer of temperature array
 float BT_CurTemp = 0.0;
-//float BT_AvgTemp = 0.0;
-//float ET_CurTemp = 0.0;
+
 
 bool bReady = false;         // flag to indicate temperature array whether is ready or not
 bool bUnit_C = true;         // flag to indicate temperature unit from Artisan requested
