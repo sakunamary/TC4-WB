@@ -425,7 +425,7 @@ if (user_wifi.Init_mode)
     xTaskCreatePinnedToCore(
         TaskROR, "RORTask" // 计算ROR的任务
         ,
-        1024 * 3  // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024 * 6  // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
         NULL, 3 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
