@@ -35,11 +35,17 @@ void TaskROR(void *pvParameters)
                    ET_ROR_TempArray[j] = temperature_data.ET_AvgTemp ;
                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
                     }
+                    Serial.print("ET array 15:");
+                    Serial.println(ET_ROR_TempArray[j] );
                     j=1;
-                    //break;
+                    break;
                 }else { //如果不是数据第一位就移动位置
                     BT_ROR_TempArray[j] = BT_ROR_TempArray[j-1];
                     ET_ROR_TempArray[j] = ET_ROR_TempArray[j-1];
+                     Serial.printf("BT array %d:",j);
+                    Serial.println(BT_ROR_TempArray[j] );
+                     Serial.printf("ET array %d:",j);
+                    Serial.println(ET_ROR_TempArray[j] );
                 }
                 j++;
          }
@@ -47,10 +53,10 @@ void TaskROR(void *pvParameters)
         if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
             {
                 temperature_data.BT_ROR = ROR(BT_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * 2;
+                
                 temperature_data.ET_ROR = ROR(ET_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * 2;
                 xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
             }
-
     }
 }
 
