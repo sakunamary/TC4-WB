@@ -367,7 +367,7 @@ void setup()
     }
 
 #endif
-
+    Serial.printf("\nRead data from EEPROM...\n");
     // set up eeprom data
     EEPROM.begin(sizeof(user_wifi));
     EEPROM.get(0, user_wifi);
@@ -387,7 +387,7 @@ if (user_wifi.Init_mode)
     EEPROM.put(0, user_wifi);
     EEPROM.commit();
 }
-
+    Serial.printf("\nStart Task...\n");
     /*---------- Task Definition ---------------------*/
     // Setup tasks to run independently.
     xTaskCreatePinnedToCore(
@@ -399,7 +399,7 @@ if (user_wifi.Init_mode)
         ,
         NULL,  1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
-
+    Serial.printf("\nbat_check...\n");
     xTaskCreatePinnedToCore(
         TaskThermalMeter, "ThermalMeter" // MAX6675 thermal task to read Bean-Temperature (BT)
         ,
@@ -410,7 +410,7 @@ if (user_wifi.Init_mode)
         NULL, 
         1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
-
+    Serial.printf("\nThermalMeter...\n");
     xTaskCreatePinnedToCore(
         TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
         ,
@@ -421,18 +421,20 @@ if (user_wifi.Init_mode)
         &xHandle_indicator, 
         1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
     );
-
+    Serial.printf("\nOLED...\n");
     xTaskCreatePinnedToCore(
         TaskROR, "RORTask" // 计算ROR的任务
         ,
-        1024 * 6  // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024 * 8 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
         NULL, 3 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
         NULL, 
         1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
-    );
-
+    );   
+     Serial.printf("\nROR ...\n");
+     Serial.printf("\nStart Wifi ...\n");
+     
   //初始化网络服务
     WiFi.mode(WIFI_STA);
     WiFi.begin(user_wifi.ssid, user_wifi.password);
@@ -442,8 +444,9 @@ if (user_wifi.Init_mode)
     {
 
         delay(1000);
+        Serial.println("wifi not ready");
 
-        if (tries++ > 5)
+        if (tries++ > 10)
         {
 
             // Serial_debug.println("WiFi.mode(AP):");

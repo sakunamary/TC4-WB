@@ -97,6 +97,7 @@ void TaskThermalMeter(void *pvParameters)
                         temperature_data.ET_AvgTemp  = averageTemperature(&ET_TempArray[0]);
                         xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
                 }   
+
                 // Filter out abnormal temperature-up only (Bypass temperature-down)
                 // Because in "CHARGE" period, the temperature-down may large than 10 degree
                 if (BT_CurTemp < (temperature_data.BT_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE) 
@@ -106,7 +107,6 @@ void TaskThermalMeter(void *pvParameters)
                             // temperature is in-arrange, store it
                             BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
                             ET_TempArray[BT_ArrayIndex] = ET_CurTemp;
-                            
                             }
                         else
                             {
