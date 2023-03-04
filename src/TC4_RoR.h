@@ -27,6 +27,27 @@ void TaskROR(void *pvParameters)
 
    
         //读取数据，并移位温度数组
+        for (j=TEMPERATURE_ROR_LENGTH; j >0;j--)
+        {
+            if (j == TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
+                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
+                    {
+                    BT_ROR_TempArray[j] = temperature_data.BT_AvgTemp ;
+                    ET_ROR_TempArray[j] = temperature_data.ET_AvgTemp ;
+                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+                        Serial.print("ET array 15:");
+                        Serial.println(ET_ROR_TempArray[j] );
+                    }
+                 }      
+                 else {
+                    BT_ROR_TempArray[j] = BT_ROR_TempArray[j+1];
+                    ET_ROR_TempArray[j] = ET_ROR_TempArray[j+1];
+                    Serial.printf("ET array %d:",j);
+                    Serial.println(ET_ROR_TempArray[j] );
+                 }             
+        }
+
+/*
          while (j <= TEMPERATURE_ROR_LENGTH){
             if (j == TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
                 if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
@@ -34,22 +55,21 @@ void TaskROR(void *pvParameters)
                    BT_ROR_TempArray[j] = temperature_data.BT_AvgTemp ;
                    ET_ROR_TempArray[j] = temperature_data.ET_AvgTemp ;
                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-                    }
                     Serial.print("ET array 15:");
                     Serial.println(ET_ROR_TempArray[j] );
                     j=1;
                     break;
-                }else { //如果不是数据第一位就移动位置
+                    }
+                    else { //如果不是数据第一位就移动位置
                     BT_ROR_TempArray[j] = BT_ROR_TempArray[j-1];
                     ET_ROR_TempArray[j] = ET_ROR_TempArray[j-1];
-                     Serial.printf("BT array %d:",j);
-                    Serial.println(BT_ROR_TempArray[j] );
-                     Serial.printf("ET array %d:",j);
-                    Serial.println(ET_ROR_TempArray[j] );
+                    //  Serial.printf("ET array %d:",j);
+                    // Serial.println(ET_ROR_TempArray[j] );
                 }
-                j++;
-         }
-
+                       j++;
+                 }             
+            }
+           */
         if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
             {
                 temperature_data.BT_ROR = ROR(BT_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * 2;
@@ -60,8 +80,7 @@ void TaskROR(void *pvParameters)
     }
 }
 
-
-float ROR( float y_signal[],const int num )
+float ROR( float y_signal[TEMPERATURE_ROR_LENGTH],const int num )
 {
 
     // x 轴 为固定时间区间点，跟采集时间保持一致。 Y轴为温度输入点。
