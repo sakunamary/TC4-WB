@@ -6,7 +6,7 @@
 
 float BT_ROR_TempArray[TEMPERATURE_ROR_LENGTH] = {0.0}; // temperature array
 float ET_ROR_TempArray[TEMPERATURE_ROR_LENGTH] = {0.0}; // temperature array
-int j=1;
+int j=0;
 float ROR( float y_signal[TEMPERATURE_ROR_LENGTH],const int num );
 
 void TaskROR(void *pvParameters)
@@ -24,60 +24,38 @@ void TaskROR(void *pvParameters)
     {
         // Wait for the next cycle
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
+        j++;   
+        Serial.printf("\nJ is now : %d",j);
 
+            if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS)  //给温度数组的最后一个数值写入数据
+                    {
+                    BT_ROR_TempArray[TEMPERATURE_ROR_LENGTH] = temperature_data.BT_AvgTemp ;
+                    ET_ROR_TempArray[TEMPERATURE_ROR_LENGTH] = temperature_data.ET_AvgTemp ;
+                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+
+                    }
    
         //读取数据，并移位温度数组
-        for (j=TEMPERATURE_ROR_LENGTH; j >0;j--)
-        {
-            if (j == TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
-                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
+            if (j <TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
+                 Serial.printf("\n array counst ");     
+                            BT_ROR_TempArray[j] = BT_ROR_TempArray[j+1];
+                            ET_ROR_TempArray[j] = ET_ROR_TempArray[j+1];
+                            Serial.printf("ET array %d:",j);
+                            Serial.println(ET_ROR_TempArray[j] );
+                 }    
+                 
+                if (j ==  TEMPERATURE_ROR_LENGTH)  {
+                     if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
                     {
-                    BT_ROR_TempArray[j] = temperature_data.BT_AvgTemp ;
-                    ET_ROR_TempArray[j] = temperature_data.ET_AvgTemp ;
+                    temperature_data.BT_ROR = ROR(BT_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * (60 / TEMPERATURE_ROR_LENGTH );
+                    temperature_data.ET_ROR = ROR(ET_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * (60/ TEMPERATURE_ROR_LENGTH);
                     xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-                        Serial.print("ET array 15:");
-                        Serial.println(ET_ROR_TempArray[j] );
                     }
-                 }      
-                 else {
-                    BT_ROR_TempArray[j] = BT_ROR_TempArray[j+1];
-                    ET_ROR_TempArray[j] = ET_ROR_TempArray[j+1];
-                    Serial.printf("ET array %d:",j);
-                    Serial.println(ET_ROR_TempArray[j] );
-                 }             
-        }
+                    j=0;
+                     }          
 
-/*
-         while (j <= TEMPERATURE_ROR_LENGTH){
-            if (j == TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
-                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
-                 {
-                   BT_ROR_TempArray[j] = temperature_data.BT_AvgTemp ;
-                   ET_ROR_TempArray[j] = temperature_data.ET_AvgTemp ;
-                   xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-                    Serial.print("ET array 15:");
-                    Serial.println(ET_ROR_TempArray[j] );
-                    j=1;
-                    break;
-                    }
-                    else { //如果不是数据第一位就移动位置
-                    BT_ROR_TempArray[j] = BT_ROR_TempArray[j-1];
-                    ET_ROR_TempArray[j] = ET_ROR_TempArray[j-1];
-                    //  Serial.printf("ET array %d:",j);
-                    // Serial.println(ET_ROR_TempArray[j] );
-                }
-                       j++;
-                 }             
-            }
-           */
-        if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
-            {
-                temperature_data.BT_ROR = ROR(BT_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * 2;
-                
-                temperature_data.ET_ROR = ROR(ET_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * 2;
-                xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-            }
-    }
+
+        }
 }
 
 float ROR( float y_signal[TEMPERATURE_ROR_LENGTH],const int num )

@@ -13,7 +13,7 @@
 
 #define PRINT_ARTISAN_WHOLE_MESSAGE 1     // set, to print Artisan commands on serial debug port
 #define TEMPERATURE_ARRAY_LENGTH    4
-#define TEMPERATURE_ROR_LENGTH      15 
+#define TEMPERATURE_ROR_LENGTH      5 
 
 
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
