@@ -564,16 +564,10 @@ void loop()
         /* READ command */
         if (msg.indexOf("READ") == 0)
         {                               // READ command
-            BTSerial.print(temperature_data.ET_CurTemp); // channel 1 : Environment Temperature (ET);
+            BTSerial.print(temperature_data.ET_AvgTemp); // channel 1 : Environment Temperature (ET);
             BTSerial.print(",");
             BTSerial.print(temperature_data.BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
             BTSerial.println(",0.00,0.00"); // channel 3,4 : A vaule of zero indicates the channel is inactive
-
-            WebSerial.print(temperature_data.ET_CurTemp); // channel 1 : Environment Temperature (ET);
-            WebSerial.print(",");
-            WebSerial.print(temperature_data.BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
-            WebSerial.println(",0.00,0.00"); // channel 3,4 : A vaule of zero indicates the channel is inactive
-
 
 
         }
@@ -596,22 +590,18 @@ void loop()
         {
             BTSerial.print("#OK");
             Serial.println("Artisan \"CHAN\"");
-            WebSerial.println("Artisan \"CHAN\"");
-
         }
         /* FILT command */
         else if (msg.indexOf("FILT;") == 0)
         {
             BTSerial.print("#OK");
             Serial.println("Artisan \"FILT\"");
-            WebSerial.println("Artisan \"FILT\"");
         }
         /* Unhandle command */
         else
         {
             Serial.println("Artisan Unhandle command");
             Serial.println(msg);
-            WebSerial.println(msg);
         }
     }
 #endif
