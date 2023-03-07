@@ -36,13 +36,7 @@
 //Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 SSD1306Wire display(SCREEN_ADDRESS, SDA, SCL);   // ADDRESS, SDA, SCL  -  SDA and SCL usually populate automatically based on your board's pins_arduino.h e.g. https://github.com/esp8266/Arduino/blob/master/variants/nodemcu/pins_arduino.h
 
-//SemaphoreHandle_t xIndicatorDataMutex = NULL;
-//SemaphoreHandle_t xThermoDataMutex = NULL;
 
-// extern float BT_AvgTemp;
-// extern float ET_CurTemp;
-// extern float BT_ROR;
-// extern float ET_ROR;
 extern String local_IP;
 extern String BT_EVENT;
 extern uint8_t charging;
