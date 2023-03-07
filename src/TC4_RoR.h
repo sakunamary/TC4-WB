@@ -32,7 +32,6 @@ void TaskROR(void *pvParameters)
                     BT_ROR_TempArray[TEMPERATURE_ROR_LENGTH] = temperature_data.BT_AvgTemp ;
                     ET_ROR_TempArray[TEMPERATURE_ROR_LENGTH] = temperature_data.ET_AvgTemp ;
                     xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-
                     }
    
         //读取数据，并移位温度数组
@@ -45,17 +44,17 @@ void TaskROR(void *pvParameters)
                  }    
                  
                 if (j ==  TEMPERATURE_ROR_LENGTH)  {
-                     if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
-                    {
-                    temperature_data.BT_ROR = ROR(BT_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * (60 / TEMPERATURE_ROR_LENGTH );
-                    temperature_data.ET_ROR = ROR(ET_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * (60/ TEMPERATURE_ROR_LENGTH);
-                    xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
-                    }
+
                     j=0;
                      }          
 
-
-        }
+            if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
+                {
+                temperature_data.BT_ROR = ROR(BT_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * (60 / TEMPERATURE_ROR_LENGTH);
+                temperature_data.ET_ROR = ROR(ET_ROR_TempArray  ,TEMPERATURE_ROR_LENGTH) * (60 / TEMPERATURE_ROR_LENGTH);
+                xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+                    }   
+}
 }
 
 float ROR( float y_signal[TEMPERATURE_ROR_LENGTH],const int num )
