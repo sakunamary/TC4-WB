@@ -47,11 +47,11 @@ void TaskBatCheck(void *pvParameters)
     {
         // Wait for the next cycle (intervel 750ms).
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
-        Serial.print(F("Pwr_level %: "));
+        //Serial.print(F("Pwr_level %: "));
         charging = battery.getBatteryChargeLevel();
        // volts = battery.getBatteryVolts();
         
-        Serial.println(charging);
+        //Serial.println(charging);
     //WebSerial.print("battery volts: ");
      //  WebSerial.println(volts);
      //  WebSerial.print("battery %: ");
