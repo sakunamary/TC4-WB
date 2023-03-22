@@ -1,16 +1,16 @@
 // ArduinoJson - https://arduinojson.org
-// Copyright © 2014-2022, Benoit BLANCHON
+// Copyright © 2014-2023, Benoit BLANCHON
 // MIT License
 
 #pragma once
 
 #include <ArduinoJson/Memory/MemoryPool.hpp>
 
-namespace ARDUINOJSON_NAMESPACE {
+ARDUINOJSON_BEGIN_PRIVATE_NAMESPACE
 
 class StringCopier {
  public:
-  StringCopier(MemoryPool& pool) : _pool(&pool) {}
+  StringCopier(MemoryPool* pool) : _pool(pool) {}
 
   void startString() {
     _pool->getFreeZone(&_ptr, &_capacity);
@@ -19,18 +19,21 @@ class StringCopier {
       _pool->markAsOverflowed();
   }
 
-  String save() {
+  JsonString save() {
     ARDUINOJSON_ASSERT(_ptr);
     ARDUINOJSON_ASSERT(_size < _capacity);  // needs room for the terminator
-    return String(_pool->saveStringFromFreeZone(_size), _size, String::Copied);
+    return JsonString(_pool->saveStringFromFreeZone(_size), _size,
+                      JsonString::Copied);
   }
 
   void append(const char* s) {
-    while (*s) append(*s++);
+    while (*s)
+      append(*s++);
   }
 
   void append(const char* s, size_t n) {
-    while (n-- > 0) append(*s++);
+    while (n-- > 0)
+      append(*s++);
   }
 
   void append(char c) {
@@ -48,11 +51,11 @@ class StringCopier {
     return _size;
   }
 
-  String str() const {
+  JsonString str() const {
     ARDUINOJSON_ASSERT(_ptr);
     ARDUINOJSON_ASSERT(_size < _capacity);
     _ptr[_size] = 0;
-    return String(_ptr, _size, String::Copied);
+    return JsonString(_ptr, _size, JsonString::Copied);
   }
 
  private:
@@ -65,4 +68,5 @@ class StringCopier {
   // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.UninitializedObject)
   size_t _size, _capacity;
 };
-}  // namespace ARDUINOJSON_NAMESPACE
+
+ARDUINOJSON_END_PRIVATE_NAMESPACE
