@@ -60,8 +60,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 String IpAddressToString(const IPAddress &ipAddress);                         //转换IP地址格式
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
 void notFound(AsyncWebServerRequest *request);                                // webpage function
-String processor(const String &var);                                          // webpage function
+String processor(const String &var); // webpage function
 
+char ap_name[30] ;
 // define variable
 //extern float BT_AvgTemp;
 //extern float ET_CurTemp;
@@ -71,6 +72,8 @@ String local_IP;
 uint32_t lastTimestamp = millis();
 float last_BT_temp = -273.0;
 bool take_temp = true;
+uint8_t macAddr[6];
+
 
 TaskHandle_t xHandle_indicator;
 
@@ -175,7 +178,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     case WStype_TEXT:
     {
         // DEBUG WEBSOCKET
-      //  Serial.printf("[%u] get Text: %s\n", num, payload);
+        Serial.printf("[%u] get Text: %s\n", num, payload);
 
         // Extract Values lt. https://arduinojson.org/v6/example/http-client/
         // Artisan Anleitung: https://artisan-scope.org/devices/websockets/
@@ -184,6 +187,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
         // char* entspricht String
         String command = doc["command"].as<char *>();
+        WebSerial.print("websocket get msg : ");
+        WebSerial.println(command);
 
         // Serial_debug.printf("Command received: %s \n",command);
 
@@ -218,7 +223,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         size_t len = serializeJson(doc, buffer); // serialize to buffer
 
         webSocket.sendTXT(num, buffer);
-
+        WebSerial.print("websocket send back: ");
+        WebSerial.println(buffer);
 
         // send message to client
         // webSocket.sendTXT(num, "message here");
@@ -422,7 +428,7 @@ if (user_wifi.Init_mode)
     xTaskCreatePinnedToCore(
         TaskROR, "RORTask" // 计算ROR的任务
         ,
-        1024 * 6 // This stack size can be checked & adjusted by reading the Stack Highwater
+        1024 * 8 // This stack size can be checked & adjusted by reading the Stack Highwater
         ,
         NULL, 3 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
         ,
@@ -443,12 +449,13 @@ if (user_wifi.Init_mode)
         delay(1000);
         Serial.println("wifi not ready");
 
-        if (tries++ > 5)
+        if (tries++ > 10)
         {
-
+            WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            WiFi.softAP("TC4_THRMO", "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
+            sprintf( ap_name ,"TC4-THRMO-%02x%02x%02x",macAddr[3],macAddr[4]+ macAddr[5]);
+            WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
         // show AP's IP
@@ -459,14 +466,13 @@ if (user_wifi.Init_mode)
 
     if (WiFi.getMode() == 2) // 1:STA mode 2:AP mode
     {
+        Serial.println(IpAddressToString(WiFi.softAPIP()));
         local_IP = IpAddressToString(WiFi.softAPIP());
-        Serial.println(local_IP);
     }
     else
     {
+        Serial.println(IpAddressToString(WiFi.localIP()));
         local_IP = IpAddressToString(WiFi.localIP());
-        Serial.println(local_IP);
-       
     }
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
@@ -530,9 +536,14 @@ if (user_wifi.Init_mode)
     server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
 
+  // WebSerial.begin(&server_OTA);
+   //WebSerial.msgCallback(recvMsg);
+
     AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
 
+
     server_OTA.begin();
+   // WebSerial.println("HTTP server started");
     Serial.println("HTTP server started");
 }
 

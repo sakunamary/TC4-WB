@@ -44,7 +44,7 @@ extern float volts;
 extern int b_drop;
 extern bool bAbnormalValue;
 
-char buffer[64];
+static char buffer[48];
 
 //#define TASKINDICATOR_INDICATOR_INTERVEL 750 // Task re-entry intervel (ms)
 
@@ -115,8 +115,8 @@ void TaskIndicator(void *pvParameters)
             {
                 display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",temperature_data.BT_AvgTemp);
                 display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",temperature_data.ET_AvgTemp);
-                display.drawStringf(128-54, 0 + 2,buffer,"dB:%4.2f",temperature_data.BT_ROR);
-                display.drawStringf(128-54, 18 + 2,buffer,"dE:%4.2f",temperature_data.ET_ROR);
+                display.drawStringf(128-48, 0 + 2,buffer,"dB:%4.2f",temperature_data.BT_ROR);
+                display.drawStringf(128-48, 18 + 2,buffer,"dE:%4.2f",temperature_data.ET_ROR);
                 xSemaphoreGive(xThermoDataMutex);
                 }      
 
@@ -125,17 +125,15 @@ void TaskIndicator(void *pvParameters)
             //显示IP地址和蓝牙状态
             display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
             display.drawXbm(0, 48, 16, 16, BT_LOGO);
-            display.drawString(2 + 16, 38,"IP:");
-            display.drawString(2 + 30, 38,local_IP);
+            display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
             display.drawStringf(2 + 16, 54,buffer,"%s",BT_EVENT);
 #endif
 
 #if defined(WIFI_VERSION) // wifi version
             //显示IP地址和蓝牙状态
             display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
-           // display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",String(local_IP));
-            display.drawString(2 + 16, 38,"IP:");
-            display.drawString(2 + 30, 38,local_IP);
+            display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
+
 #endif
 
 #if defined(BLUETOOTH_VERSION) // wifi version
