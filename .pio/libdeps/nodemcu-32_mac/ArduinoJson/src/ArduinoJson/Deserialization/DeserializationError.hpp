@@ -1,21 +1,20 @@
 // ArduinoJson - https://arduinojson.org
-// Copyright © 2014-2022, Benoit BLANCHON
+// Copyright © 2014-2023, Benoit BLANCHON
 // MIT License
 
 #pragma once
 
-#include <ArduinoJson/Misc/SafeBoolIdiom.hpp>
 #include <ArduinoJson/Namespace.hpp>
+#include <ArduinoJson/Polyfills/pgmspace_generic.hpp>
 #include <ArduinoJson/Polyfills/preprocessor.hpp>
-#include <ArduinoJson/Polyfills/static_array.hpp>
 
 #if ARDUINOJSON_ENABLE_STD_STREAM
 #  include <ostream>
 #endif
 
-namespace ARDUINOJSON_NAMESPACE {
+ARDUINOJSON_BEGIN_PUBLIC_NAMESPACE
 
-class DeserializationError : public SafeBoolIdom<DeserializationError> {
+class DeserializationError {
  public:
   enum Code {
     Ok,
@@ -53,9 +52,9 @@ class DeserializationError : public SafeBoolIdom<DeserializationError> {
     return lhs != rhs._code;
   }
 
-  // Behaves like a bool
-  operator bool_type() const {
-    return _code != Ok ? safe_true() : safe_false();
+  // Returns true if there is an error
+  explicit operator bool() const {
+    return _code != Ok;
   }
 
   // Returns internal enum, useful for switch statement
@@ -74,16 +73,16 @@ class DeserializationError : public SafeBoolIdom<DeserializationError> {
 
 #if ARDUINOJSON_ENABLE_PROGMEM
   const __FlashStringHelper* f_str() const {
-    ARDUINOJSON_DEFINE_STATIC_ARRAY(char, s0, "Ok");
-    ARDUINOJSON_DEFINE_STATIC_ARRAY(char, s1, "EmptyInput");
-    ARDUINOJSON_DEFINE_STATIC_ARRAY(char, s2, "IncompleteInput");
-    ARDUINOJSON_DEFINE_STATIC_ARRAY(char, s3, "InvalidInput");
-    ARDUINOJSON_DEFINE_STATIC_ARRAY(char, s4, "NoMemory");
-    ARDUINOJSON_DEFINE_STATIC_ARRAY(char, s5, "TooDeep");
-    ARDUINOJSON_DEFINE_STATIC_ARRAY(
-        const char*, messages, ARDUINOJSON_EXPAND6({s0, s1, s2, s3, s4, s5}));
-    return ARDUINOJSON_READ_STATIC_ARRAY(const __FlashStringHelper*, messages,
-                                         _code);
+    ARDUINOJSON_DEFINE_PROGMEM_ARRAY(char, s0, "Ok");
+    ARDUINOJSON_DEFINE_PROGMEM_ARRAY(char, s1, "EmptyInput");
+    ARDUINOJSON_DEFINE_PROGMEM_ARRAY(char, s2, "IncompleteInput");
+    ARDUINOJSON_DEFINE_PROGMEM_ARRAY(char, s3, "InvalidInput");
+    ARDUINOJSON_DEFINE_PROGMEM_ARRAY(char, s4, "NoMemory");
+    ARDUINOJSON_DEFINE_PROGMEM_ARRAY(char, s5, "TooDeep");
+    ARDUINOJSON_DEFINE_PROGMEM_ARRAY(const char*, messages,
+                                     {s0, s1, s2, s3, s4, s5});
+    return reinterpret_cast<const __FlashStringHelper*>(
+        detail::pgm_read(messages + _code));
   }
 #endif
 
@@ -104,4 +103,4 @@ inline std::ostream& operator<<(std::ostream& s, DeserializationError::Code c) {
 }
 #endif
 
-}  // namespace ARDUINOJSON_NAMESPACE
+ARDUINOJSON_END_PUBLIC_NAMESPACE

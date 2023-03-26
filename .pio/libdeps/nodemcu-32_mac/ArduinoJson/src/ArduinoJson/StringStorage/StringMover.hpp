@@ -1,13 +1,13 @@
 // ArduinoJson - https://arduinojson.org
-// Copyright © 2014-2022, Benoit BLANCHON
+// Copyright © 2014-2023, Benoit BLANCHON
 // MIT License
 
 #pragma once
 
 #include <ArduinoJson/Namespace.hpp>
-#include <ArduinoJson/Strings/String.hpp>
+#include <ArduinoJson/Strings/JsonString.hpp>
 
-namespace ARDUINOJSON_NAMESPACE {
+ARDUINOJSON_BEGIN_PRIVATE_NAMESPACE
 
 class StringMover {
  public:
@@ -17,8 +17,8 @@ class StringMover {
     _startPtr = _writePtr;
   }
 
-  FORCE_INLINE String save() {
-    String s = str();
+  FORCE_INLINE JsonString save() {
+    JsonString s = str();
     _writePtr++;
     return s;
   }
@@ -31,9 +31,9 @@ class StringMover {
     return true;
   }
 
-  String str() const {
+  JsonString str() const {
     _writePtr[0] = 0;  // terminator
-    return String(_startPtr, size(), String::Linked);
+    return JsonString(_startPtr, size(), JsonString::Linked);
   }
 
   size_t size() const {
@@ -44,4 +44,5 @@ class StringMover {
   char* _writePtr;
   char* _startPtr;
 };
-}  // namespace ARDUINOJSON_NAMESPACE
+
+ARDUINOJSON_END_PRIVATE_NAMESPACE

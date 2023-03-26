@@ -1,19 +1,19 @@
 // ArduinoJson - https://arduinojson.org
-// Copyright © 2014-2022, Benoit BLANCHON
+// Copyright © 2014-2023, Benoit BLANCHON
 // MIT License
 
 #pragma once
 
 #include <Arduino.h>
 
-namespace ARDUINOJSON_NAMESPACE {
+ARDUINOJSON_BEGIN_PRIVATE_NAMESPACE
 
 template <>
-class Writer< ::String, void> {
+class Writer<::String, void> {
   static const size_t bufferCapacity = ARDUINOJSON_STRING_BUFFER_SIZE;
 
  public:
-  explicit Writer(::String &str) : _destination(&str) {
+  explicit Writer(::String& str) : _destination(&str) {
     _size = 0;
   }
 
@@ -29,7 +29,7 @@ class Writer< ::String, void> {
     return 1;
   }
 
-  size_t write(const uint8_t *s, size_t n) {
+  size_t write(const uint8_t* s, size_t n) {
     for (size_t i = 0; i < n; i++) {
       write(s[i]);
     }
@@ -45,9 +45,9 @@ class Writer< ::String, void> {
   }
 
  private:
-  ::String *_destination;
+  ::String* _destination;
   char _buffer[bufferCapacity];
   size_t _size;
 };
 
-}  // namespace ARDUINOJSON_NAMESPACE
+ARDUINOJSON_END_PRIVATE_NAMESPACE

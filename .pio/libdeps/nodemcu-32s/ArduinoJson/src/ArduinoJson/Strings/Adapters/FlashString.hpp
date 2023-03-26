@@ -1,5 +1,5 @@
 // ArduinoJson - https://arduinojson.org
-// Copyright © 2014-2022, Benoit BLANCHON
+// Copyright © 2014-2023, Benoit BLANCHON
 // MIT License
 
 #pragma once
@@ -7,9 +7,9 @@
 #include <Arduino.h>
 
 #include <ArduinoJson/Polyfills/pgmspace.hpp>
-#include <ArduinoJson/Strings/IsString.hpp>
+#include <ArduinoJson/Strings/StringAdapter.hpp>
 
-namespace ARDUINOJSON_NAMESPACE {
+ARDUINOJSON_BEGIN_PRIVATE_NAMESPACE
 
 class FlashString {
  public:
@@ -61,20 +61,31 @@ class FlashString {
     ::memcpy_P(p, s._str, n);
   }
 
+  StringStoragePolicy::Copy storagePolicy() const {
+    return StringStoragePolicy::Copy();
+  }
+
  private:
   const char* _str;
   size_t _size;
 };
 
-inline FlashString adaptString(const __FlashStringHelper* s) {
-  return FlashString(s, s ? strlen_P(reinterpret_cast<const char*>(s)) : 0);
-}
+template <>
+struct StringAdapter<const __FlashStringHelper*, void> {
+  typedef FlashString AdaptedString;
 
-inline FlashString adaptString(const __FlashStringHelper* s, size_t n) {
-  return FlashString(s, n);
-}
+  static AdaptedString adapt(const __FlashStringHelper* s) {
+    return AdaptedString(s, s ? strlen_P(reinterpret_cast<const char*>(s)) : 0);
+  }
+};
 
 template <>
-struct IsString<const __FlashStringHelper*> : true_type {};
+struct SizedStringAdapter<const __FlashStringHelper*, void> {
+  typedef FlashString AdaptedString;
 
-}  // namespace ARDUINOJSON_NAMESPACE
+  static AdaptedString adapt(const __FlashStringHelper* s, size_t n) {
+    return AdaptedString(s, n);
+  }
+};
+
+ARDUINOJSON_END_PRIVATE_NAMESPACE
