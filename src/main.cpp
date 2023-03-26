@@ -60,8 +60,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 String IpAddressToString(const IPAddress &ipAddress);                         //转换IP地址格式
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
 void notFound(AsyncWebServerRequest *request);                                // webpage function
-String processor(const String &var);                                          // webpage function
+String processor(const String &var); // webpage function
 
+char ap_name[30] ;
 // define variable
 //extern float BT_AvgTemp;
 //extern float ET_CurTemp;
@@ -71,6 +72,8 @@ String local_IP;
 uint32_t lastTimestamp = millis();
 float last_BT_temp = -273.0;
 bool take_temp = true;
+uint8_t macAddr[6];
+
 
 TaskHandle_t xHandle_indicator;
 
@@ -448,10 +451,11 @@ if (user_wifi.Init_mode)
 
         if (tries++ > 10)
         {
-
+            WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            WiFi.softAP("TC4_THRMO", "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
+            sprintf( ap_name ,"TC4-THRMO-%02x%02x",macAddr[4]+ macAddr[5]);
+            WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
         // show AP's IP
