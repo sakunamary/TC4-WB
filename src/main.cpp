@@ -186,7 +186,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         deserializeJson(doc, (char *)payload);
 
         // char* entspricht String
-        String command = doc["command"].as<char *>();
+        String command = doc["command"].as< const char *>();
         WebSerial.print("websocket get msg : ");
         WebSerial.println(command);
 
@@ -323,6 +323,7 @@ void checkLowPowerMode(float temp_in)
 
 
 /* Message callback of WebSerial */
+/*
 void recvMsg(uint8_t *data, size_t len){
   WebSerial.println("Received Data...");
   String d = "";
@@ -331,7 +332,7 @@ void recvMsg(uint8_t *data, size_t len){
   }
   WebSerial.println(d);
 }
-
+*/
 
 void setup()
 {
@@ -352,7 +353,7 @@ void setup()
     // Initial Bluetooth Serial Port Profile (SPP)
     BTSerial.register_callback(Bluetooth_Callback);
     // Setup bluetooth device name as
-    if (!BTSerial.begin("TC4_THERMO"))
+    if (!BTSerial.begin(ap_name))
     {
         Serial.println("An error occurred during initialize");
     }
@@ -454,7 +455,7 @@ if (user_wifi.Init_mode)
             WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            sprintf( ap_name ,"TC4-THRMO-%02x%02x%02x",macAddr[3],macAddr[4]+ macAddr[5]);
+            sprintf( ap_name ,"TC4-WB_%02x%02x%02x",macAddr[3],macAddr[4]+ macAddr[5]);
             WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
