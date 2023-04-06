@@ -381,6 +381,8 @@ void setup()
 
 if (user_wifi.Init_mode) 
 {
+    user_wifi.ssid=" ";
+    user_wifi.password= " ";
     user_wifi.Init_mode = false ;
     user_wifi.sampling_time = 0.75; 
     user_wifi.sleeping_time = 300;

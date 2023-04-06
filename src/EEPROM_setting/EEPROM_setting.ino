@@ -35,7 +35,8 @@ void setup()
     Serial.println("Initialed EEPROM,data will be writen after 3s..."); 
     delay(3000);
     EEPROM.get(0, user_wifi);
-
+    user_wifi.ssid="TC4-WB";
+    user_wifi.password= "12345678";
     user_wifi.Init_mode = false ;
     user_wifi.sampling_time = 0.75; 
     user_wifi.sleeping_time = 300;
