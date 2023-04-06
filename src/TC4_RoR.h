@@ -25,7 +25,7 @@ void TaskROR(void *pvParameters)
         // Wait for the next cycle
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
         j++;   
-        Serial.printf("\nJ is now : %d",j);
+        //Serial.printf("\nJ is now : %d",j);
 
             if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS)  //给温度数组的最后一个数值写入数据
                     {
@@ -39,8 +39,8 @@ void TaskROR(void *pvParameters)
                  Serial.printf("\n array counst ");     
                             BT_ROR_TempArray[j] = BT_ROR_TempArray[j+1];
                             ET_ROR_TempArray[j] = ET_ROR_TempArray[j+1];
-                            Serial.printf("ET array %d:",j);
-                            Serial.println(ET_ROR_TempArray[j] );
+                           // Serial.printf("ET array %d:",j);
+                           // Serial.println(ET_ROR_TempArray[j] );
                  }    
                  
                 if (j ==  TEMPERATURE_ROR_LENGTH)  {
