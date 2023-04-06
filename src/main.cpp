@@ -426,7 +426,7 @@ if (user_wifi.Init_mode)
         delay(1000);
         Serial.println("wifi not ready");
 
-        if (tries++ > 10)
+        if (tries++ > 7)
         {
             WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
