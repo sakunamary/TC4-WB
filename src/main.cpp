@@ -274,15 +274,6 @@ void notFound(AsyncWebServerRequest *request)
 void checkLowPowerMode(float temp_in)
 {
 
-// for debug 
-//  user_wifi.Init_mode = true ;
-//   user_wifi.sampling_time = 0.25; 
-//   user_wifi.sleeping_time = 100;
-//   EEPROM.put(0, user_wifi);
-//    EEPROM.commit();
-
-//    Serial.println("reset function done!");
-//
 
     if (take_temp)
     {
