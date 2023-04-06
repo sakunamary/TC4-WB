@@ -36,7 +36,7 @@ void TaskROR(void *pvParameters)
    
         //读取数据，并移位温度数组
             if (j <TEMPERATURE_ROR_LENGTH){  //如果是数组第一位就读取新的数据
-                 Serial.printf("\n array counst ");     
+                 //Serial.printf("\n array counst ");     
                             BT_ROR_TempArray[j] = BT_ROR_TempArray[j+1];
                             ET_ROR_TempArray[j] = ET_ROR_TempArray[j+1];
                            // Serial.printf("ET array %d:",j);

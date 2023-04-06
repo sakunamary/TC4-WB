@@ -30,7 +30,8 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncElegantOTA.h>
 #include "BluetoothSerial.h"
-#include "WebSerial.h"
+#include <EEPROM.h>
+//#include "WebSerial.h"
 
 // Thermo lib for MX6675
 #include "max6675.h"
@@ -43,7 +44,6 @@
 #include "TC4_Indicator.h"
 #include "TC4_RoR.h"
 
-#include <EEPROM.h>
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -63,9 +63,7 @@ void notFound(AsyncWebServerRequest *request);                                //
 String processor(const String &var); // webpage function
 
 char ap_name[30] ;
-// define variable
-//extern float BT_AvgTemp;
-//extern float ET_CurTemp;
+
 
 String BT_EVENT;
 String local_IP;
@@ -91,7 +89,7 @@ user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
 temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
 
 // object declare
-AsyncWebServer server_OTA(80);
+AsyncWebServer  server_OTA(80);
 
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
@@ -187,8 +185,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
         // char* entspricht String
         String command = doc["command"].as< const char *>();
-        WebSerial.print("websocket get msg : ");
-        WebSerial.println(command);
+
 
         // Serial_debug.printf("Command received: %s \n",command);
 
@@ -222,10 +219,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         char buffer[200];                        // create temp buffer 200
         size_t len = serializeJson(doc, buffer); // serialize to buffer
 
-        webSocket.sendTXT(num, buffer);
-        WebSerial.print("websocket send back: ");
-        WebSerial.println(buffer);
-
+   
         // send message to client
         // webSocket.sendTXT(num, "message here");
 
@@ -322,18 +316,6 @@ void checkLowPowerMode(float temp_in)
 
 
 
-/* Message callback of WebSerial */
-/*
-void recvMsg(uint8_t *data, size_t len){
-  WebSerial.println("Received Data...");
-  String d = "";
-  for(int i=0; i < len; i++){
-    d += char(data[i]);
-  }
-  WebSerial.println(d);
-}
-*/
-
 void setup()
 {
 
@@ -377,7 +359,7 @@ void setup()
     EEPROM.get(0, user_wifi);
 
 
-   // user_wifi.Init_mode = true ;
+   //user_wifi.Init_mode = true ;
 
 if (user_wifi.Init_mode) 
 {
