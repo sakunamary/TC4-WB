@@ -381,8 +381,8 @@ void setup()
 
 if (user_wifi.Init_mode) 
 {
-    user_wifi.ssid=" ";
-    user_wifi.password= " ";
+    strcat(user_wifi.ssid,"TC4-WB");
+    strcat(user_wifi.password,"12345678");
     user_wifi.Init_mode = false ;
     user_wifi.sampling_time = 0.75; 
     user_wifi.sleeping_time = 300;
@@ -439,6 +439,7 @@ if (user_wifi.Init_mode)
         1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
     );   
      Serial.printf("\nROR ...\n");
+
      Serial.printf("\nStart Wifi ...\n");
      
   //初始化网络服务
@@ -538,15 +539,11 @@ if (user_wifi.Init_mode)
 
     server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
-
-  // WebSerial.begin(&server_OTA);
-   //WebSerial.msgCallback(recvMsg);
-
     AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
 
 
     server_OTA.begin();
-   // WebSerial.println("HTTP server started");
+
     Serial.println("HTTP server started");
 }
 
@@ -578,20 +575,7 @@ void loop()
 
 
         }
-        /* UNIT command ONLY PROVIED C NOT F */
-        /*
-               else if (msg.indexOf("UNITS;")== 0) {
-                   if (msg.substring(6,7)=="F") {
 
-                       BTSerial.println("#OK Farenheit");
-                       Serial.println("Artisan \"Farenheit\"");
-                   }
-                   else if (msg.substring(6,7)=="C") {
-                       BTSerial.println("#OK Celsius");
-                       Serial.println("Artisan \"Celsius\"");
-                   }
-               }
-       */
         /* CHAN command */
         else if (msg.indexOf("CHAN;") == 0)
         {
