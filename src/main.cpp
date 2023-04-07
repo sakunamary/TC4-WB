@@ -322,28 +322,6 @@ void setup()
 
     Serial.printf("\nTC4-WB  STARTING...\n");
 
-#if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
-    // Initial Bluetooth Serial Port Profile (SPP)
-    BTSerial.register_callback(Bluetooth_Callback);
-    // Setup bluetooth device name as
-    if (!BTSerial.begin(ap_name))
-    {
-        Serial.println("An error occurred during initialize");
-    }
-    else
-    {
-        Serial.println("Bluetooth is ready for pairing");
-        // Use FIXED pin-code for Legacy Pairing
-        char pinCode[5];
-        memset(pinCode, 0, sizeof(pinCode));
-        pinCode[0] = '1';
-        pinCode[1] = '2';
-        pinCode[2] = '3';
-        pinCode[3] = '4';
-        BTSerial.setPin(pinCode);
-    }
-
-#endif
     Serial.printf("\nRead data from EEPROM...\n");
     // set up eeprom data
     EEPROM.begin(sizeof(user_wifi));
@@ -451,6 +429,33 @@ if (user_wifi.Init_mode)
         Serial.println(IpAddressToString(WiFi.localIP()));
         local_IP = IpAddressToString(WiFi.localIP());
     }
+
+
+#if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
+    // Initial Bluetooth Serial Port Profile (SPP)
+    BTSerial.register_callback(Bluetooth_Callback);
+    // Setup bluetooth device name as
+    if (!BTSerial.begin(ap_name))
+    {
+        Serial.println("An error occurred during initialize");
+    }
+    else
+    {
+        Serial.println("Bluetooth is ready for pairing");
+        // Use FIXED pin-code for Legacy Pairing
+        char pinCode[5];
+        memset(pinCode, 0, sizeof(pinCode));
+        pinCode[0] = '1';
+        pinCode[1] = '2';
+        pinCode[2] = '3';
+        pinCode[3] = '4';
+        BTSerial.setPin(pinCode);
+    }
+
+#endif
+
+
+
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
     // init websocket
