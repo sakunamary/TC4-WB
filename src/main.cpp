@@ -184,7 +184,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         deserializeJson(doc, (char *)payload);
 
         // char* entspricht String
-        String command = doc["command"].as< const char *>();
+        String command = doc["command"].as<  char *>();
 
 
         // Serial_debug.printf("Command received: %s \n",command);
