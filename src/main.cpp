@@ -61,6 +61,7 @@ String IpAddressToString(const IPAddress &ipAddress);                         //
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
 void notFound(AsyncWebServerRequest *request);                                // webpage function
 String processor(const String &var); // webpage function
+void hexdump(const void *mem, uint32_t len, uint8_t cols) ; //websocket
 
 char ap_name[30] ;
 
@@ -100,6 +101,24 @@ WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
 // bluetooth declare
 BluetoothSerial BTSerial;
+
+
+
+
+void hexdump(const void *mem, uint32_t len, uint8_t cols = 16) {
+	const uint8_t* src = (const uint8_t*) mem;
+	Serial.printf("\n[HEXDUMP] Address: 0x%08X len: 0x%X (%d)", (ptrdiff_t)src, len, len);
+	for(uint32_t i = 0; i < len; i++) {
+		if(i % cols == 0) {
+			Serial.printf("\n[0x%08X] 0x%08X: ", (ptrdiff_t)src, i);
+		}
+		Serial.printf("%02X ", *src);
+		src++;
+	}
+	Serial.printf("\n");
+}
+
+
 
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 {
@@ -151,7 +170,7 @@ String IpAddressToString(const IPAddress &ipAddress)
 // Define Artisan Websocket events to exchange data
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
-
+   //    {"command": "getData", "id": 93609, "roasterID": 0}
     // Artisan schickt Anfrage als TXT
     // TXT zu JSON lt. https://forum.arduino.cc/t/assistance-parsing-and-reading-json-array-payload-websockets-solved/667917
 
@@ -184,7 +203,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
         deserializeJson(doc, (char *)payload);
 
         // char* entspricht String
-        String command = doc["command"].as<  char *>();
+        String command = doc["command"].as<  const char *>();
 
 
         // Serial_debug.printf("Command received: %s \n",command);
@@ -213,27 +232,37 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
             data["BT"] = temperature_data.BT_AvgTemp;
             data["ET"] = temperature_data.ET_AvgTemp;
 
-            Serial.println("getData");
+            //Serial.println("getData");
         }
 
         char buffer[200];                        // create temp buffer 200
         size_t len = serializeJson(doc, buffer); // serialize to buffer
 
-   
+         Serial.println(buffer);
+                    
         // send message to client
         // webSocket.sendTXT(num, "message here");
 
         // send data to all connected clients
         // webSocket.broadcastTXT("message here");
+
+         webSocket.sendTXT(num, buffer);
     }
     break;
     case WStype_BIN:
-        // Serial_debug.printf("[%u] get binary length: %u\n", num, length);
-        // hexdump(payload, length);
+         //Serial.printf("[%u] get binary length: %u\n", num, length);
+        //hexdump(payload, length,16);
 
         // send message to client
-        webSocket.sendBIN(num, payload, length);
-        break;
+       webSocket.sendBIN(num, payload, length);
+
+     break;
+    case WStype_ERROR:			
+	case WStype_FRAGMENT_TEXT_START:
+	case WStype_FRAGMENT_BIN_START:
+	case WStype_FRAGMENT:
+	case WStype_FRAGMENT_FIN:
+	break;
     }
 }
 
@@ -409,7 +438,7 @@ if (user_wifi.Init_mode)
             WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            sprintf( ap_name ,"TC4-WB_%02x%02x",macAddr[4] ,macAddr[5]);
+            sprintf( ap_name ,"TC4-WB_%02X%02X",macAddr[1] ,macAddr[0]);
             WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
