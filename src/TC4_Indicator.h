@@ -44,7 +44,7 @@ extern float volts;
 extern int b_drop;
 extern bool bAbnormalValue;
 
-static char buffer[48];
+static char buffer[64];
 
 //#define TASKINDICATOR_INDICATOR_INTERVEL 750 // Task re-entry intervel (ms)
 
@@ -125,14 +125,18 @@ void TaskIndicator(void *pvParameters)
             //显示IP地址和蓝牙状态
             display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
             display.drawXbm(0, 48, 16, 16, BT_LOGO);
-            display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
+            display.drawString(2 + 16, 38,"IP:");
+            display.drawString(2 + 30, 38,local_IP);
+            //display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
             display.drawStringf(2 + 16, 54,buffer,"%s",BT_EVENT);
 #endif
 
 #if defined(WIFI_VERSION) // wifi version
             //显示IP地址和蓝牙状态
             display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
-            display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
+            display.drawString(2 + 16, 38,"IP:");
+            display.drawString(2 + 30, 38,local_IP);
+            //display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
 
 #endif
 
