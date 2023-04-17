@@ -599,10 +599,6 @@ if (user_wifi.Init_mode)
   });         
 
 
-
-
-
-
     server_OTA.onNotFound(notFound); // 404 page seems not necessary...
     server_OTA.onFileUpload(onUpload);
     //AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
