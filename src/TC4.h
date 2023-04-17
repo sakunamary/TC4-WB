@@ -90,6 +90,11 @@ const char wifi_sussce_html[] PROGMEM = R"rawliteral(
 </body></html>
 )rawliteral";
 
+
+
+
+
+
 const char index_html[] PROGMEM = R"rawliteral(
 <!doctype html><html lang='cn'>
 <head>
@@ -186,5 +191,13 @@ const char index_html[] PROGMEM = R"rawliteral(
     </main> 
 </body></html>
 )rawliteral";
+
+const char update_html[] PROGMEM = R"rawliteral(
+<form method='POST' action='/update' enctype='multipart/form-data'>
+<input type='file' name='update'>
+<input type='submit' value='Update'>
+</form>
+)rawliteral";
+
 
 #endif /*__TC4_H__*/

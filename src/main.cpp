@@ -28,9 +28,11 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
-#include <AsyncElegantOTA.h>
+//#include <AsyncElegantOTA.h>
 #include "BluetoothSerial.h"
 #include <EEPROM.h>
+#include "Update.h"
+
 
 
 // Thermo lib for MX6675
@@ -62,8 +64,20 @@ void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); //
 void notFound(AsyncWebServerRequest *request);                                // webpage function
 String processor(const String &var); // webpage function
 void hexdump(const void *mem, uint32_t len, uint8_t cols) ; //websocket
+void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+  //Handle upload
+}
 
+
+
+
+//flag to use from web update to reboot the ESP
+bool shouldReboot = true;
 char ap_name[30] ;
+
+
+
+
 
 
 String BT_EVENT;
@@ -342,6 +356,8 @@ void setup()
     xThermoDataMutex = xSemaphoreCreateMutex();
     //xIndicatorDataMutex = xSemaphoreCreateMutex();
 
+
+
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(BAUDRATE);
     while (!Serial)
@@ -544,9 +560,52 @@ if (user_wifi.Init_mode)
                       EEPROM.commit();
                   });
 
-    server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
-    AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
+  // upload a file to /upload
+  server_OTA.on("/upload", HTTP_POST, [](AsyncWebServerRequest *request){
+    request->send(200);
+  }, onUpload);
+       // Simple Firmware Update Form
+  server_OTA.on("/update", HTTP_GET, [](AsyncWebServerRequest *request)
+                    {
+                    request->send(200, "text/html", update_html);
+                    });
+
+  server_OTA.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
+                        shouldReboot = !Update.hasError();
+                        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", shouldReboot?"OK":"FAIL");
+                        response->addHeader("Connection", "close");
+                        request->send(response);
+                        },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+                        if(!index){
+                        Serial.printf("Update Start: %s\n", filename.c_str());
+                        //Update.runAsync(true);
+                        if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
+                            Update.printError(Serial);
+                        }
+                        }
+                        if(!Update.hasError()){
+                        if(Update.write(data, len) != len){
+                            Update.printError(Serial);
+                        }
+                        }
+                        if(final){
+                        if(Update.end(true)){
+                            Serial.printf("Update Success: %uB\n", index+len);
+                        } else {
+                            Update.printError(Serial);
+                        }
+                        }
+  });         
+
+
+
+
+
+
+    server_OTA.onNotFound(notFound); // 404 page seems not necessary...
+    server_OTA.onFileUpload(onUpload);
+    //AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
 
 
     server_OTA.begin();
