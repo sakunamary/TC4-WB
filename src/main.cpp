@@ -572,8 +572,8 @@ if (user_wifi.Init_mode)
                     });
 
   server_OTA.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
-                        shouldReboot = !Update.hasError();
-                        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", shouldReboot?"OK":"FAIL");
+                        //shouldReboot = !Update.hasError();
+                        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", (Update.hasError())?update_fail_html:update_OK_html);
                         response->addHeader("Connection", "close");
                         request->send(response);
                         },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){

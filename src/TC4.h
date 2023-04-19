@@ -221,22 +221,71 @@ const char update_html[] PROGMEM = R"rawliteral(
     width: 400px;
     padding:15px;
     margin:auto;}
-    h1,p{text-align:center}</style> 
+    h1,p{text-align:center}
+    .input_control{
+    color:#fff;
+    background-color:#007bff;
+    border-color:#007bff;
+    padding:.5rem 1rem;
+    font-size:1.25rem;
+    line-height:1.5;
+    border-radius:.3rem;
+    width:400px   
+    }
+    </style> 
 </head> 
 <body>
     <main class='form-signin'> 
-        <h1 class=''>固件升级 </h1>
-         
+        <h1 class=''>固件升级</h1>
         <form method='POST' action='/update' enctype='multipart/form-data'>
-        <label>选择固件文件</label>
+         <div class='form-floating'>               
+        <H2>选择固件文件</H2>
+        <input type='file' name='update'class='form-signin'>
         <br/>
-        <input type='file' name='update'>
-        <br/>
-        <input type='submit' value='升级'>
+        <input type='submit' value='升级' class='input_control' >
+    </div>    
     </form>
     </main> 
 </body></html>
 )rawliteral";
+
+
+
+const char update_OK_html[] PROGMEM = R"rawliteral(
+<!doctype html><html lang='cn'><head>
+    <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>固件升级成功</title>
+        <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> 
+        </head> 
+<body>
+    <main class='form-signin'> 
+        <h1>固件升级成功</h1> <br/> 
+        </p>
+        <p>设置成功<br />
+        模块将在3秒后重启<br />
+        </p>
+    </main>
+</body></html>
+)rawliteral";
+
+
+const char update_fail_html[] PROGMEM = R"rawliteral(
+<!doctype html><html lang='cn'><head>
+    <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>固件升级成功</title>
+        <style>*,::after,::before{box-sizing:border-box;}body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#f5f5f5;}.form-control{display:block;width:100%;height:calc(1.5em + .75rem + 2px);border:1px solid #ced4da;}button{border:1px solid transparent;color:#fff;background-color:#007bff;border-color:#007bff;padding:.5rem 1rem;font-size:1.25rem;line-height:1.5;border-radius:.3rem;width:100%}.form-signin{width:100%;max-width:400px;padding:15px;margin:auto;}h1,p{text-align: center}</style> 
+        </head> 
+<body>
+    <main class='form-signin'> 
+        <h1>固件升级失败</h1> <br/> 
+        </p>
+        模块将在3秒后重启<br />s
+        重启后请重新上传<br />
+        </p>
+    </main>
+</body></html>
+)rawliteral";
+
 
 
 #endif /*__TC4_H__*/
