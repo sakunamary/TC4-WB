@@ -592,6 +592,9 @@ if (user_wifi.Init_mode)
                         if(final){
                         if(Update.end(true)){
                             Serial.printf("Update Success: %uB\n", index+len);
+                            Serial.printf("ESP32 will reboot after 3s \n");
+                            vTaskDelay(3000);
+                            ESP.restart();
                         } else {
                             Update.printError(Serial);
                         }

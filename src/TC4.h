@@ -193,10 +193,49 @@ const char index_html[] PROGMEM = R"rawliteral(
 )rawliteral";
 
 const char update_html[] PROGMEM = R"rawliteral(
-<form method='POST' action='/update' enctype='multipart/form-data'>
-<input type='file' name='update'>
-<input type='submit' value='Update'>
-</form>
+<!doctype html><html lang='cn'>
+<head>
+    <meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>TC4-WB Setup</title>
+    <style>*,::after,::before{box-sizing:border-box;}
+    body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans','Liberation Sans';
+    font-size:1rem;
+    font-weight:400;
+    line-height:1.5;color:#212529;
+    background-color:#f5f5f5;}
+    .form-control{
+    display:block;
+    width: 400px;
+    height:calc(1.5em + .75rem + 2px);
+    border:1px solid #ced4da;}
+    button{border:1px solid transparent;
+    color:#fff;
+    background-color:#007bff;
+    border-color:#007bff;
+    padding:.5rem 1rem;
+    font-size:1.25rem;
+    line-height:1.5;
+    border-radius:.3rem;
+    width:400px}
+    .form-signin{
+    width: 400px;
+    padding:15px;
+    margin:auto;}
+    h1,p{text-align:center}</style> 
+</head> 
+<body>
+    <main class='form-signin'> 
+        <h1 class=''>固件升级 </h1>
+         
+        <form method='POST' action='/update' enctype='multipart/form-data'>
+        <label>选择固件文件</label>
+        <br/>
+        <input type='file' name='update'>
+        <br/>
+        <input type='submit' value='升级'>
+    </form>
+    </main> 
+</body></html>
 )rawliteral";
 
 
