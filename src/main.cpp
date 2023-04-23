@@ -25,20 +25,33 @@
 #include <Arduino.h>
 #include "TC4.h"
 
+#ifdef ESP32
 #include <WiFi.h>
 #include <AsyncTCP.h>
+#elif defined(ESP8266)
+#include <ESP8266WiFi.h>
+#include <ESPAsyncTCP.h>
+#endif
 #include <ESPAsyncWebServer.h>
+
+
 //#include <AsyncElegantOTA.h>
+
 #include "BluetoothSerial.h"
 #include <EEPROM.h>
 #include "Update.h"
 
 
 
+
+
+
+
+
 // Thermo lib for MX6675
 #include "max6675.h"
 // Websockets Lib by links2004
-#include <WebSocketsServer.h>
+//#include <WebSocketsServer.h>
 // JSON for Artisan Websocket implementation
 #include "ArduinoJson.h"
 
@@ -58,16 +71,17 @@ extern void TaskBatCheck(void *pvParameters);
 extern void TaskROR(void *pvParameters);
 
 // define other functions
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
+//void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
 String IpAddressToString(const IPAddress &ipAddress);                         //转换IP地址格式
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
 void notFound(AsyncWebServerRequest *request);                                // webpage function
 String processor(const String &var); // webpage function
 
+void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
 //Handle upload
 void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){}
 //Handle WebSocket event
-void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){}
+
 
 
 char ap_name[30] ;
@@ -100,7 +114,7 @@ AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
 // WebSocketsServer declare
-WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
+//WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 
 
 #endif
@@ -169,97 +183,85 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
 
     switch (type)
     {
-    case WS_EVT_DISCONNECT
-        os_printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
+    case WS_EVT_DISCONNECT:
+        Serial.printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
         break;
-    case WS_EVT_CONNECT
+    case WS_EVT_CONNECT:
         //client connected
-         os_printf("ws[%s][%u] connect\n", server->url(), client->id());
+         Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
          client->printf("Hello Client %u :)", client->id());
          client->ping();
         break;
-    case WS_EVT_ERROR
+    case WS_EVT_ERROR:
         //error was received from the other end
-         os_printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
+         Serial.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
         break;
-    case WS_EVT_PONG
+    case WS_EVT_PONG:
         //pong message was received (in response to a ping request maybe)
-        os_printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");   
-        break;
+        Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");   
+        break;   
+    case WS_EVT_DATA:
+        AwsFrameInfo * info = (AwsFrameInfo*)arg;
+
+       if(info->final && info->index == 0 && info->len == len){
+
+         Serial.printf("ws[%s][%u] %s-message[%llu]: ", 
+         server->url(), client->id(), 
+         (info->opcode == WS_TEXT)?"text":"binary", info->len);
+
+            if(info->opcode == WS_TEXT){
+                    // Extract Values lt. https://arduinojson.org/v6/example/http-client/
+                    // Artisan Anleitung: https://artisan-scope.org/devices/websockets/
+
+                    deserializeJson(doc, (char *)data);
+
+                    // char* entspricht String
+                    String command = doc["command"].as<  const char *>();
 
 
+                    // Serial_debug.printf("Command received: %s \n",command);
+
+                    long ln_id = doc["id"].as<long>();
+
+                    // Send Values to Artisan over Websocket
+                    JsonObject root = doc.to<JsonObject>();
+                    JsonObject data = root.createNestedObject("data");
+                    if (command == "getBT")
+                    {
+                        root["id"] = ln_id;
+                        data["BT"] = temperature_data.BT_AvgTemp;
+                        // Serial_debug.printf("getBT created BT: %4.2f \n",cmd_M1.TC1);
+                    }
+                    else if (command == "getET")
+                    {
+                        root["id"] = ln_id;
+                        data["ET"] = temperature_data.ET_AvgTemp;
+                        // Serial_debug.printf("getET created ET: %4.2f \n",cmd_M1.TC2);
+                    }
+
+                    else if (command == "getData")
+                    {
+                        root["id"] = ln_id;
+                        data["BT"] = temperature_data.BT_AvgTemp;
+                        data["ET"] = temperature_data.ET_AvgTemp;
+
+                        //Serial.println("getData");
+                    }
+
+                    char buffer[200];                        // create temp buffer 200
+                    size_t len = serializeJson(doc, buffer); // serialize to buffer
+
+                    Serial.println(buffer);
+                    client->text(buffer);
+                }
+            }   
+    break;
     }
-
-/*
-  if(type == WS_EVT_CONNECT){
-    //client connected
-    os_printf("ws[%s][%u] connect\n", server->url(), client->id());
-    client->printf("Hello Client %u :)", client->id());
-    client->ping();
-  } else if(type == WS_EVT_DISCONNECT){
-    //client disconnected
-    os_printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
-  } else if(type == WS_EVT_ERROR){
-    //error was received from the other end
-    os_printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
-  } else if(type == WS_EVT_PONG){
-    //pong message was received (in response to a ping request maybe)
-    os_printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
-  } else if(type == WS_EVT_DATA){
-    //data packet
-    AwsFrameInfo * info = (AwsFrameInfo*)arg;
-    if(info->final && info->index == 0 && info->len == len){
-      //the whole message is in a single frame and we got all of it's data
-      os_printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
-      if(info->opcode == WS_TEXT){
-        data[len] = 0;
-        os_printf("%s\n", (char*)data);
-      } else {
-        for(size_t i=0; i < info->len; i++){
-          os_printf("%02x ", data[i]);
-        }
-        os_printf("\n");
-      }
-      if(info->opcode == WS_TEXT)
-        client->text("I got your text message");
-      else
-        client->binary("I got your binary message");
-    } else {
-      //message is comprised of multiple frames or the frame is split into multiple packets
-      if(info->index == 0){
-        if(info->num == 0)
-          os_printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
-        os_printf("ws[%s][%u] frame[%u] start[%llu]\n", server->url(), client->id(), info->num, info->len);
-      }
-
-      os_printf("ws[%s][%u] frame[%u] %s[%llu - %llu]: ", server->url(), client->id(), info->num, (info->message_opcode == WS_TEXT)?"text":"binary", info->index, info->index + len);
-      if(info->message_opcode == WS_TEXT){
-        data[len] = 0;
-        os_printf("%s\n", (char*)data);
-      } else {
-        for(size_t i=0; i < len; i++){
-          os_printf("%02x ", data[i]);
-        }
-        os_printf("\n");
-      }
-
-      if((info->index + len) == info->len){
-        os_printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);
-        if(info->final){
-          os_printf("ws[%s][%u] %s-message end\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
-          if(info->message_opcode == WS_TEXT)
-            client->text("I got your text message");
-          else
-            client->binary("I got your binary message");
-        }
-      }
-    }
-  }
-*/
-
 }
 
+
 // Define Artisan Websocket events to exchange data
+/*
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 {
    //    {"command": "getData", "id": 93609, "roasterID": 0}
@@ -357,7 +359,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 	break;
     }
 }
-
+*/
 #endif
 
 String processor(const String &var)
@@ -582,11 +584,12 @@ if (user_wifi.Init_mode)
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
     // init websocket
-    webSocket.begin();
+    //webSocket.begin();
     Serial.println("WebSocket started!");
 
     // event  websocket handler
-    webSocket.onEvent(webSocketEvent);
+   // webSocket.onEvent(webSocketEvent);
+
 #endif
 
   // attach AsyncWebSocket
@@ -698,7 +701,7 @@ void loop()
 
 {
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
-    webSocket.loop(); //处理websocketmie
+   // webSocket.loop(); //处理websocketmie
 #endif
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
