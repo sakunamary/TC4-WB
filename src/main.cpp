@@ -33,11 +33,13 @@
 #include <ESPAsyncTCP.h>
 #endif
 #include <ESPAsyncWebServer.h>
+#include <ESPAsync_WiFiManager.h>    //https://github.com/khoih-prog/ESPAsync_WiFiManager
 
 
-//#include <AsyncElegantOTA.h>
-
+#if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
 #include "BluetoothSerial.h"
+#endif
+
 #include <EEPROM.h>
 #include "Update.h"
 
