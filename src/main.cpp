@@ -41,17 +41,8 @@
 #include <EEPROM.h>
 #include "Update.h"
 
-
-
-
-
-
-
-
 // Thermo lib for MX6675
 #include "max6675.h"
-// Websockets Lib by links2004
-//#include <WebSocketsServer.h>
 // JSON for Artisan Websocket implementation
 #include "ArduinoJson.h"
 
@@ -76,11 +67,10 @@ String IpAddressToString(const IPAddress &ipAddress);                         //
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
 void notFound(AsyncWebServerRequest *request);                                // webpage function
 String processor(const String &var); // webpage function
+void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);//Handle WebSocket event
 
-void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
-//Handle upload
 void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){}
-//Handle WebSocket event
+
 
 
 
@@ -110,13 +100,10 @@ temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
 
 // object declare
 AsyncWebServer  server_OTA(80);
-AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
 // WebSocketsServer declare
-//WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
-
-
+AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
 #endif
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
@@ -126,7 +113,6 @@ BluetoothSerial BTSerial;
 
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 {
-
     switch (event)
     {
     case ESP_SPP_INIT_EVT:
@@ -179,7 +165,6 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
 
     const size_t capacity = JSON_OBJECT_SIZE(3) + 60; // Memory pool
     DynamicJsonDocument doc(capacity);
-    String temp_cmd_out = ""; // from websockets recived drumer control command and send out ;
 
     switch (type)
     {
@@ -202,27 +187,18 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
         break;   
     case WS_EVT_DATA:
         AwsFrameInfo * info = (AwsFrameInfo*)arg;
-
        if(info->final && info->index == 0 && info->len == len){
 
-         Serial.printf("ws[%s][%u] %s-message[%llu]: ", 
-         server->url(), client->id(), 
-         (info->opcode == WS_TEXT)?"text":"binary", info->len);
+         Serial.printf("ws[%s][%u] %s-message[%llu]: ",server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
 
             if(info->opcode == WS_TEXT){
                     // Extract Values lt. https://arduinojson.org/v6/example/http-client/
                     // Artisan Anleitung: https://artisan-scope.org/devices/websockets/
-
                     deserializeJson(doc, (char *)data);
-
                     // char* entspricht String
                     String command = doc["command"].as<  const char *>();
-
-
                     // Serial_debug.printf("Command received: %s \n",command);
-
                     long ln_id = doc["id"].as<long>();
-
                     // Send Values to Artisan over Websocket
                     JsonObject root = doc.to<JsonObject>();
                     JsonObject data = root.createNestedObject("data");
@@ -230,13 +206,11 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
                     {
                         root["id"] = ln_id;
                         data["BT"] = temperature_data.BT_AvgTemp;
-                        // Serial_debug.printf("getBT created BT: %4.2f \n",cmd_M1.TC1);
                     }
                     else if (command == "getET")
                     {
                         root["id"] = ln_id;
                         data["ET"] = temperature_data.ET_AvgTemp;
-                        // Serial_debug.printf("getET created ET: %4.2f \n",cmd_M1.TC2);
                     }
 
                     else if (command == "getData")
@@ -244,8 +218,6 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
                         root["id"] = ln_id;
                         data["BT"] = temperature_data.BT_AvgTemp;
                         data["ET"] = temperature_data.ET_AvgTemp;
-
-                        //Serial.println("getData");
                     }
 
                     char buffer[200];                        // create temp buffer 200
@@ -413,9 +385,7 @@ void checkLowPowerMode(float temp_in)
             take_temp = true;
             vTaskSuspend(xHandle_indicator);
             // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
-            // display.dim(true); //set OLED DIM
-            display.clear(); // disable OLED
-            
+            display.clear(); // disable OLED            
             display.display();      // disable OLE
             delay(1000);
             // set sleep mode
@@ -434,10 +404,7 @@ void setup()
 {
 
     xThermoDataMutex = xSemaphoreCreateMutex();
-    //xIndicatorDataMutex = xSemaphoreCreateMutex();
-
-
-
+    
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(BAUDRATE);
     while (!Serial)
@@ -446,7 +413,6 @@ void setup()
     }
 
     Serial.printf("\nTC4-WB  STARTING...\n");
-
     Serial.printf("\nRead data from EEPROM...\n");
     // set up eeprom data
     EEPROM.begin(sizeof(user_wifi));
@@ -584,19 +550,11 @@ if (user_wifi.Init_mode)
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
     // init websocket
-    //webSocket.begin();
     Serial.println("WebSocket started!");
-
-    // event  websocket handler
-   // webSocket.onEvent(webSocketEvent);
-
+    // attach AsyncWebSocket
+    ws.onEvent(onEvent);
+    server_OTA.addHandler(&ws);
 #endif
-
-  // attach AsyncWebSocket
-  ws.onEvent(onEvent);
-  server_OTA.addHandler(&ws);
-
-
 
     // for index.html
     server_OTA.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -700,9 +658,6 @@ if (user_wifi.Init_mode)
 void loop()
 
 {
-#if defined(FULL_VERSION) || defined(WIFI_VERSION)
-   // webSocket.loop(); //处理websocketmie
-#endif
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
     // This is main task which is created by Arduino to handle Artisan TC4 Commands
