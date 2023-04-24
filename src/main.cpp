@@ -100,7 +100,7 @@ AsyncWebServer  server_OTA(80);
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
 // WebSocketsServer declare
-AsyncWebSocket ws("/ws"); // access at ws://[esp ip]/ws
+AsyncWebSocket ws("/websocket"); // access at ws://[esp ip]/ws
 #endif
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
@@ -171,7 +171,7 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
     case WS_EVT_CONNECT:
         //client connected
          Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
-         client->printf("Hello Client %u :)", client->id());
+         client->printf("Hello Client %u :", client->id());
          client->ping();
         break;
     case WS_EVT_ERROR:
