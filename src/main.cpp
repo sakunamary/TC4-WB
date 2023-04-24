@@ -31,6 +31,7 @@
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
 #include "BluetoothSerial.h"
+void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
 #endif
 
 #include <EEPROM.h>
@@ -59,7 +60,7 @@ extern void TaskROR(void *pvParameters);
 // define other functions
 //void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
 String IpAddressToString(const IPAddress &ipAddress);                         //转换IP地址格式
-void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
+
 void notFound(AsyncWebServerRequest *request);                                // webpage function
 String processor(const String &var); // webpage function
 void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);//Handle WebSocket event
@@ -222,108 +223,6 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
     break;
     }
 }
-
-
-// Define Artisan Websocket events to exchange data
-/*
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
-{
-   //    {"command": "getData", "id": 93609, "roasterID": 0}
-    // Artisan schickt Anfrage als TXT
-    // TXT zu JSON lt. https://forum.arduino.cc/t/assistance-parsing-and-reading-json-array-payload-websockets-solved/667917
-
-    const size_t capacity = JSON_OBJECT_SIZE(3) + 60; // Memory pool
-    DynamicJsonDocument doc(capacity);
-    String temp_cmd_out = ""; // from websockets recived drumer control command and send out ;
-    switch (type)
-    {
-    case WStype_DISCONNECTED:
-        webSocket.sendTXT(num, "Disonnected");
-        Serial.printf("[%u] Disconnected!\n", num);
-        break;
-    case WStype_CONNECTED:
-    {
-        IPAddress ip = webSocket.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-
-        // send message to client
-        webSocket.sendTXT(num, "Connected");
-    }
-    break;
-    case WStype_TEXT:
-    {
-        // DEBUG WEBSOCKET
-        Serial.printf("[%u] get Text: %s\n", num, payload);
-
-        // Extract Values lt. https://arduinojson.org/v6/example/http-client/
-        // Artisan Anleitung: https://artisan-scope.org/devices/websockets/
-
-        deserializeJson(doc, (char *)payload);
-
-        // char* entspricht String
-        String command = doc["command"].as<  const char *>();
-
-
-        // Serial_debug.printf("Command received: %s \n",command);
-
-        long ln_id = doc["id"].as<long>();
-
-        // Send Values to Artisan over Websocket
-        JsonObject root = doc.to<JsonObject>();
-        JsonObject data = root.createNestedObject("data");
-        if (command == "getBT")
-        {
-            root["id"] = ln_id;
-            data["BT"] = temperature_data.BT_AvgTemp;
-            // Serial_debug.printf("getBT created BT: %4.2f \n",cmd_M1.TC1);
-        }
-        else if (command == "getET")
-        {
-            root["id"] = ln_id;
-            data["ET"] = temperature_data.ET_AvgTemp;
-            // Serial_debug.printf("getET created ET: %4.2f \n",cmd_M1.TC2);
-        }
-
-        else if (command == "getData")
-        {
-            root["id"] = ln_id;
-            data["BT"] = temperature_data.BT_AvgTemp;
-            data["ET"] = temperature_data.ET_AvgTemp;
-
-            //Serial.println("getData");
-        }
-
-        char buffer[200];                        // create temp buffer 200
-        size_t len = serializeJson(doc, buffer); // serialize to buffer
-
-         Serial.println(buffer);
-                    
-        // send message to client
-        // webSocket.sendTXT(num, "message here");
-
-        // send data to all connected clients
-        // webSocket.broadcastTXT("message here");
-
-         webSocket.sendTXT(num, buffer);
-    }
-    break;
-    case WStype_BIN:
-         //Serial.printf("[%u] get binary length: %u\n", num, length);
-        //hexdump(payload, length,16);
-
-        // send message to client
-       webSocket.sendBIN(num, payload, length);
-
-     break;
-    case WStype_ERROR:			
-	case WStype_FRAGMENT_TEXT_START:
-	case WStype_FRAGMENT_BIN_START:
-	case WStype_FRAGMENT:
-	case WStype_FRAGMENT_FIN:
-	break;
-    }
-}
-*/
 #endif
 
 String processor(const String &var)
