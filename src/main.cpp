@@ -72,8 +72,6 @@ void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
 void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){}
 
 
-
-
 char ap_name[30] ;
 String BT_EVENT;
 String local_IP;
@@ -81,7 +79,6 @@ uint32_t lastTimestamp = millis();
 float last_BT_temp = -273.0;
 bool take_temp = true;
 uint8_t macAddr[6];
-
 
 TaskHandle_t xHandle_indicator;
 
