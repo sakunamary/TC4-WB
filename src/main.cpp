@@ -514,8 +514,15 @@ if (user_wifi.Init_mode)
                         request->send(response);
                         },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
                         if(!index){
+                        vTaskSuspend(xHandle_indicator); //停止显示
                         Serial.printf("Update Start: %s\n", filename.c_str());
-                        //Update.runAsync(true);
+
+                            display.clear();
+                            display.setFont(ArialMT_Plain_16);
+                            display.drawString(20, 18 + 4,"UPLOADING");
+                            display.drawRect(2, 2, 128-2, 64-2);
+                            display.display();
+
                         if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
                             Update.printError(Serial);
                         }
@@ -529,10 +536,32 @@ if (user_wifi.Init_mode)
                         if(Update.end(true)){
                             Serial.printf("Update Success: %uB\n", index+len);
                             Serial.printf("ESP32 will reboot after 3s \n");
+
+                            display.clear();
+                            display.setFont(ArialMT_Plain_16);
+                            display.drawString(28, 14-4 + 4,"FINISHED");
+                            display.drawString(19, 30-4 + 4,"REBOOTING");
+                            display.drawRect(2, 2, 128-2, 64-2);
+                            display.display();
+
                             vTaskDelay(3000);
+
                             ESP.restart();
+
+
                         } else {
                             Update.printError(Serial);
+                            Serial.printf("ESP32 will reboot after 3s \n");
+
+                            display.clear();
+                            display.setFont(ArialMT_Plain_16);
+                            display.drawString(36, 14-4 + 4,"ERROR");
+                            display.drawString(19, 30-4 + 4,"REBOOTING");
+                            display.drawRect(2, 2, 128-2, 64-2);
+                            display.display();
+
+                            vTaskDelay(3000);
+                            ESP.restart();
                         }
                         }
   });         
