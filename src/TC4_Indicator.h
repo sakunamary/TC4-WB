@@ -88,7 +88,7 @@ void TaskIndicator(void *pvParameters)
             display.setFont(ArialMT_Plain_16);
             display.drawString(48, 14-4 + 4,"LOW");
             display.drawString(28, 30-4 + 4,"BATTERY");
-            display.drawRect(19, 7, 90, 45);
+            display.drawRect(2, 2, 128-2, 64-2);
             display.display();
             display.setFont(ArialMT_Plain_10);   
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup

@@ -24,19 +24,21 @@
 
 #include <Arduino.h>
 #include "TC4.h"
-
 #include <WiFi.h>
 #include <AsyncTCP.h>
+#include <AsyncUDP.h>
 #include <ESPAsyncWebServer.h>
-#include <AsyncElegantOTA.h>
-#include "BluetoothSerial.h"
-#include <EEPROM.h>
 
+#if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
+#include "BluetoothSerial.h"
+void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
+#endif
+
+#include <EEPROM.h>
+#include "Update.h"
 
 // Thermo lib for MX6675
 #include "max6675.h"
-// Websockets Lib by links2004
-#include <WebSocketsServer.h>
 // JSON for Artisan Websocket implementation
 #include "ArduinoJson.h"
 
@@ -56,23 +58,23 @@ extern void TaskBatCheck(void *pvParameters);
 extern void TaskROR(void *pvParameters);
 
 // define other functions
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
+//void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
 String IpAddressToString(const IPAddress &ipAddress);                         //转换IP地址格式
-void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param); // bluetooth callback handler
+
 void notFound(AsyncWebServerRequest *request);                                // webpage function
 String processor(const String &var); // webpage function
-void hexdump(const void *mem, uint32_t len, uint8_t cols) ; //websocket
+void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);//Handle WebSocket event
+
+void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){}
+
 
 char ap_name[30] ;
-
-
 String BT_EVENT;
 String local_IP;
 uint32_t lastTimestamp = millis();
 float last_BT_temp = -273.0;
 bool take_temp = true;
 uint8_t macAddr[6];
-
 
 TaskHandle_t xHandle_indicator;
 
@@ -92,10 +94,9 @@ temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
 // object declare
 AsyncWebServer  server_OTA(80);
 
-
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
 // WebSocketsServer declare
-WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
+AsyncWebSocket ws("/websocket"); // access at ws://[esp ip]/ws
 #endif
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
@@ -103,26 +104,8 @@ WebSocketsServer webSocket = WebSocketsServer(8080); //构建websockets类
 BluetoothSerial BTSerial;
 
 
-
-
-void hexdump(const void *mem, uint32_t len, uint8_t cols = 16) {
-	const uint8_t* src = (const uint8_t*) mem;
-	Serial.printf("\n[HEXDUMP] Address: 0x%08X len: 0x%X (%d)", (ptrdiff_t)src, len, len);
-	for(uint32_t i = 0; i < len; i++) {
-		if(i % cols == 0) {
-			Serial.printf("\n[0x%08X] 0x%08X: ", (ptrdiff_t)src, i);
-		}
-		Serial.printf("%02X ", *src);
-		src++;
-	}
-	Serial.printf("\n");
-}
-
-
-
 void Bluetooth_Callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 {
-
     switch (event)
     {
     case ESP_SPP_INIT_EVT:
@@ -167,105 +150,79 @@ String IpAddressToString(const IPAddress &ipAddress)
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
 
-// Define Artisan Websocket events to exchange data
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
-{
-   //    {"command": "getData", "id": 93609, "roasterID": 0}
+void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
+
+     //    {"command": "getData", "id": 93609, "roasterID": 0}
     // Artisan schickt Anfrage als TXT
     // TXT zu JSON lt. https://forum.arduino.cc/t/assistance-parsing-and-reading-json-array-payload-websockets-solved/667917
 
     const size_t capacity = JSON_OBJECT_SIZE(3) + 60; // Memory pool
     DynamicJsonDocument doc(capacity);
-    String temp_cmd_out = ""; // from websockets recived drumer control command and send out ;
+
     switch (type)
     {
-    case WStype_DISCONNECTED:
-        webSocket.sendTXT(num, "Disonnected");
-        Serial.printf("[%u] Disconnected!\n", num);
+    case WS_EVT_DISCONNECT:
+        Serial.printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
         break;
-    case WStype_CONNECTED:
-    {
-        IPAddress ip = webSocket.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+    case WS_EVT_CONNECT:
+        //client connected
+         Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
+         client->printf("Hello Client %u :", client->id());
+         client->ping();
+        break;
+    case WS_EVT_ERROR:
+        //error was received from the other end
+         Serial.printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
+        break;
+    case WS_EVT_PONG:
+        //pong message was received (in response to a ping request maybe)
+        Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");   
+        break;   
+    case WS_EVT_DATA:
+        AwsFrameInfo * info = (AwsFrameInfo*)arg;
+       if(info->final && info->index == 0 && info->len == len){
 
-        // send message to client
-        webSocket.sendTXT(num, "Connected");
-    }
+         Serial.printf("ws[%s][%u] %s-message[%llu]: ",server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
+
+            if(info->opcode == WS_TEXT){
+                    // Extract Values lt. https://arduinojson.org/v6/example/http-client/
+                    // Artisan Anleitung: https://artisan-scope.org/devices/websockets/
+                    deserializeJson(doc, (char *)data);
+                    // char* entspricht String
+                    String command = doc["command"].as<  const char *>();
+                    // Serial_debug.printf("Command received: %s \n",command);
+                    long ln_id = doc["id"].as<long>();
+                    // Send Values to Artisan over Websocket
+                    JsonObject root = doc.to<JsonObject>();
+                    JsonObject data = root.createNestedObject("data");
+                    if (command == "getBT")
+                    {
+                        root["id"] = ln_id;
+                        data["BT"] = temperature_data.BT_AvgTemp;
+                    }
+                    else if (command == "getET")
+                    {
+                        root["id"] = ln_id;
+                        data["ET"] = temperature_data.ET_AvgTemp;
+                    }
+
+                    else if (command == "getData")
+                    {
+                        root["id"] = ln_id;
+                        data["BT"] = temperature_data.BT_AvgTemp;
+                        data["ET"] = temperature_data.ET_AvgTemp;
+                    }
+
+                    char buffer[200];                        // create temp buffer 200
+                    size_t len = serializeJson(doc, buffer); // serialize to buffer
+
+                    Serial.println(buffer);
+                    client->text(buffer);
+                }
+            }   
     break;
-    case WStype_TEXT:
-    {
-        // DEBUG WEBSOCKET
-        Serial.printf("[%u] get Text: %s\n", num, payload);
-
-        // Extract Values lt. https://arduinojson.org/v6/example/http-client/
-        // Artisan Anleitung: https://artisan-scope.org/devices/websockets/
-
-        deserializeJson(doc, (char *)payload);
-
-        // char* entspricht String
-        String command = doc["command"].as<  const char *>();
-
-
-        // Serial_debug.printf("Command received: %s \n",command);
-
-        long ln_id = doc["id"].as<long>();
-
-        // Send Values to Artisan over Websocket
-        JsonObject root = doc.to<JsonObject>();
-        JsonObject data = root.createNestedObject("data");
-        if (command == "getBT")
-        {
-            root["id"] = ln_id;
-            data["BT"] = temperature_data.BT_AvgTemp;
-            // Serial_debug.printf("getBT created BT: %4.2f \n",cmd_M1.TC1);
-        }
-        else if (command == "getET")
-        {
-            root["id"] = ln_id;
-            data["ET"] = temperature_data.ET_AvgTemp;
-            // Serial_debug.printf("getET created ET: %4.2f \n",cmd_M1.TC2);
-        }
-
-        else if (command == "getData")
-        {
-            root["id"] = ln_id;
-            data["BT"] = temperature_data.BT_AvgTemp;
-            data["ET"] = temperature_data.ET_AvgTemp;
-
-            //Serial.println("getData");
-        }
-
-        char buffer[200];                        // create temp buffer 200
-        size_t len = serializeJson(doc, buffer); // serialize to buffer
-
-         Serial.println(buffer);
-                    
-        // send message to client
-        // webSocket.sendTXT(num, "message here");
-
-        // send data to all connected clients
-        // webSocket.broadcastTXT("message here");
-
-         webSocket.sendTXT(num, buffer);
-    }
-    break;
-    case WStype_BIN:
-         //Serial.printf("[%u] get binary length: %u\n", num, length);
-        //hexdump(payload, length,16);
-
-        // send message to client
-       webSocket.sendBIN(num, payload, length);
-
-     break;
-    case WStype_ERROR:			
-	case WStype_FRAGMENT_TEXT_START:
-	case WStype_FRAGMENT_BIN_START:
-	case WStype_FRAGMENT:
-	case WStype_FRAGMENT_FIN:
-	break;
     }
 }
-
 #endif
 
 String processor(const String &var)
@@ -319,9 +276,7 @@ void checkLowPowerMode(float temp_in)
             take_temp = true;
             vTaskSuspend(xHandle_indicator);
             // 满足条件1:时间够60s and 条件2: 温度变化不超过5度
-            // display.dim(true); //set OLED DIM
-            display.clear(); // disable OLED
-            
+            display.clear(); // disable OLED            
             display.display();      // disable OLE
             delay(1000);
             // set sleep mode
@@ -340,8 +295,7 @@ void setup()
 {
 
     xThermoDataMutex = xSemaphoreCreateMutex();
-    //xIndicatorDataMutex = xSemaphoreCreateMutex();
-
+    
     // Initialize serial communication at 115200 bits per second:
     Serial.begin(BAUDRATE);
     while (!Serial)
@@ -350,7 +304,6 @@ void setup()
     }
 
     Serial.printf("\nTC4-WB  STARTING...\n");
-
     Serial.printf("\nRead data from EEPROM...\n");
     // set up eeprom data
     EEPROM.begin(sizeof(user_wifi));
@@ -438,7 +391,7 @@ if (user_wifi.Init_mode)
             WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            sprintf( ap_name ,"TC4-WB_%02X%02X",macAddr[1] ,macAddr[0]);
+            sprintf( ap_name ,"TC4-WB_%02X%02X%02X\n",macAddr[0],macAddr[1],macAddr[2]);
             WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
@@ -488,11 +441,10 @@ if (user_wifi.Init_mode)
 
 #if defined(FULL_VERSION) || defined(WIFI_VERSION)
     // init websocket
-    webSocket.begin();
     Serial.println("WebSocket started!");
-
-    // event  websocket handler
-    webSocket.onEvent(webSocketEvent);
+    // attach AsyncWebSocket
+    ws.onEvent(onEvent);
+    server_OTA.addHandler(&ws);
 #endif
 
     // for index.html
@@ -544,9 +496,78 @@ if (user_wifi.Init_mode)
                       EEPROM.commit();
                   });
 
-    server_OTA.onNotFound(notFound); // 404 page seems not necessary...
 
-    AsyncElegantOTA.begin(&server_OTA); // Start ElegantOTA
+  // upload a file to /upload
+  server_OTA.on("/upload", HTTP_POST, [](AsyncWebServerRequest *request){
+    request->send(200);
+  }, onUpload);
+       // Simple Firmware Update Form
+  server_OTA.on("/update", HTTP_GET, [](AsyncWebServerRequest *request)
+                    {
+                    request->send(200, "text/html", update_html);
+                    });
+
+  server_OTA.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
+                        //shouldReboot = !Update.hasError();
+                        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", (Update.hasError())?update_fail_html:update_OK_html);
+                        response->addHeader("Connection", "close");
+                        request->send(response);
+                        },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+                        if(!index){
+                        vTaskSuspend(xHandle_indicator); //停止显示
+                        Serial.printf("Update Start: %s\n", filename.c_str());
+
+                            display.clear();
+                            display.setFont(ArialMT_Plain_16);
+                            display.drawString(20, 18 + 4,"UPLOADING");
+                            display.drawRect(2, 2, 128-2, 64-2);
+                            display.display();
+
+                        if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
+                            Update.printError(Serial);
+                        }
+                        }
+                        if(!Update.hasError()){
+                        if(Update.write(data, len) != len){
+                            Update.printError(Serial);
+                        }
+                        }
+                        if(final){
+                        if(Update.end(true)){
+                            Serial.printf("Update Success: %uB\n", index+len);
+                            Serial.printf("ESP32 will reboot after 3s \n");
+
+                            display.clear();
+                            display.setFont(ArialMT_Plain_16);
+                            display.drawString(28, 14-4 + 4,"FINISHED");
+                            display.drawString(19, 30-4 + 4,"REBOOTING");
+                            display.drawRect(2, 2, 128-2, 64-2);
+                            display.display();
+
+                            vTaskDelay(3000);
+
+                            ESP.restart();
+
+
+                        } else {
+                            Update.printError(Serial);
+                            Serial.printf("ESP32 will reboot after 3s \n");
+
+                            display.clear();
+                            display.setFont(ArialMT_Plain_16);
+                            display.drawString(36, 14-4 + 4,"ERROR");
+                            display.drawString(19, 30-4 + 4,"REBOOTING");
+                            display.drawRect(2, 2, 128-2, 64-2);
+                            display.display();
+
+                            vTaskDelay(3000);
+                            ESP.restart();
+                        }
+                        }
+  });         
+
+    server_OTA.onNotFound(notFound); // 404 page seems not necessary...
+    server_OTA.onFileUpload(onUpload);
 
 
     server_OTA.begin();
@@ -557,9 +578,6 @@ if (user_wifi.Init_mode)
 void loop()
 
 {
-#if defined(FULL_VERSION) || defined(WIFI_VERSION)
-    webSocket.loop(); //处理websocketmie
-#endif
 
 #if defined(FULL_VERSION) || defined(BLUETOOTH_VERSION)
     // This is main task which is created by Arduino to handle Artisan TC4 Commands

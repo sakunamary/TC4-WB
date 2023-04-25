@@ -15,7 +15,8 @@
         "memory": "cpp",
         "istream": "cpp",
         "tuple": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "random": "cpp"
     },
     "editor.fontFamily": "'Nimbus Sans', 'Nimbus Sans', Nimbus Sans",
     "editor.fontSize": 16,
