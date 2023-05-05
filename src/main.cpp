@@ -391,7 +391,7 @@ if (user_wifi.Init_mode)
             WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            sprintf( ap_name ,"TC4-WB_%02X%02X%02X\n",macAddr[0],macAddr[1],macAddr[2]);
+            sprintf( ap_name ,"TC4-WB_%02X%02X%02X",macAddr[0],macAddr[1],macAddr[2]);
             WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
