@@ -71,7 +71,7 @@ void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uin
 char ap_name[30] ;
 String BT_EVENT;
 String local_IP;
-uint32_t lastTimestamp = millis();
+//uint32_t lastTimestamp = millis();
 float last_BT_temp = -273.0;
 bool take_temp = true;
 uint8_t macAddr[6];
@@ -257,6 +257,7 @@ void notFound(AsyncWebServerRequest *request)
 }
 
 // low power mode; checks every few seconds for an event
+/*
 void checkLowPowerMode(float temp_in)
 {
 
@@ -288,7 +289,7 @@ void checkLowPowerMode(float temp_in)
         }
     }
 }
-
+*/
 
 
 void setup()
@@ -391,7 +392,7 @@ if (user_wifi.Init_mode)
             WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            sprintf( ap_name ,"TC4-WB_%02X%02X%02X\n",macAddr[0],macAddr[1],macAddr[2]);
+            sprintf( ap_name ,"TC4-WB_%02X%02X%02X",macAddr[0],macAddr[1],macAddr[2]);
             WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
@@ -623,7 +624,7 @@ void loop()
 #endif
 
 
-    checkLowPowerMode(temperature_data.BT_AvgTemp); //测量是否进入睡眠模式
+   // checkLowPowerMode(temperature_data.BT_AvgTemp); //测量是否进入睡眠模式
 
 
 
