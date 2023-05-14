@@ -318,7 +318,8 @@ if (user_wifi.Init_mode)
     strcat(user_wifi.ssid,"TC4-WB");
     strcat(user_wifi.password,"12345678");
     user_wifi.Init_mode = false ;
-    user_wifi.sampling_time = 0.75; 
+    user_wifi.thremo_small=false;
+    user_wifi.sampling_time = 1; 
     user_wifi.sleeping_time = 300;
     user_wifi.btemp_fix = 0;
     user_wifi.etemp_fix = 0;

@@ -23,13 +23,13 @@
 #define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
-    #define VERSION "1.1.7f"
+    #define VERSION "1.1.8f"
 #endif    
 #if defined(WIFI_VERSION)
-    #define VERSION "1.1.7w"
+    #define VERSION "1.1.8w"
 #endif 
 #if defined(BLUETOOTH_VERSION)
-    #define VERSION "1.1.7b"
+    #define VERSION "1.1.8b"
 #endif
 
 
@@ -43,6 +43,7 @@
   float  etemp_fix;
   double sampling_time;//采样时间   单位：s
   int    sleeping_time ;//休眠时间  单位：s
+  bool  thremo_small;//特细探针
   bool   Init_mode ; //是否初始化模式
 } user_wifi_t;
 
@@ -199,14 +200,12 @@ const char index_html[] PROGMEM = R"rawliteral(
             <div class='form-floating'>
             <h2 class=''>3.杂项</h2>  
             <label>温度采样时间 (current: %sampling_time%) s</label>
-            <input type='number' step = '0.25' max = '4' min='0.75' class='form-control'  name='sampling_time'> 
+            <input type='number' step = '0.5' max = '4' min='1' class='form-control'  name='sampling_time'>     
+            <br/> 
+            <label>是否用3mm探针 (current: %sampling_time%) s</label>
+            <select   type='select' step = '0.5' max = '4' min='1' class='form-control'  name='sampling_time'>
+            
             </div>
-            <br/>
-            <div class='form-floating'>
-            <label>休眠时间 (current:%sleeping_time%) Mins</label>
-            <input type='number' step = '1' max = '30' min='5' class='form-control' name='sleeping_time'> 
-            </div>
-            <br/>
             <div align="center">
                 <button type='submit'onclick="submitMessage()">保存</button>
             </div>
