@@ -71,7 +71,7 @@ void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uin
 char ap_name[30] ;
 String BT_EVENT;
 String local_IP;
-//uint32_t lastTimestamp = millis();
+
 float last_BT_temp = -273.0;
 bool take_temp = true;
 uint8_t macAddr[6];
@@ -244,10 +244,12 @@ String processor(const String &var)
     { //
         return String(user_wifi.sampling_time);
     }
+    /*
     else if (var == "sleeping_time")
     {
         return String(user_wifi.sleeping_time/60);
     }
+    */
     return String();
 }
 

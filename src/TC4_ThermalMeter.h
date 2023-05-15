@@ -29,12 +29,12 @@
 float BT_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
 float ET_TempArray[TEMPERATURE_ARRAY_LENGTH] = {0.0}; // temperature array
 int BT_ArrayIndex = 0;                                // A pointer of temperature array
+int ET_ArrayIndex = 0;                                // A pointer of temperature array
 float BT_CurTemp = 0.0;
 float ET_CurTemp = 0.0;
 
 
 bool bReady = false;         // flag to indicate temperature array whether is ready or not
-bool bUnit_C = true;         // flag to indicate temperature unit from Artisan requested
 bool bAbnormalValue = false; // indicate temperature value is unexpect or not
 
 int thermoDO = 19;

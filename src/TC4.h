@@ -11,7 +11,7 @@
 #ifndef __TC4_H__
 #define __TC4_H__
 
-#define TEMPERATURE_ARRAY_LENGTH    4
+#define TEMPERATURE_ARRAY_LENGTH    6
 #define TEMPERATURE_ROR_LENGTH      6
 
 
@@ -19,17 +19,17 @@
 #define BAUDRATE 115200  //serial port baudrate
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-//#define  WIFI_VERSION       //only wifi version 
-#define  BLUETOOTH_VERSION  //only bluetooth version
+#define  WIFI_VERSION       //only wifi version 
+//#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
-    #define VERSION "1.1.7f"
+    #define VERSION "1.1.8f"
 #endif    
 #if defined(WIFI_VERSION)
-    #define VERSION "1.1.7w"
+    #define VERSION "1.1.8w"
 #endif 
 #if defined(BLUETOOTH_VERSION)
-    #define VERSION "1.1.7b"
+    #define VERSION "1.1.8b"
 #endif
 
 
