@@ -51,9 +51,9 @@ MAX6675 thermocouple_ET(thermoCLK, thermoCS_ET, thermoDO);
 // Create object for Beam Temperature (BT)
 MAX6675 thermocouple_BT(thermoCLK, thermoCS_BT, thermoDO);
 
-float averageTemperature(float *pTemp);
+float averageTemperature(float temp[TEMPERATURE_ARRAY_LENGTH],const int num );
 
-
+int l = 0 ;
 
 void TaskThermalMeter(void *pvParameters)
 { //function 
@@ -72,95 +72,64 @@ void TaskThermalMeter(void *pvParameters)
     { //for loop
         // Wait for the next cycle (intervel 750ms).
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
-
+        l++;
         // Perform task actions from here
         // Read BT from MAX6675 thermal couple
 
-            // The ET is reference temperature, don't need averaging
-            // read ET from MAX6675 thermal couple
-            //ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
-            // Serial.printf("ET:%f ,ET compensate:%f",ET_CurTemp,etemp_fix_in);
-            // Serial.println("");
+           //读取max6675数据
 
-     
             BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
             ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
+
      vTaskDelay(100);
-            if (bReady) // bReady = false -- a new loop
-            {
+         
                 // Means, first round of temperature array is done,
                 // The averaged temperyure is ready for reading
 
-                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
+                if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS)  //给温度数组的最后一个数值写入数据
                 {//lock the  mutex       
-                        temperature_data.BT_AvgTemp  = averageTemperature(&BT_TempArray[0]);
-                        temperature_data.ET_AvgTemp  = averageTemperature(&ET_TempArray[0]);
+                        BT_TempArray[TEMPERATURE_ARRAY_LENGTH]= BT_CurTemp;
+                        ET_TempArray[TEMPERATURE_ARRAY_LENGTH]= ET_CurTemp;
                         xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
                 }   
 
-                // Filter out abnormal temperature-up only (Bypass temperature-down)
-                // Because in "CHARGE" period, the temperature-down may large than 10 degree
-                if (BT_CurTemp < (temperature_data.BT_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE) 
-                && ET_CurTemp < (temperature_data.ET_AvgTemp + ABNORMAL_TEMPERATURE_DEGREE) 
-                )
-                            {
-                            // temperature is in-arrange, store it
-                            BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
-                            ET_TempArray[BT_ArrayIndex] = ET_CurTemp;
-                            }
-                        else
-                            {
-                                // set abnormal flag
-                                bAbnormalValue = true;
-                            }
 
-            }
-        
-            else // bReady = true
-            {   
-                 // just read current temperature
-                 BT_TempArray[BT_ArrayIndex] = BT_CurTemp;
-                 ET_TempArray[BT_ArrayIndex] = ET_CurTemp;
-            }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-            if (!bAbnormalValue)
-            {
-                // Normal temperature will into this loop
-                // print MAX6675 reading value on serial monitor
+        //读取数据，并移位温度数组
+            if (l <TEMPERATURE_ARRAY_LENGTH){  //如果是数组第一位就读取新的数据
+                 //Serial.printf("\n array counst ");     
+                            BT_TempArray[l] = BT_TempArray[l+1];
+                            ET_TempArray[l] = ET_TempArray[l+1];
+ 
+                 }    
+                 
+                if (l ==  TEMPERATURE_ARRAY_LENGTH)  {
 
-                BT_ArrayIndex++;
-                if (BT_ArrayIndex >= TEMPERATURE_ARRAY_LENGTH)
+                    l=0;
+                     }          
+
+            if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) 
                 {
-                    BT_ArrayIndex = 0;
-
-                    if (!bReady)
-                    {
-                        bReady = true;
-                    }
-
-                    }
-                }
-            else //bAbnormalValue
-                {
-                    // After bypass abnormal value, reset flag here
-                    bAbnormalValue = false;
-                }
-    } 
+                temperature_data.BT_AvgTemp  = averageTemperature(BT_TempArray  ,TEMPERATURE_ARRAY_LENGTH) ;
+                temperature_data.ET_AvgTemp  = averageTemperature(ET_TempArray  ,TEMPERATURE_ARRAY_LENGTH) ;
+                xSemaphoreGive(xThermoDataMutex);  //end of lock mutex
+                    }   
+    }
 }//function 
 
 
 
 // A function to average temperature array
-float averageTemperature(float *pTemp)
+float averageTemperature(float temp[TEMPERATURE_ARRAY_LENGTH],const int num )
 {
-    float avg = *pTemp;
+    float avg ;
+    int k;
+    float sum=0.0;
 
-    pTemp++;
-    avg = (avg + *pTemp) / 2;
-    pTemp++;
-    avg = (avg + *pTemp) / 2;
-    pTemp++;
-    avg = (avg + *pTemp) / 2;
+    for(k=1;k<=num;k++)
+    {
+       sum=sum+temp[k];
+    }
+    avg = sum/num;
     return avg;
 }
 

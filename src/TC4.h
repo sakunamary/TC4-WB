@@ -11,7 +11,7 @@
 #ifndef __TC4_H__
 #define __TC4_H__
 
-#define TEMPERATURE_ARRAY_LENGTH    6
+#define TEMPERATURE_ARRAY_LENGTH    4
 #define TEMPERATURE_ROR_LENGTH      6
 
 
