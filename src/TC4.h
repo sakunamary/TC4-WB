@@ -201,15 +201,14 @@ const char index_html[] PROGMEM = R"rawliteral(
             <h2 class=''>3.杂项</h2>  
             <label>温度采样时间 (current: %sampling_time%) s</label>
             <input type='number' step = '0.5' max = '4' min='1' class='form-control'  name='sampling_time'>     
-            <br/> 
-            <label>是否用3mm探针 (current: %sampling_time%) s</label>
-            <select   type='select' step = '0.5' max = '4' min='1' class='form-control'  name='sampling_time'>
-            
             </div>
+             <br/>
+             <br/>
             <div align="center">
                 <button type='submit'onclick="submitMessage()">保存</button>
             </div>
-            
+            <br/>
+            <br/>
         </form> 
             <p>
             <a href='/update' target='_blank'>FIRMWARE UPDATE verison:%version%</a>
