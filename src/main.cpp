@@ -88,7 +88,7 @@ TaskHandle_t xHandle_indicator;
      vTaskSuspend( xHandle );
 
 */
-user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
+user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 1.0,300,true};
 temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
 
 // object declare
@@ -320,7 +320,6 @@ if (user_wifi.Init_mode)
     strcat(user_wifi.ssid,"TC4-WB");
     strcat(user_wifi.password,"12345678");
     user_wifi.Init_mode = false ;
-    user_wifi.thremo_small=false;
     user_wifi.sampling_time = 1; 
     user_wifi.sleeping_time = 300;
     user_wifi.btemp_fix = 0;
@@ -490,10 +489,6 @@ if (user_wifi.Init_mode)
                       if (request->getParam("sampling_time")->value() != "")
                       {
                           user_wifi.sampling_time = request->getParam("sampling_time")->value().toFloat();
-                      }
-                      if (request->getParam("sleeping_time")->value() != "")
-                      {
-                          user_wifi.sleeping_time = request->getParam("sleeping_time")->value().toInt() * 60; // input in MINUTES covernet to seconds
                       }
                       // Svae EEPROM
                       EEPROM.put(0, user_wifi);

@@ -43,7 +43,6 @@
   float  etemp_fix;
   double sampling_time;//采样时间   单位：s
   int    sleeping_time ;//休眠时间  单位：s
-  bool  thremo_small;//特细探针
   bool   Init_mode ; //是否初始化模式
 } user_wifi_t;
 
