@@ -89,7 +89,7 @@ while( init_countdown >=1)
     init_countdown--;
     vTaskDelay(1000 / portTICK_RATE_MS); // dealy 1s showup
 }
-
+   display.setFont(ArialMT_Plain_10);
 
 
     // Initial the xLastWakeTime variable with the current time.
