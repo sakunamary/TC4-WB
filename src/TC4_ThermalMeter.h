@@ -63,7 +63,7 @@ void TaskThermalMeter(void *pvParameters)
     TickType_t xLastWakeTime;
 
     const TickType_t xIntervel = (user_wifi.sampling_time * 1000) / portTICK_PERIOD_MS;
-
+   //const TickType_t xIntervel = (2 * 1000) / portTICK_PERIOD_MS;
     /* Task Setup and Initialize */
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
