@@ -342,6 +342,7 @@ if (user_wifi.Init_mode)
         NULL,  1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
     Serial.printf("\nbat_check...\n");
+
     xTaskCreatePinnedToCore(
         TaskThermalMeter, "ThermalMeter" // MAX6675 thermal task to read Bean-Temperature (BT)
         ,
@@ -353,17 +354,8 @@ if (user_wifi.Init_mode)
         1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
     Serial.printf("\nThermalMeter...\n");
-    xTaskCreatePinnedToCore(
-        TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
-        ,
-        1024*6 // This stack size can be checked & adjusted by reading the Stack Highwater
-        ,
-        NULL, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-        ,
-        &xHandle_indicator, 
-        1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
-    );
-    Serial.printf("\nOLED...\n");
+
+
     xTaskCreatePinnedToCore(
         TaskROR, "RORTask" // 计算ROR的任务
         ,
@@ -376,7 +368,20 @@ if (user_wifi.Init_mode)
     );   
      Serial.printf("\nROR ...\n");
 
-     Serial.printf("\nStart Wifi ...\n");
+
+    xTaskCreatePinnedToCore(
+        TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
+        ,
+        1024*6 // This stack size can be checked & adjusted by reading the Stack Highwater
+        ,
+        NULL, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+        ,
+        &xHandle_indicator, 
+        1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
+    );
+    Serial.printf("\nOLED...\n");
+
+    Serial.printf("\nStart Wifi ...\n");
      
   //初始化网络服务
     WiFi.mode(WIFI_STA);

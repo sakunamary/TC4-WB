@@ -45,6 +45,7 @@ extern int b_drop;
 extern bool bAbnormalValue;
 
 static char buffer[64];
+int init_countdown =30 ;
 
 //#define TASKINDICATOR_INDICATOR_INTERVEL 750 // Task re-entry intervel (ms)
 
@@ -71,6 +72,25 @@ void TaskIndicator(void *pvParameters)
 
 
     vTaskDelay(3000 / portTICK_RATE_MS); // dealy 3s showup
+
+//countdown init screen
+
+
+while( init_countdown >=1)
+{
+
+   display.clear();
+   display.setFont(ArialMT_Plain_10);
+   display.drawString(16, 14,"Warm up Thermos");
+   display.drawString(28, 36,"Wait            s");
+   display.setFont(ArialMT_Plain_16);
+   display.drawStringf(58, 32,buffer,"%2d",init_countdown);
+   display.display();
+    init_countdown--;
+    vTaskDelay(1000 / portTICK_RATE_MS); // dealy 1s showup
+}
+
+
 
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
