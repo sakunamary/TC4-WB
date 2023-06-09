@@ -45,7 +45,7 @@ extern int b_drop;
 extern bool bAbnormalValue;
 
 static char buffer[64];
-int init_countdown =30 ;
+int init_countdown =20 ;
 
 //#define TASKINDICATOR_INDICATOR_INTERVEL 750 // Task re-entry intervel (ms)
 

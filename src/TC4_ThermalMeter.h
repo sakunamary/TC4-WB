@@ -18,6 +18,7 @@
 #define __TC4_THERMALMETER_H__
 
 #include <Arduino.h>
+#include <SimpleKalmanFilter.h>
 #include "TC4.h"
 #include "max6675.h"
 
@@ -51,6 +52,9 @@ MAX6675 thermocouple_ET(thermoCLK, thermoCS_ET, thermoDO);
 // Create object for Beam Temperature (BT)
 MAX6675 thermocouple_BT(thermoCLK, thermoCS_BT, thermoDO);
 
+SimpleKalmanFilter simpleKalmanFilter_BT(1, 1, 0.01);
+SimpleKalmanFilter simpleKalmanFilter_ET(1, 1, 0.01);
+
 float averageTemperature(float temp[TEMPERATURE_ARRAY_LENGTH],const int num );
 
 int l = 0 ;
@@ -77,9 +81,10 @@ void TaskThermalMeter(void *pvParameters)
         // Read BT from MAX6675 thermal couple
 
            //读取max6675数据
-
-            BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
-            ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
+              BT_CurTemp = simpleKalmanFilter_BT.updateEstimate(thermocouple_BT.readCelsius()) + user_wifi.btemp_fix; //增加简单卡尔曼滤波
+              ET_CurTemp = simpleKalmanFilter_ET.updateEstimate(thermocouple_ET.readCelsius()) + user_wifi.etemp_fix; //增加简单卡尔曼滤波
+            //BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
+            //ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
 
      vTaskDelay(100);
          
