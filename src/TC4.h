@@ -11,7 +11,7 @@
 #ifndef __TC4_H__
 #define __TC4_H__
 
-#define TEMPERATURE_ARRAY_LENGTH    4
+#define TEMPERATURE_ARRAY_LENGTH    2
 #define TEMPERATURE_ROR_LENGTH      6
 
 
@@ -23,13 +23,13 @@
 #define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
-    #define VERSION "1.1.7f"
+    #define VERSION "1.1.8f"
 #endif    
 #if defined(WIFI_VERSION)
-    #define VERSION "1.1.7w"
+    #define VERSION "1.1.8w"
 #endif 
 #if defined(BLUETOOTH_VERSION)
-    #define VERSION "1.1.7b"
+    #define VERSION "1.1.8b"
 #endif
 
 
@@ -199,18 +199,15 @@ const char index_html[] PROGMEM = R"rawliteral(
             <div class='form-floating'>
             <h2 class=''>3.杂项</h2>  
             <label>温度采样时间 (current: %sampling_time%) s</label>
-            <input type='number' step = '0.25' max = '4' min='0.75' class='form-control'  name='sampling_time'> 
+            <input type='number' step = '0.5' max = '4' min='1' class='form-control'  name='sampling_time'>     
             </div>
-            <br/>
-            <div class='form-floating'>
-            <label>休眠时间 (current:%sleeping_time%) Mins</label>
-            <input type='number' step = '1' max = '30' min='5' class='form-control' name='sleeping_time'> 
-            </div>
-            <br/>
+             <br/>
+             <br/>
             <div align="center">
                 <button type='submit'onclick="submitMessage()">保存</button>
             </div>
-            
+            <br/>
+            <br/>
         </form> 
             <p>
             <a href='/update' target='_blank'>FIRMWARE UPDATE verison:%version%</a>

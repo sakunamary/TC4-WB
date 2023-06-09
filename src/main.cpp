@@ -71,7 +71,7 @@ void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uin
 char ap_name[30] ;
 String BT_EVENT;
 String local_IP;
-//uint32_t lastTimestamp = millis();
+
 float last_BT_temp = -273.0;
 bool take_temp = true;
 uint8_t macAddr[6];
@@ -88,7 +88,7 @@ TaskHandle_t xHandle_indicator;
      vTaskSuspend( xHandle );
 
 */
-user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 0.75, 300,true};
+user_wifi_t user_wifi = {" ", " ", 0.0, 0.0, 1.0,300,true};
 temperature_data_t temperature_data= {0.0,0.0,0.0,0.0};
 
 // object declare
@@ -244,10 +244,12 @@ String processor(const String &var)
     { //
         return String(user_wifi.sampling_time);
     }
+    /*
     else if (var == "sleeping_time")
     {
         return String(user_wifi.sleeping_time/60);
     }
+    */
     return String();
 }
 
@@ -318,7 +320,7 @@ if (user_wifi.Init_mode)
     strcat(user_wifi.ssid,"TC4-WB");
     strcat(user_wifi.password,"12345678");
     user_wifi.Init_mode = false ;
-    user_wifi.sampling_time = 0.75; 
+    user_wifi.sampling_time = 1; 
     user_wifi.sleeping_time = 300;
     user_wifi.btemp_fix = 0;
     user_wifi.etemp_fix = 0;
@@ -340,6 +342,7 @@ if (user_wifi.Init_mode)
         NULL,  1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
     Serial.printf("\nbat_check...\n");
+
     xTaskCreatePinnedToCore(
         TaskThermalMeter, "ThermalMeter" // MAX6675 thermal task to read Bean-Temperature (BT)
         ,
@@ -351,17 +354,8 @@ if (user_wifi.Init_mode)
         1 // Running Core decided by FreeRTOS,let core0 run wifi and BT
     );
     Serial.printf("\nThermalMeter...\n");
-    xTaskCreatePinnedToCore(
-        TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
-        ,
-        1024*6 // This stack size can be checked & adjusted by reading the Stack Highwater
-        ,
-        NULL, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-        ,
-        &xHandle_indicator, 
-        1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
-    );
-    Serial.printf("\nOLED...\n");
+
+
     xTaskCreatePinnedToCore(
         TaskROR, "RORTask" // 计算ROR的任务
         ,
@@ -374,7 +368,20 @@ if (user_wifi.Init_mode)
     );   
      Serial.printf("\nROR ...\n");
 
-     Serial.printf("\nStart Wifi ...\n");
+
+    xTaskCreatePinnedToCore(
+        TaskIndicator, "IndicatorTask" // 128*64 SSD1306 OLED 显示参数
+        ,
+        1024*6 // This stack size can be checked & adjusted by reading the Stack Highwater
+        ,
+        NULL, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+        ,
+        &xHandle_indicator, 
+        1 // Running Core decided by FreeRTOS , let core0 run wifi and BT
+    );
+    Serial.printf("\nOLED...\n");
+
+    Serial.printf("\nStart Wifi ...\n");
      
   //初始化网络服务
     WiFi.mode(WIFI_STA);
@@ -487,10 +494,6 @@ if (user_wifi.Init_mode)
                       if (request->getParam("sampling_time")->value() != "")
                       {
                           user_wifi.sampling_time = request->getParam("sampling_time")->value().toFloat();
-                      }
-                      if (request->getParam("sleeping_time")->value() != "")
-                      {
-                          user_wifi.sleeping_time = request->getParam("sleeping_time")->value().toInt() * 60; // input in MINUTES covernet to seconds
                       }
                       // Svae EEPROM
                       EEPROM.put(0, user_wifi);

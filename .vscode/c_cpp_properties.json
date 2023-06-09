@@ -16,6 +16,7 @@
                 "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/Update/src",
                 "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/BluetoothSerial/src",
                 "/Users/xiaoning/Documents/GitHub/TC4_OLED/lib/Battery_18650_Stats/src",
+                "/Users/xiaoning/Documents/GitHub/TC4_OLED/.pio/libdeps/nodemcu-32_mac/SimpleKalmanFilter/src",
                 "/Users/xiaoning/Documents/GitHub/TC4_OLED/.pio/libdeps/nodemcu-32_mac/ESPAsyncWebServer-esphome/src",
                 "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/WiFi/src",
                 "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/FS/src",
@@ -236,6 +237,7 @@
                     "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/Update/src",
                     "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/BluetoothSerial/src",
                     "/Users/xiaoning/Documents/GitHub/TC4_OLED/lib/Battery_18650_Stats/src",
+                    "/Users/xiaoning/Documents/GitHub/TC4_OLED/.pio/libdeps/nodemcu-32_mac/SimpleKalmanFilter/src",
                     "/Users/xiaoning/Documents/GitHub/TC4_OLED/.pio/libdeps/nodemcu-32_mac/ESPAsyncWebServer-esphome/src",
                     "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/WiFi/src",
                     "/Users/xiaoning/.platformio/packages/framework-arduinoespressif32@3.20003.220626/libraries/FS/src",
@@ -447,7 +449,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60106",
+                "PLATFORMIO=60107",
                 "ARDUINO_NodeMCU_32S",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
