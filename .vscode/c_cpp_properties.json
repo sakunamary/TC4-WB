@@ -449,7 +449,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60107",
+                "PLATFORMIO=60109",
                 "ARDUINO_NodeMCU_32S",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
@@ -468,8 +468,8 @@
                 "ARDUINO_PARTITION_min_spiffs",
                 ""
             ],
-            "cStandard": "c99",
-            "cppStandard": "c++11",
+            "cStandard": "gnu99",
+            "cppStandard": "gnu++11",
             "compilerPath": "/Users/xiaoning/.platformio/packages/toolchain-xtensa-esp32@8.4.0+2021r2-patch3/bin/xtensa-esp32-elf-gcc",
             "compilerArgs": [
                 "-mlongcalls",
