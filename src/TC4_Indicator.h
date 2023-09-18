@@ -135,8 +135,8 @@ while( init_countdown >=1)
             {
                 display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",temperature_data.BT_AvgTemp);
                 display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",temperature_data.ET_AvgTemp);
-                display.drawStringf(128-48, 0 + 2,buffer,"dB:%4.2f",temperature_data.BT_ROR);
-                display.drawStringf(128-48, 18 + 2,buffer,"dE:%4.2f",temperature_data.ET_ROR);
+                display.drawStringf(128-48-12, 0 + 2,buffer,"dB:%4.2f",temperature_data.BT_ROR);
+                display.drawStringf(128-48-12, 18 + 2,buffer,"dE:%4.2f",temperature_data.ET_ROR);
                 xSemaphoreGive(xThermoDataMutex);
                 }      
 
