@@ -73,25 +73,6 @@ void TaskIndicator(void *pvParameters)
 
     vTaskDelay(3000 / portTICK_RATE_MS); // dealy 3s showup
 
-//countdown init screen
-
-
-while( init_countdown >=1)
-{
-
-   display.clear();
-   display.setFont(ArialMT_Plain_10);
-   display.drawString(16, 14,"Warm up Thermos");
-   display.drawString(28, 36,"Wait            s");
-   display.setFont(ArialMT_Plain_16);
-   display.drawStringf(58, 32,buffer,"%2d",init_countdown);
-   display.display();
-    init_countdown--;
-    vTaskDelay(1000 / portTICK_RATE_MS); // dealy 1s showup
-}
-   display.setFont(ArialMT_Plain_10);
-
-
     // Initial the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
 
@@ -99,11 +80,12 @@ while( init_countdown >=1)
     {
         // Wait for the next cycle
         vTaskDelayUntil(&xLastWakeTime, xIntervel);
-        display.clear();
+        //countdown init screen 如果倒数没到1 and 电量 大于5 
 
-        if (charging <= 5)
+        if ( init_countdown >=1 ) 
         {
-           
+         if (charging <= 5)
+            {
             display.clear();
             display.setFont(ArialMT_Plain_16);
             display.drawString(48, 14-4 + 4,"LOW");
@@ -112,86 +94,118 @@ while( init_countdown >=1)
             display.display();
             display.setFont(ArialMT_Plain_10);   
             vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
-        }
 
-        else
-        {
-           
-            //显示logo
+            } else {
 
-            display.drawXbm(0, 0, 16, 16, BEAN_LOGO);
-            display.drawXbm(0, 16, 16, 16, DRUMMER_LOGO);
-
-            //显示温度
-
-            if (bAbnormalValue == true)
-            {
-            display.invertDisplay();
-            }
-            else
-                display.normalDisplay();
-
-            if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) // Mutex to make the data more clean
-            {
-                display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",temperature_data.BT_AvgTemp);
-                display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",temperature_data.ET_AvgTemp);
-                display.drawStringf(128-48-12, 0 + 2,buffer,"dB:%4.2f",temperature_data.BT_ROR);
-                display.drawStringf(128-48-12, 18 + 2,buffer,"dE:%4.2f",temperature_data.ET_ROR);
-                xSemaphoreGive(xThermoDataMutex);
-                }      
-
-
-#if defined(FULL_VERSION) // full version
-            //显示IP地址和蓝牙状态
-            display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
-            display.drawXbm(0, 48, 16, 16, BT_LOGO);
-            display.drawString(2 + 16, 38,"IP:");
-            display.drawString(2 + 30, 38,local_IP);
-            //display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
-            display.drawStringf(2 + 16, 54,buffer,"%s",BT_EVENT);
-#endif
-
-#if defined(WIFI_VERSION) // wifi version
-            //显示IP地址和蓝牙状态
-            display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
-            display.drawString(2 + 16, 38,"IP:");
-            display.drawString(2 + 30, 38,local_IP);
-            //display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
-
-#endif
-
-#if defined(BLUETOOTH_VERSION) // wifi version
-            //显示IP地址和蓝牙状态
-            display.drawXbm(0, 32, 16, 16, BT_LOGO);
-            display.drawStringf(2 + 16, 36 + 2,buffer,"%s",BT_EVENT);
-
-#endif
-
-            //显示电池电量情况
-            if (charging >= 75)
-            {
-                display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16,BAT_100);
-            }
-            else if (charging >= 55)
-            {
-                display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_75);
-            }
-            else if (charging >= 35)
-            {
-                display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_50);
-            }
-            else if (charging >= 15)
-            {
-                display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_25);
-            }
-            else
-            {
-                display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_0);
-            }
-              
+            display.clear();
+            display.setFont(ArialMT_Plain_10);
+            display.drawString(16, 14,"Warm up Thermos");
+            display.drawString(28, 36,"Wait            s");
+            display.setFont(ArialMT_Plain_16);
+            display.drawStringf(58, 32,buffer,"%2d",init_countdown);
             display.display();
-            vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
-        }
+            init_countdown--;
+            vTaskDelay(1000 / portTICK_RATE_MS); // dealy 1s showup
+            }
+        } 
+
+        else {
+                display.setFont(ArialMT_Plain_10);
+                display.clear();
+
+                if (charging <= 5)
+                {
+                
+                    display.clear();
+                    display.setFont(ArialMT_Plain_16);
+                    display.drawString(48, 14-4 + 4,"LOW");
+                    display.drawString(28, 30-4 + 4,"BATTERY");
+                    display.drawRect(2, 2, 128-2, 64-2);
+                    display.display();
+                    display.setFont(ArialMT_Plain_10);   
+                    vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
+                }
+
+                else
+                {
+                
+                    //显示logo
+
+                    display.drawXbm(0, 0, 16, 16, BEAN_LOGO);
+                    display.drawXbm(0, 16, 16, 16, DRUMMER_LOGO);
+
+                    //显示温度
+
+                    if (bAbnormalValue == true)
+                    {
+                    display.invertDisplay();
+                    }
+                    else
+                        display.normalDisplay();
+
+                    if (xSemaphoreTake(xThermoDataMutex, xIntervel) == pdPASS) // Mutex to make the data more clean
+                    {
+                        display.drawStringf(2 + 16, 0 + 2,buffer,"BT:%4.2f",temperature_data.BT_AvgTemp);
+                        display.drawStringf(2 + 16, 18 + 2,buffer,"ET:%4.2f",temperature_data.ET_AvgTemp);
+                        display.drawStringf(128-48-12, 0 + 2,buffer,"dB:%4.2f",temperature_data.BT_ROR);
+                        display.drawStringf(128-48-12, 18 + 2,buffer,"dE:%4.2f",temperature_data.ET_ROR);
+                        xSemaphoreGive(xThermoDataMutex);
+                        }      
+
+
+        #if defined(FULL_VERSION) // full version
+                    //显示IP地址和蓝牙状态
+                    display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
+                    display.drawXbm(0, 48, 16, 16, BT_LOGO);
+                    display.drawString(2 + 16, 38,"IP:");
+                    display.drawString(2 + 30, 38,local_IP);
+                    //display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
+                    display.drawStringf(2 + 16, 54,buffer,"%s",BT_EVENT);
+        #endif
+
+        #if defined(WIFI_VERSION) // wifi version
+                    //显示IP地址和蓝牙状态
+                    display.drawXbm(0, 32, 16, 16, WIFI_LOGO);
+                    display.drawString(2 + 16, 38,"IP:");
+                    display.drawString(2 + 30, 38,local_IP);
+                    //display.drawStringf(2 + 16, 36 + 2,buffer,"IP:%s",local_IP);
+
+        #endif
+
+        #if defined(BLUETOOTH_VERSION) // wifi version
+                    //显示IP地址和蓝牙状态
+                    display.drawXbm(0, 32, 16, 16, BT_LOGO);
+                    display.drawStringf(2 + 16, 36 + 2,buffer,"%s",BT_EVENT);
+
+        #endif
+
+                    //显示电池电量情况
+                    if (charging >= 75)
+                    {
+                        display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16,BAT_100);
+                    }
+                    else if (charging >= 55)
+                    {
+                        display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_75);
+                    }
+                    else if (charging >= 35)
+                    {
+                        display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_50);
+                    }
+                    else if (charging >= 15)
+                    {
+                        display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_25);
+                    }
+                    else
+                    {
+                        display.drawXbm(SCREEN_WIDTH - 17, SCREEN_HEIGHT - 14, 16, 16, BAT_0);
+                    }
+                    
+                    display.display();
+                    vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
+                }
+                }
+                
     }
 }
 
