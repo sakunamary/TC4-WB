@@ -104,8 +104,9 @@ void TaskIndicator(void *pvParameters)
             display.setFont(ArialMT_Plain_16);
             display.drawStringf(58, 32,buffer,"%2d",init_countdown);
             display.display();
-            init_countdown--;
+       
             vTaskDelay(1000 / portTICK_RATE_MS); // dealy 1s showup
+            init_countdown--;
             }
         } 
 

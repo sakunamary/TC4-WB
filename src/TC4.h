@@ -19,8 +19,8 @@
 #define BAUDRATE 115200  //serial port baudrate
 
 //#define  FULL_VERSION         //full function version ,with wifi and bluetooth
-#define  WIFI_VERSION       //only wifi version 
-//#define  BLUETOOTH_VERSION  //only bluetooth version
+//#define  WIFI_VERSION       //only wifi version 
+#define  BLUETOOTH_VERSION  //only bluetooth version
 
 #if defined(FULL_VERSION)
     #define VERSION "1.1.9f"
