@@ -69,6 +69,7 @@ void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uin
 
 
 char ap_name[30] ;
+//static char BT_buffer[64];
 String BT_EVENT;
 String local_IP;
 
@@ -599,9 +600,11 @@ void loop()
         {                               // READ command
             BTSerial.print(temperature_data.ET_AvgTemp); // channel 1 : Environment Temperature (ET);
             BTSerial.print(",");
+            BTSerial.print(temperature_data.BT_AvgTemp); // channel 1 : Environment Temperature (ET);
+            BTSerial.print(",");
+            BTSerial.print(temperature_data.ET_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
+            BTSerial.print(",");
             BTSerial.print(temperature_data.BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
-            BTSerial.println(",0.00,0.00"); // channel 3,4 : A vaule of zero indicates the channel is inactive
-
 
         }
 
