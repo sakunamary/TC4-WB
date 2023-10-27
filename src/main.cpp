@@ -599,22 +599,8 @@ void loop()
         if (msg.indexOf("READ") == 0)
         {                               // READ command
            
-           //sprintf(BT_buffer,"%4.2d,%4.2d,%4.2d,%4.2d\r\n",temperature_data.ET_AvgTemp,temperature_data.BT_AvgTemp,
-           //temperature_data.ET_AvgTemp,temperature_data.BT_AvgTemp);
-           BTSerial.printf("%4.2f,%4.2f,%4.2f,%4.2f\r\n",
-           temperature_data.ET_AvgTemp,temperature_data.BT_AvgTemp,
-           temperature_data.ET_AvgTemp,temperature_data.BT_AvgTemp);
-
-           /*
-           
-            BTSerial.print(temperature_data.ET_AvgTemp); // channel 1 : Environment Temperature (ET);
-            BTSerial.print(",");
-            BTSerial.print(temperature_data.BT_AvgTemp); // channel 1 : Environment Temperature (ET);
-            BTSerial.print(",");
-            BTSerial.print(temperature_data.ET_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
-            BTSerial.print(",");
-            BTSerial.print(temperature_data.BT_AvgTemp);     // channel 2 : Bean Temperature (BT) with degree Celsius
-*/
+           BTSerial.printf("%4.2f,%4.2f,0.0,0.0\r\n",
+            temperature_data.ET_AvgTemp,temperature_data.BT_AvgTemp);
 
         }
 
