@@ -1,4 +1,5 @@
-bblanchon/ArduinoJson@^6.21.1
-thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays@ ^4.4.0
 ottowinter/ESPAsyncWebServer-esphome@^3.0.0
+thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays@ ^4.4.0
 adafruit/MAX6675 library@^1.1.0
+bblanchon/ArduinoJson@^6.21.1
+denyssene/SimpleKalmanFilter@^0.1.0

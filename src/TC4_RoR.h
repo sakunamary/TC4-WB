@@ -82,4 +82,21 @@ float ROR( float y_signal[TEMPERATURE_ROR_LENGTH],const int num )
 
 
 
+/*
+ code from TC4 
+
+// T1, T2 = temperatures x 1000
+// t1, t2 = time marks, milliseconds
+// ---------------------------------------------------
+float calcRise( int32_t T1, int32_t T2, int32_t t1, int32_t t2 ) {
+  int32_t dt = t2 - t1;
+  if( dt == 0 ) return 0.0;  // fixme -- throw an exception here?
+  float dT = ( convertUnits( T2 ) - convertUnits( T1 ) ) * D_MULT;
+  float dS = dt * 0.001; // convert from milli-seconds to seconds
+  return ( dT / dS ) * 60.0; // rise per minute
+}
+
+*/
+
+
 #endif
