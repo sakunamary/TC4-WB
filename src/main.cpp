@@ -318,8 +318,8 @@ void setup()
 
 if (user_wifi.Init_mode) 
 {
-    strcat(user_wifi.ssid,"TC4-WB");
-    strcat(user_wifi.password,"12345678");
+    strcat(user_wifi.ssid,"");
+    strcat(user_wifi.password,"");
     user_wifi.Init_mode = false ;
     user_wifi.sampling_time = 1; 
     user_wifi.sleeping_time = 300;
@@ -400,7 +400,7 @@ if (user_wifi.Init_mode)
             WiFi.macAddress(macAddr); 
             // Serial_debug.println("WiFi.mode(AP):");
             WiFi.mode(WIFI_AP);
-            sprintf( ap_name ,"TC4-WB_%02X%02X%02X",macAddr[0],macAddr[1],macAddr[2]);
+            sprintf( ap_name ,"TC4-WB_%02X%02X",macAddr[0],macAddr[1]);
             WiFi.softAP(ap_name, "12345678"); // defualt IP address :192.168.4.1 password min 8 digis
             break;
         }
