@@ -12,31 +12,31 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "/Users/xiaoning/Documents/GitHub/TC4_OLED/.pio/build/nodemcu-32s/firmware.elf",
+            "executable": "/home/pi/文档/GitHub/TC4_OLED/.pio/build/nodemcu-32s/firmware.elf",
             "projectEnvName": "nodemcu-32s",
-            "toolchainBinDir": "/Users/xiaoning/.platformio/packages/toolchain-xtensa-esp32@8.4.0+2021r2-patch3/bin",
+            "toolchainBinDir": "/home/pi/.platformio/packages/toolchain-xtensa-esp32/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
-                "task": "Pre-Debug"
+                "task": "Pre-Debug (nodemcu-32s)"
             }
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "/Users/xiaoning/Documents/GitHub/TC4_OLED/.pio/build/nodemcu-32s/firmware.elf",
+            "executable": "/home/pi/文档/GitHub/TC4_OLED/.pio/build/nodemcu-32s/firmware.elf",
             "projectEnvName": "nodemcu-32s",
-            "toolchainBinDir": "/Users/xiaoning/.platformio/packages/toolchain-xtensa-esp32@8.4.0+2021r2-patch3/bin",
+            "toolchainBinDir": "/home/pi/.platformio/packages/toolchain-xtensa-esp32/bin",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "/Users/xiaoning/Documents/GitHub/TC4_OLED/.pio/build/nodemcu-32s/firmware.elf",
+            "executable": "/home/pi/文档/GitHub/TC4_OLED/.pio/build/nodemcu-32s/firmware.elf",
             "projectEnvName": "nodemcu-32s",
-            "toolchainBinDir": "/Users/xiaoning/.platformio/packages/toolchain-xtensa-esp32@8.4.0+2021r2-patch3/bin",
+            "toolchainBinDir": "/home/pi/.platformio/packages/toolchain-xtensa-esp32/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }
