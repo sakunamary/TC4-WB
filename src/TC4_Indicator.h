@@ -45,7 +45,7 @@ extern int b_drop;
 extern bool bAbnormalValue;
 
 static char buffer[64];
-int init_countdown =20 ;
+int init_countdown =30 ;
 
 //#define TASKINDICATOR_INDICATOR_INTERVEL 750 // Task re-entry intervel (ms)
 
@@ -54,7 +54,7 @@ void TaskIndicator(void *pvParameters)
     /* Variable Definition */
     (void)pvParameters;
     TickType_t xLastWakeTime;
-    const TickType_t xIntervel = (user_wifi.sampling_time * 1000) / portTICK_PERIOD_MS;
+    const TickType_t xIntervel = 1000 / portTICK_PERIOD_MS;
 
     String ver = VERSION;
 
@@ -83,8 +83,8 @@ void TaskIndicator(void *pvParameters)
         //countdown init screen 如果倒数没到1 and 电量 大于5 
 
         if ( init_countdown >=1 ) 
-        {
-         if (charging <= 5)
+        {//倒计时界面
+         if (charging <= 5) //处理电量过低警示
             {
             display.clear();
             display.setFont(ArialMT_Plain_16);
@@ -93,7 +93,7 @@ void TaskIndicator(void *pvParameters)
             display.drawRect(2, 2, 128-2, 64-2);
             display.display();
             display.setFont(ArialMT_Plain_10);   
-            vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
+           // vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
 
             } else {
 
@@ -105,16 +105,16 @@ void TaskIndicator(void *pvParameters)
             display.drawStringf(58, 32,buffer,"%2d",init_countdown);
             display.display();
        
-            vTaskDelay(1000 / portTICK_RATE_MS); // dealy 1s showup
+            //vTaskDelay(1000 / portTICK_RATE_MS); // dealy 1s showup
             init_countdown--;
             }
         } 
 
-        else {
+        else { //正常显示界面
                 display.setFont(ArialMT_Plain_10);
                 display.clear();
 
-                if (charging <= 5)
+                if (charging <= 5) //处理电量过低警示
                 {
                 
                     display.clear();
@@ -124,7 +124,7 @@ void TaskIndicator(void *pvParameters)
                     display.drawRect(2, 2, 128-2, 64-2);
                     display.display();
                     display.setFont(ArialMT_Plain_10);   
-                    vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
+                    //vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
                 }
 
                 else
@@ -203,7 +203,7 @@ void TaskIndicator(void *pvParameters)
                     }
                     
                     display.display();
-                    vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
+                    //vTaskDelay(user_wifi.sampling_time / portTICK_RATE_MS); // dealy 1s showup
                 }
                 }
                 
