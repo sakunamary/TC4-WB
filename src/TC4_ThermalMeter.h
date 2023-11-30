@@ -83,6 +83,7 @@ void TaskThermalMeter(void *pvParameters)
            //读取max6675数据
               BT_CurTemp = simpleKalmanFilter_BT.updateEstimate(thermocouple_BT.readCelsius()) + user_wifi.btemp_fix; //增加简单卡尔曼滤波
               ET_CurTemp = simpleKalmanFilter_ET.updateEstimate(thermocouple_ET.readCelsius()) + user_wifi.etemp_fix; //增加简单卡尔曼滤波
+              
             //BT_CurTemp = thermocouple_BT.readCelsius() + user_wifi.btemp_fix;  //get BT data
             //ET_CurTemp = thermocouple_ET.readCelsius() + user_wifi.etemp_fix;
 
