@@ -599,7 +599,7 @@ void loop()
         if (msg.indexOf("READ") == 0)
         {                               // READ command
            
-           BTSerial.printf("%4.2f,%4.2f,0.0,0.0\r\n",
+           BTSerial.printf("%4.1f,%4.1f,0.0,0.0\r\n",
             temperature_data.ET_AvgTemp,temperature_data.BT_AvgTemp);
 
         }
